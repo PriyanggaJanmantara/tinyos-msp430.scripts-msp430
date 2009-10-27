@@ -1,0 +1,33 @@
+diff -ur msp430-libc-cvs/src/Makefile msp430-libc/src/Makefile
+--- msp430-libc-cvs/src/Makefile	2008-12-07 14:45:57.000000000 -0800
++++ msp430-libc/src/Makefile	2009-10-12 23:15:46.000000000 -0700
+@@ -8,7 +8,7 @@
+ # installation prefix (set this if you don't install by hand)
+ 
+ #prefix = /usr
+-prefix = /usr/local/msp430
++prefix = /stow
+ 
+ # name of target architecture (used for conform naming)
+ 
+@@ -86,19 +86,11 @@
+ 	crt430x412.o   crt430x413.o   crt430x415.o   crt430x417.o \
+ 	crt430x423.o   crt430x425.o   crt430x427.o \
+ 	crt430x4250.o  crt430x4260.o  crt430x4270.o \
+-	crt430xG4250.o crt430xG4260.o crt430xG4270.o \
+-	crt430xE423.o  crt430xE425.o  crt430xE427.o \
+-	crt430xE4232.o crt430xE4242.o crt430xE4252.o crt430xE4272.o \
+ 	crt430xW423.o  crt430xW425.o  crt430xW427.o \
+ 	crt430xG437.o  crt430xG438.o  crt430xG439.o \
+ 	crt430x435.o   crt430x436.o   crt430x437.o \
+-	crt430x4351.o  crt430x4361.o  crt430x4371.o \
+ 	crt430x447.o   crt430x448.o   crt430x449.o \
+-	crt430xG4616.o crt430xG4617.o crt430xG4618.o crt430xG4619.o \
+-	crt430x4783.o  crt430x4784.o  crt430x4793.o  crt430x4794.o \
+-	crt430x5418.o  crt430x5419.o  \
+-	crt430x5435.o  crt430x5436.o  crt430x5437.o  crt430x5438.o \
+-	
++
+ 
+ build-crt: ${crt_all_objs}
+ 

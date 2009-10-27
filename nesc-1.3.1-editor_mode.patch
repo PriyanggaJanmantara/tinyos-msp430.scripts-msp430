@@ -1,0 +1,67 @@
+--- nesc-1.3.1/tools/editor-modes/emacs/new-nesc.el.~1~	2005-05-11 17:13:05.000000000 -0700
++++ nesc-1.3.1/tools/editor-modes/emacs/new-nesc.el	2009-10-14 00:34:45.000000000 -0700
+@@ -46,54 +46,44 @@
+   ;; cc-mode 5.30.8 is buggy:
+   (if (not (get 'nesc-mode 'c-fallback-mode))
+       (put 'nesc-mode 'c-fallback-mode 'c-mode)))
+ 
+ (c-lang-defconst c-class-decl-kwds
+-  nesc (append '("interface" "implementation" "nx_struct" "nx_union")
+-	       (c-lang-const c-class-decl-kwds)))
++  nesc '("interface" "implementation" "nx_struct" "nx_union"))
+ 
+ (c-lang-defconst c-type-prefix-kwds
+-  nesc (append '("nx_struct" "nx_union")
+-	       (c-lang-const c-type-prefix-kwds)))
++  nesc '("nx_struct" "nx_union"))
+ 
+ (c-lang-defconst c-block-decls-with-vars
+-  nesc (append '("nx_struct" "nx_union")
+-	       (c-lang-const c-block-decls-with-vars)))
++  nesc '("nx_struct" "nx_union"))
+ 
+ (c-lang-defconst c-brace-list-decl-kwds
+-  nesc (append '("module" "configuration" "provides" "uses")
+-	       (c-lang-const c-brace-list-decl-kwds)))
++  nesc '("module" "configuration" "provides" "uses"))
+ 
+ (c-lang-defconst c-typeless-decl-kwds
+-  nesc (append '("as" "components" "interface")
+-	       (c-lang-const c-typeless-decl-kwds)))
++  nesc '("as" "components" "interface"))
+ 
+ (c-lang-defconst c-modifier-kwds
+-  nesc (append '("command" "event" "task" "norace" "async")
+-	       (c-lang-const c-modifier-kwds)))
++  nesc '("command" "event" "task" "norace" "async"))
+ 
+ (c-lang-defconst c-other-decl-kwds
+-  nesc (append '("includes") (c-lang-const c-other-decl-kwds)))
++  nesc '("includes"))
+ 
+ (c-lang-defconst c-other-kwds
+-  nesc (append '("new") (c-lang-const c-other-kwds)))
++  nesc '("new" "abstract"))
+ 
+ (c-lang-defconst c-block-stmt-1-kwds
+-  nesc (append '("atomic") (c-lang-const c-block-stmt-1-kwds)))
++  nesc '("atomic"))
+ 
+ (c-lang-defconst c-recognize-knr-p nesc nil)
+ 
+ ;; This gives post, call, signal a slightly incorrect priority
+ (c-lang-defconst c-operators
+-  nesc (append '((prefix "post" "call" "signal"))
++  nesc '((prefix "post" "call" "signal")))
+ 	       ;; Note: need to ask specifically for the C operators
+ 	       ;; as there are explicit tests for the C name in the 
+ 	       ;; c-operators constant specification...
+-	       (c-lang-const c-operators c)))
+-
+-(c-lang-defconst c-other-kwds
+-  nesc (cons "abstract" (c-lang-const c-other-kwds)))
+ 
+ 
+ (defcustom nesc-font-lock-extra-types '("result_t" "bool"
+ 					"int8_t" "uint8_t"
+ 					"int16_t" "uint16_t"
