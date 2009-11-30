@@ -23,3 +23,5 @@ export MAKERULES
 path::addpath /stow/bin
 path::addpath /stow/sbin
 path::addpath /stow/man MANPATH
+
+alias dis430='msp430-objdump -d'
