@@ -9,7 +9,9 @@ function download() {
 	|| { svn co $repo_mspgcc4 mspgcc4 \
 	|| die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $gdb.tar.bz2 ]] \
-	|| fetch $url_gnu/gdb/$gdb.tar.bz2
+	|| fetch $url_gnu/gdb/$gdb.tar.bz2 \
+	|| die "can not down load $gdb.tar.bz2 from $url_gnu"
+    return 0
 }
 
 function prepare() {
@@ -25,6 +27,7 @@ function prepare() {
 	patch -d $gdb -p1 < mspgcc4/$gdb.patch \
 	    || die "apply $gdb.patch failed"
     fi
+    return 0
 }
 
 function build() {

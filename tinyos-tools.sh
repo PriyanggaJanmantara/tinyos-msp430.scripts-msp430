@@ -5,25 +5,26 @@
 function download() {
     cd $buildtop
     rm -rf $builddir
-    if [[ -d ../$tinyos ]]; then
-	cp -R ../$tinyos/tools/ $builddir
-    elif [[ -d $tinyos ]]; then
+    if [[ -d $tinyos ]]; then
 	cd $tinyos; cvs -q up; cd ..;
-	cp -R $tinyos/tools/ $builddir
     else
 	cvs -q -d $repo_tinyos co -P $tinyos \
-            || die "can not fetch from cvs repository"; \
-	    cp -R $tinyos/tools/ $builddir
+            || die "can not fetch from cvs repository";
     fi
+    return 0
 }
 
 function prepare() {
     cd $buildtop
+    rm -rf $builddir
+    cp -R $tinyos $builddir \
+	|| die "can not copy $tinyos"
+    return 0
 }
 
 function build() { 
-    cd $builddir
-   ./Bootstrap \
+    cd $builddir/tools
+    ./Bootstrap \
 	|| die "bootstrap failed"
     ./configure --prefix=$prefix --disable-nls \
 	|| die "configure failed"
@@ -32,7 +33,7 @@ function build() {
 }
 
 function install() {
-    cd $builddir
+    cd $builddir/tools
     sudo make install
 }
 

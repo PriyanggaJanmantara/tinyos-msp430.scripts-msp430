@@ -15,6 +15,7 @@ function download() {
 	&& { cd mspgcc4; svn up; cd ..; } \
 	|| { svn co $repo_mspgcc4 mspgcc4 \
 	|| die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
+    return 0
 }
 
 function prepare() {
@@ -23,8 +24,9 @@ function prepare() {
     cp -R mspgcc/msp430-libc $builddir
     patch -p1 -d $builddir < mspgcc4/msp430-libc.patch \
 	|| die "apply msp430-libc.patch failed"
-    mkdir $builddir/src/msp1
-    mkdir $builddir/src/msp2
+    mkdir -p $builddir/src/msp1
+    mkdir -p $builddir/src/msp2
+    return 0
 }
 
 function build() {

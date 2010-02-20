@@ -5,7 +5,9 @@
 function download() {
     cd $buildtop
     [[ -f $nesc.tar.gz ]] \
-	|| fetch $url_nesc/$nesc.tar.gz
+	|| fetch $url_nesc/$nesc.tar.gz \
+	|| die "can not download $nesc.tar.gz from $url_nesc"
+    return 0
 }
 
 function prepare() {
@@ -16,6 +18,7 @@ function prepare() {
     is_osx_snow_leopard \
 	&& { patch -d $builddir -p1 < $scriptdir/$nesc-osx_snow_leopard.patch \
 	|| die "apply patch failed"; }
+    return 0
 }
 
 function build() {

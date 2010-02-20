@@ -18,11 +18,15 @@ function download() {
 	|| { svn co $repo_mspgcc4 mspgcc4 \
 	|| die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $gcccore.tar.bz2 ]] \
-	|| fetch $url_gnu/gcc/$gcc/$gcccore.tar.bz2
+	|| fetch $url_gnu/gcc/$gcc/$gcccore.tar.bz2 \
+	|| die "can not download $gcccore.tar.bz2 from $url_gnu"
     [[ -f $gmp.tar.bz2 ]] \
-	|| fetch $url_gnu/gmp/$gmp.tar.bz2
+	|| fetch $url_gnu/gmp/$gmp.tar.bz2 \
+	|| die "can not download $gmp.tar.bz2 from $url_gnu"
     [[ -f $mpfr.tar.bz2 ]] \
-	|| fetch $urlmpfr/$mpfr/$mpfr.tar.bz2
+	|| fetch $url_mpfr/$mpfr/$mpfr.tar.bz2 \
+	|| die "can not download $mpfr.tar.bz2 from $url_mpfr"
+    return 0
 }
 
 function prepare() {
@@ -49,6 +53,7 @@ function prepare() {
     fi
     { tar cf - --exclude=CVS -C mspgcc/gcc/$mspgccdir . | tar xvf - -C $gcc; } \
 	|| die "copy $mspgccdir failed"
+    return 0
 }
 
 function build() {
