@@ -1,0 +1,12 @@
+diff -urp mspdebug-0.4/dis.c build-mspdebug/dis.c
+--- mspdebug-0.4/dis.c	2010-01-15 10:29:51.000000000 +0900
++++ build-mspdebug/dis.c	2010-02-12 17:17:09.000000000 +0900
+@@ -443,7 +443,7 @@ static const char *msp_op_name(msp430_op
+ 	} ops[] = {
+ 		/* Single operand */
+ 		{MSP430_OP_RRC,         "RRC"},
+-		{MSP430_OP_RRC,         "SWPB"},
++		{MSP430_OP_SWPB,        "SWPB"},
+ 		{MSP430_OP_RRA,         "RRA"},
+ 		{MSP430_OP_SXT,         "SXT"},
+ 		{MSP430_OP_PUSH,        "PUSH"},
