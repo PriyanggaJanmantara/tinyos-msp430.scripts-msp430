@@ -27,7 +27,7 @@ function prepare() {
 function build() {
     cd $builddir
     ./bootstrap
-    ./configure --target=powerpc --prefix=$prefix --disable-nls \
+    ./configure --target=msp430 --prefix=$prefix --disable-nls \
 	|| die "configure failed"
     make -j$(num_cpus) \
 	|| die "make failed"
