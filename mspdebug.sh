@@ -18,15 +18,25 @@ function prepare() {
     tar xzf $mspdebug.tar.gz
     mv $mspdebug $builddir
 
-    [[ -f $scriptdir/$mspdebug-enhance_dis.patch ]] \
-	&& patch -d $builddir -p1 < $scriptdir/$mspdebug-enhance_dis.patch
+    if [[ "$scriptdir/$mspdebug-fix_*.patch" ]]; then
+	for p in $scriptdir/$mspdebug-fix_*.patch; do
+	    patch -d $builddir -p1 < $p
+	done
+    fi
+    if [[ "$scriptdir/$mspdebug-enhance_*.patch" ]]; then
+	for p in $scriptdir/$mspdebug-enhance_*.patch; do
+	    patch -d $builddir -p1 < $p
+	done
+    fi
 
     if is_osx; then
 	COMPAT_FLAGS="-D'usb_detach_kernel_driver_np(x,y)'=0"
 	COMPAT_FLAGS+=" -DB460800=460800"
 	COMPAT_FLAGS+=" -I/opt/local/include"
-	if [ -f $scriptdir/$mspdebug-osx_*.patch ]; then
-	    patch -d $builddir -p1 < $scriptdir/$mspdebug-osx_*.patch
+	if [[ "$scriptdir/$mspdebug-osx_*.patch" ]]; then
+	    for p in $scriptdir/$mspdebug-osx_*.patch; do
+		patch -d $builddir -p1 < $p
+	    done
 	fi
     fi
 }

@@ -6,14 +6,14 @@ diff -urp mspdebug-0.4/dis.c build-mspdebug/dis.c
  	} ops[] = {
  		/* Single operand */
 -		{MSP430_OP_RRC,         "RRC"},
--		{MSP430_OP_RRC,         "SWPB"},
+-		{MSP430_OP_SWPB,        "SWPB"},
 -		{MSP430_OP_RRA,         "RRA"},
 -		{MSP430_OP_SXT,         "SXT"},
 -		{MSP430_OP_PUSH,        "PUSH"},
 -		{MSP430_OP_CALL,        "CALL"},
 -		{MSP430_OP_RETI,        "RETI"},
 +		{MSP430_OP_RRC,         "rrc"},
-+		{MSP430_OP_RRC,         "swpb"},
++		{MSP430_OP_SWPB,        "swpb"},
 +		{MSP430_OP_RRA,         "rra"},
 +		{MSP430_OP_SXT,         "sxt"},
 +		{MSP430_OP_PUSH,        "push"},
