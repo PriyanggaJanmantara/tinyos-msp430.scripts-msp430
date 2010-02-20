@@ -12,6 +12,7 @@ function download() {
 	|| die "can not fetch from mspgcc4 repository"; }
     [[ -f $binutils.tar.bz2 ]] \
 	|| fetch $url_gnu/binutils/$binutils.tar.bz2
+    return 0
 }
 
 function prepare() {
@@ -22,6 +23,7 @@ function prepare() {
 	|| die "apply patch falied"
     patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
 	|| die "apply patch failed"
+    return 0
 }
 
 function build() {
