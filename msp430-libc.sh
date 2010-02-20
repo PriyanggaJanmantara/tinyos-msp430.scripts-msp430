@@ -41,6 +41,14 @@ function build() {
 function install() {
     cd $builddir/src
     sudo make install
+
+    cd $buildtop
+
+    sudo rm -f $prefix/lib/libstdc.a
+    sudo echo '!<arch>' > $prefix/lib/libstdc.a
+
+    sudo rm -f $prefix/msp430/include/inttypes.h
+    sudo ln -s $prefix/msp430/include/sys/inttypes.h $prefix/msp430/include/inttypes.h
 }
 
 function cleanup() {
@@ -49,4 +57,3 @@ function cleanup() {
 }
 
 main "$@"
-
