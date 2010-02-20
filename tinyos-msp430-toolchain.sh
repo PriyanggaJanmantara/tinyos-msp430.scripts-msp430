@@ -1,6 +1,6 @@
 #!/bin/bash -u
 
-. $(dirname $0)/main.sh
+. $(dirname $0)/main.subr
 
 modules="nesc binutils gcc msp430-libc tinyos-tools mspdebug gdb"
 
