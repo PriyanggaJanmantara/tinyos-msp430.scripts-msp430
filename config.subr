@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # install prefix
-prefix=/opt/local
+prefix=/opt/msp430
 
 # tinyos
 repo_tinyos=:pserver:anonymous@tinyos.cvs.sourceforge.net:/cvsroot/tinyos
