@@ -28,3 +28,8 @@ gdb=gdb-7.0
 # mspdebug
 url_mspdebug=http://homepages.xnet.co.nz/~dlbeer
 mspdebug=mspdebug-0.4
+
+# gdbproxy
+repo_gdbproxy=:pserver:anonymous@gdbproxy.cvs.sourceforge.net:/cvsroot/gdbproxy
+gdbproxy=gdbproxy
+

@@ -1,0 +1,410 @@
+--- gdbproxy/Makefile.am	2005-09-04 17:57:17.000000000 +0900
++++ build-gdbproxy/Makefile.am	2010-02-12 02:19:33.000000000 +0900
+@@ -42,7 +42,7 @@
+     gdbproxy.c \
+     rpmisc.c \
+     serial.c \
+-    target_skeleton.c \
++    target_msp430.c \
+     gdbproxy.h \
+     rpmisc.h \
+     serial.h
+--- gdbproxy/target_skeleton.c	2010-02-10 20:41:51.000000000 +0900
++++ build-gdbproxy/target_msp430.c	2010-02-12 02:20:31.000000000 +0900
+@@ -64,7 +64,7 @@
+ #include "getopt.h"
+ #endif
+ 
+-#if defined(__FreeBSD__)
++#if defined(__FreeBSD__) || defined(__APPLE__)
+ #include "getopt.h"
+ #endif
+ 
+@@ -175,7 +175,7 @@
+ /*
+  * Global target descriptor 
+  */
+-rp_target skeleton_target =
++rp_target msp430_target =
+ {
+     NULL,      /* next */
+     "skeleton",
+@@ -212,6 +212,7 @@
+     skeleton_add_break,
+     skeleton_remove_break
+ };
++static const rp_target *const this_target = &msp430_target;
+ 
+ struct skeleton_status_s
+ {
+@@ -248,12 +249,12 @@
+     printf("This is the skeleton target for the GDB proxy server. Usage:\n\n");
+     printf("  %s [options] %s [skeleton-options] [port]\n",
+            prog_name,
+-           skeleton_target.name);
++           this_target->name);
+     printf("\nOptions:\n\n");
+     printf("  --debug              run %s in debug mode\n", prog_name);
+     printf("  --help               `%s --help %s'  prints this message\n",
+            prog_name,
+-           skeleton_target.name);
++           this_target->name);
+     printf("  --port=PORT          use the specified TCP port\n");
+     printf("\nskeleton-options:\n\n");
+ 
+@@ -274,7 +275,7 @@
+     const char *port = "1";
+ #elif defined(__linux__)
+     const char *port = "/dev/parport0";
+-#elif defined(__FreeBSD__)
++#elif defined(__FreeBSD__) || defined(__APPLE__)
+     const char *port ="/dev/ppi0";
+ #endif
+     /* Option descriptors */
+@@ -293,7 +294,7 @@
+ 
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_open()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     /* Process options */
+     for (;;)
+@@ -312,9 +313,9 @@
+         default:
+             skeleton_status.log(RP_VAL_LOGLEVEL_NOTICE,
+                                 "%s: Use `%s --help %s' to see a complete list of options",
+-                                skeleton_target.name,
++                                this_target->name,
+                                 prog_name,
+-                                skeleton_target.name);
++                                this_target->name);
+             return RP_VAL_TARGETRET_ERR;
+         }
+     }
+@@ -328,8 +329,8 @@
+         /* Bad number of arguments */
+         skeleton_status.log(RP_VAL_LOGLEVEL_ERR,
+                             "%s: bad number of arguments",
+-                            skeleton_target.name);
+-        skeleton_target.help(prog_name);
++                            this_target->name);
++        this_target->help(prog_name);
+ 
+         return RP_VAL_TARGETRET_ERR;
+     }
+@@ -359,7 +360,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_close()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -377,7 +378,7 @@
+ 
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_connect()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -404,7 +405,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_disconnect()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     return RP_VAL_TARGETRET_NOSUPP;
+ }
+@@ -414,7 +415,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_kill()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     /* TODO: Kill the target debug session. */
+ }
+@@ -423,7 +424,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_restart()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     /* Just stop it. The actual restart will be done
+        when connect is called again */
+@@ -437,7 +438,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_stop()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -450,7 +451,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_set_gen_thread()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     return RP_VAL_TARGETRET_NOSUPP;
+ }
+@@ -460,7 +461,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_set_ctrl_thread()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     return RP_VAL_TARGETRET_NOSUPP;
+ }
+@@ -470,7 +471,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_is_thread_alive()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     return RP_VAL_TARGETRET_OK;
+ }
+@@ -483,7 +484,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_read_registers()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -506,7 +507,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_write_registers()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -530,7 +531,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_read_single_register()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -558,7 +559,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_write_single_register(%d, 0x%X)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         reg_no,
+                         ((RP_SKELETON_REG_DATATYPE *) buf)[0]);
+ 
+@@ -585,7 +586,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_read_mem(0x%llX, ptr, %d, ptr)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         addr,
+                         req_size);
+ 
+@@ -599,7 +600,7 @@
+     {
+         skeleton_status.log(RP_VAL_LOGLEVEL_ERR,
+                             "%s: bad address 0x%llx",
+-                            skeleton_target.name,
++                            this_target->name,
+                             addr);
+ 
+         return RP_VAL_TARGETRET_ERR;
+@@ -622,7 +623,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_write_mem(0x%llX, ptr, %d)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         addr,
+                         write_size);
+ 
+@@ -637,7 +638,7 @@
+     {
+         skeleton_status.log(RP_VAL_LOGLEVEL_ERR,
+                             "%s: bad address 0x%llx",
+-                            skeleton_target.name,
++                            this_target->name,
+                             addr);
+         return RP_VAL_TARGETRET_ERR;
+     }
+@@ -646,7 +647,7 @@
+     {
+         skeleton_status.log(RP_VAL_LOGLEVEL_ERR,
+                             "%s: bad address/write_size 0x%llx/0x%x",
+-                            skeleton_target.name,
++                            this_target->name,
+                             addr,
+                             write_size);
+         return RP_VAL_TARGETRET_ERR;
+@@ -662,7 +663,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_resume_from_current(%s, %d)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         (step)  ?  "step"  :  "run",
+                         sig);
+ 
+@@ -683,7 +684,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_resume_from_addr(%s, %d, 0x%llX)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         (step)  ?  "step"  :  "run",
+                         sig,
+                         addr);
+@@ -706,7 +707,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_go_waiting()",
+-                        skeleton_target.name);
++                        this_target->name);
+     return RP_VAL_TARGETRET_NOSUPP;
+ }
+ 
+@@ -724,7 +725,7 @@
+ 
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_wait_partial()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -776,7 +777,7 @@
+     default:
+         skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                             "%s: unexpected state %d for the SKELETON",
+-                            skeleton_target.name,
++                            this_target->name,
+                             state);
+         sig = RP_SIGNAL_ABORTED;
+         break;
+@@ -807,7 +808,7 @@
+ 
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_wait()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -838,7 +839,7 @@
+     default:
+         skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                             "%s: unexpected state %d for the SKELETON",
+-                            skeleton_target.name,
++                            this_target->name,
+                             state);
+         sig = RP_SIGNAL_ABORTED;
+         break;
+@@ -862,7 +863,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_process_query()",
+-                        skeleton_target.name);
++                        this_target->name);
+     /* TODO: Does your target support threads? Is so, implement this function.
+        Otherwise just return no support. */
+     return RP_VAL_TARGETRET_NOSUPP;
+@@ -878,7 +879,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_list_query()",
+-                        skeleton_target.name);
++                        this_target->name);
+     /* TODO: Does your target support threads? Is so, implement this function.
+        Otherwise just return no support. */
+     return RP_VAL_TARGETRET_NOSUPP;
+@@ -889,7 +890,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_current_thread_query()",
+-                        skeleton_target.name);
++                        this_target->name);
+     /* TODO: Does your target support threads? Is so, implement this function.
+        Otherwise just return no support. */
+     return RP_VAL_TARGETRET_NOSUPP;
+@@ -900,7 +901,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_offsets_query()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -922,7 +923,7 @@
+ 
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_crc_query()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     assert(skeleton_status.is_open);
+ 
+@@ -930,7 +931,7 @@
+     {
+         skeleton_status.log(RP_VAL_LOGLEVEL_ERR,
+                             "%s: bad address 0x%llx",
+-                            skeleton_target.name,
++                            this_target->name,
+                             addr);
+ 
+         return RP_VAL_TARGETRET_ERR;
+@@ -954,7 +955,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_raw_query()",
+-                        skeleton_target.name);
++                        this_target->name);
+ 
+     return RP_VAL_TARGETRET_NOSUPP;
+ }
+@@ -966,7 +967,7 @@
+ 
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_rcmd_erase()",
+-                        skeleton_target.name);
++                        this_target->name);
+     rp_encode_string("Erasing target flash - ", buf, 1000);
+     of(buf);
+ 
+@@ -990,7 +991,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_add_break(%d, 0x%llx, %d)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         type,
+                         addr,
+                         len);
+@@ -1004,7 +1005,7 @@
+ {
+     skeleton_status.log(RP_VAL_LOGLEVEL_DEBUG,
+                         "%s: skeleton_remove_break(%d, 0x%llx, %d)",
+-                        skeleton_target.name,
++                        this_target->name,
+                         type,
+                         addr,
+                         len);
