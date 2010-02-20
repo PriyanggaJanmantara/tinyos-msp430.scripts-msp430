@@ -24,31 +24,39 @@ builddir=$PWD/build-$scriptname
 . $scriptdir/config.subr
 
 function usage {
-    die "usage: $0 [--help|-h] [download|prepare|build|install|cleanup...]"
+    die "usage: $0 [--help|-h] [download|build|install|cleanup...]"
 }
 
 function main() {
-    PATH=$prefix/bin:$PATH
-    local verbose i
+    local i cmd
     local -a cmds
+
     for i in "$@"; do
 	case $i in
 	    -h|--help) usage;;
-	    -v|--verbose) verbose="set -x";;
-	    -*) die "unkown option $i";;
+	    -*) die "unkown option $i, try --help";;
 	    *) cmds[${#cmds[@]}]=$i;;
 	esac
     done
+
+    PATH=$prefix/bin:$PATH
     if [[ ${#cmds[@]} -eq 0 ]]; then
-	set -x
-	download && prepare && build
-	set +x
+	set -x; download && prepare && build; set +x
 	echo "To install $scriptname under $prefix, run '$0 install'"
     else
 	for cmd in "${cmds[@]}"; do
-	    set -x
-	    $cmd
-	    set +x
+            case $cmd in
+            download)
+	        set -x; download || die "download failed"; set +x;;
+            build)
+                set -x; prepare && build || die "build failed"; set +x;;
+            install)
+		set -x; install || die "install failed"; set +x;;
+            cleanup)
+                set -x; cleanup; set +x;;
+            *)
+	        die "unknown command '$cmd'";;
+            esac
 	done
     fi
 }
