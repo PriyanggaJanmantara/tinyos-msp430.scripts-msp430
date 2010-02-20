@@ -23,7 +23,7 @@ function prepare() {
     rm -rf $builddir
     cp -R mspgcc/msp430-libc $builddir
     patch -p1 -d $builddir < mspgcc4/msp430-libc.patch \
-	|| die "apply msp430-libc.patch failed"
+	|| die "apply mspgcc4/msp430-libc.patch failed"
     mkdir -p $builddir/src/msp1
     mkdir -p $builddir/src/msp2
     return 0
