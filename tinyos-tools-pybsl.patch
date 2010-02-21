@@ -1,0 +1,12 @@
+diff -ur tinyos-2.x/tools/platforms/msp430/pybsl/tos-bsl.in build-tinyos-tools/tools/platforms/msp430/pybsl/tos-bsl.in
+--- tinyos-2.x/tools/platforms/msp430/pybsl/tos-bsl.in	2006-07-13 02:00:40.000000000 +0900
++++ build-tinyos-tools/tools/platforms/msp430/pybsl/tos-bsl.in	2010-02-21 19:47:34.000000000 +0900
+@@ -1335,7 +1335,7 @@
+ 
+     try:
+         opts, args = getopt.getopt(sys.argv[1:],
+-            "hc:P:wf:m:eEpvrg:UDudsxbITNB:S:V14",
++            "hc:P:wf:m:eEpvrg:UDu:ds:xbITNB:S:V14",
+             ["help", "comport=", "password=", "wait", "framesize=",
+              "erasecycles=", "masserase", "erasecheck", "program",
+              "verify", "reset", "go=", "unpatched", "debug",
