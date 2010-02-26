@@ -1,15 +1,9 @@
 #!/bin/sh -xu
 
 scriptdir=$(dirname $0)
-prefix=/stow
-repomspgcc=:pserver:anonymous@mspgcc.cvs.sourceforge.net:/cvsroot/mspgcc
-repomspgcc4=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
-builddir=build-msp430-libc
+. $scriptdir/config
 
-function die() {
-    echo "$@" 1>&2
-    exit 1
-}
+builddir=build-msp430-libc
 
 [ -d mspgcc-msp430-libc ] \
     || cvs -d $repomspgcc co -d mspgcc-msp430-libc -P msp430-libc \

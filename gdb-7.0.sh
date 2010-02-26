@@ -1,16 +1,9 @@
 #!/bin/sh -xu
 
 scriptdir=$(dirname $0)
-prefix=/stow
-gdb=gdb-7.0
-repomspgcc4=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
-urlgnu=ftp://ftp.gnu.org/pub/gnu
-builddir=build-gdb
+. $scriptdir/config.sh
 
-function die() {
-    echo "$@" 1>&2
-    exit 1
-}
+builddir=build-gdb
 
 [ -d mspgcc4 ] \
     || svn co $repomspgcc4 mspgcc4 \

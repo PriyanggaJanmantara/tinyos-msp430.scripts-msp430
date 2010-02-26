@@ -1,22 +1,11 @@
 #!/bin/sh -xu
 
 scriptdir=$(dirname $0)
-prefix=/stow
-gcc=gcc-4.4.2
-gcccore=$(echo $gcc | sed 's/gcc-/gcc-core-/')
-mspgccdir=gcc-4.x
-gmp=gmp-4.3.1
-mpfr=mpfr-2.4.1
-repomspgcc=:pserver:anonymous@mspgcc.cvs.sourceforge.net:/cvsroot/mspgcc
-repomspgcc4=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
-urlgnu=ftp://ftp.gnu.org/pub/gnu
-urlmpfr=http://www.mpfr.org
-builddir=build-gcc
+. $scriptdir/config.sh
 
-function die() {
-    echo "$@" 1>&2
-    exit 1
-}
+gcccore=$(echo $gcc | sed 's/gcc-/gcc-core-/')
+
+builddir=build-gcc
 
 [ -d mspgcc-gcc ] \
     || cvs -d $repomspgcc co -d mspgcc-gcc -P gcc \

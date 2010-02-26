@@ -1,17 +1,12 @@
 #!/bin/sh -xu
 
 scriptdir=$(dirname $0)
-prefix=/stow
+. $scriptdir/config.sh
+
 gcc=gcc-3.2.3
 gcccore=$(echo $gcc | sed 's/gcc-/gcc-core-/')
-repomspgcc=:pserver:anonymous@mspgcc.cvs.sourceforge.net:/cvsroot/mspgcc
-urlgnu=ftp://ftp.gnu.org/pub/gnu/gcc
-builddir=build-gcc
 
-function die() {
-    echo "$@" 1>&2
-    exit 1
-}
+builddir=build-gcc
 
 [ -f $scriptdir/$gcc-config_gcc.patch ] \
     || die $scriptdir/$gcc-config_gcc.patch missing
@@ -19,10 +14,10 @@ function die() {
     || cvs -d $repomspgcc co -d mspgcc-gcc -P gcc \
     || die "can not fetch from cvs repository"
 [ -f $gcccore.tar.bz2 ] \
-    || curl -O $urlgnu/$gcc/$gcccore.tar.bz2 \
+    || curl -O $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
     || die "can not fetch tarball"
 [ -f gcc-core-3.3.6.tar.bz2 ] \
-    || curl -O $urlgnu/gcc-3.3.6/gcc-core-3.3.6.tar.bz2 \
+    || curl -O $urlgnu/gcc/gcc-3.3.6/gcc-core-3.3.6.tar.bz2 \
     || die "can not fetch tarball"
 
 rm -rf $gcc

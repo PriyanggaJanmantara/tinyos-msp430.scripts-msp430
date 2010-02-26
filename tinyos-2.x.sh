@@ -1,18 +1,17 @@
 #!/bin/sh -xu
 
-prefix=/stow
-repotinyos=:pserver:anonymous@tinyos.cvs.sourceforge.net:/cvsroot/tinyos
+scriptdir=$(dirname $0)
+. $scriptdir/config
 
-function die() {
-    echo "$@" 1>&2
-    exit 1
-}
+builddir=build-tinyos-tools
 
-[ -d tinyos-2.x ] \
-    || cvs -d $repotinyos co -P tinyos-2.x \
+[ -d $tinyos ] \
+    || cvs -d $repotinyos co -P $tinyos \
     || die "can not fetch from cvs repository"
 
-cd tinyos-2.x/tools
+rm -rf $builddir
+cp -R $tinyos/tools/* $builddir
+cd $builddir
 ./Bootstrap \
     || die "bootstrap failed"
 ./configure --prefix=$prefix --disable-nls \
