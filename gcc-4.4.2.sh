@@ -14,7 +14,7 @@ cd mspgcc
     || die "can not fetch gcc project from $repomspgcc repository"
 cd ..
 [ -d mspgcc4 ] \
-    || svn -q co $repomspgcc4 mspgcc4 \
+    || svn co $repomspgcc4 mspgcc4 \
     || die "can not fetch mspgcc4 project from $repomspgcc4 repository"
 [ -f $gcccore.tar.bz2 ] \
     || curl -O $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
