@@ -1,18 +1,14 @@
 #!/bin/bash -xu
 
-prefix=/stow
-urlbase=http://homepages.xnet.co.nz/~dlbeer
+scriptdir=$(dirname $0)
+. $scriptdir/config.sh
+
 builddir=build-mspdebug
 
-function die() {
-    echo "$@" 1>&2
-    exit 1
-}
-
-[ -f mspdebug.c ] \
-    || curl -O $urlbase/mspdebug.c \
+[[ -f mspdebug.c ]] \
+    || $fetch $urlmspdebug/mspdebug.c \
     || die "can not fetch source file"
-which -s libusb-config \
+which libusb-config >/dev/null \
     || die "libusb is not installed"
 
 rm -rf $builddir

@@ -1,10 +1,12 @@
 #!/bin/bash -xu
 
-prefix=/stow
-giturl=git://git.libusb.org/libusb.git
-builddir=build-libusb
+scriptdir=$(dirname $0)
+. $scriptdir/config.sh
 
-[ -d libusb-1.0 ] || git clone $giturl libusb-1.0
+which libusb-config >/dev/null && exit 0
+
+builddir=build-libusb
+[[ -d libusb-1.0 ]] || git clone $repolibusb libusb-1.0
 
 rm -rf $builddir
 cp -R libusb-1.0 $builddir

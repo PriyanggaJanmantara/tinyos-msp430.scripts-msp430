@@ -5,17 +5,20 @@ scriptdir=$(dirname $0)
 
 builddir=build-gdb
 
-[ -d mspgcc4 ] \
+[[ -d mspgcc4 ]] \
     && { cd mspgcc4; svn up; cd ..; } \
     || { svn co $repomspgcc4 mspgcc4 \
       || die "can not fetch mspgcc4 project from $repomspgcc4 repository"; }
-[ -f $gdb.tar.bz2 ] \
-    || curl -O $urlgnu/gdb/$gdb.tar.bz2 \
+[[ -f $gdb.tar.bz2 ]] \
+    || $fetch $urlgnu/gdb/$gdb.tar.bz2 \
     || die "can not fetch $gdb.tar.bz2 tar ball"
 
 rm -rf $gdb
 tar xjf $gdb.tar.bz2
-{ tar cf - --exclude=.svn -C mspgcc4/ports/gdb-6-and-7 . | tar xvf - -C $gdb; } \
+{ \
+    tar cf - --exclude=.svn -C mspgcc4/ports/gdb-6-and-7 . \
+    | tar xvf - -C $gdb;\
+} \
     || die "copy gdb-6-and-7 failed"
 if [ -f mspgcc4/$gdb.patch ]; then
     patch -d $gdb -p1 < mspgcc4/$gdb.patch \
