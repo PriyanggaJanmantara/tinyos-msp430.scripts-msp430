@@ -5,21 +5,18 @@ scriptdir=$(dirname $0)
 
 builddir=build-mspdebug
 
-[[ -f mspdebug.c ]] \
-    || $fetch $urlmspdebug/mspdebug.c \
+[[ -d $mspdebug.tar.gz ]] \
+    || $fetch $urlmspdebug/$mspdebug.tar.gz \
     || die "can not fetch source file"
 which libusb-config >/dev/null \
     || die "libusb is not installed"
 
 rm -rf $builddir
-mkdir -p $builddir
-cp -p mspdebug.c $builddir
+tar xf $mspdebug.tar.gz
+mv $mspdebug $builddir
 
 is_osx && CFLAGS=-D'usb_detach_kernel_driver_np(x,y)'=0 || CFLAGS=
 cd $builddir
-gcc -c mspdebug.c -O $(libusb-config --cflags) $CFLAGS \
-    || die "can not compile"
-gcc -o mspdebug mspdebug.o $(libusb-config --libs) \
-    || die "can not link"
+make
 # sudo cp -p mspdebug $prefix/bin
 
