@@ -8,12 +8,14 @@ builddir=build-msp430-libc
 [ -d mspgcc ] || mkdir mspgcc
 cd mspgcc
 [ -d msp430-libc ] \
-    || cvs -q -d $repomspgcc co -P msp430-libc \
-    || die "can not fetch cvs repository"
+    && { cd msp430-libc; cvs -q up; cd ..; } \
+    || { cvs -q -d $repomspgcc co -P msp430-libc \
+      || die "can not fetch cvs repository"; }
 cd ..
 [ -d mspgcc4 ] \
-    || svn co $repomspgcc4 mspgcc4 \
-    || die "can not fetch mspgcc4 project from $repomspgcc4 repository"
+    && { cd mspgcc4; svn up; cd ..; } \
+    || { svn co $repomspgcc4 mspgcc4 \
+      || die "can not fetch mspgcc4 project from $repomspgcc4 repository"; }
 
 rm -rf $builddir
 cp -R mspgcc/msp430-libc $builddir

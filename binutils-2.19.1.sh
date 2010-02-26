@@ -8,8 +8,9 @@ builddir=build-binutils
 [ -f $scriptdir/$binutils-dollar.patch ] \
     || die $scriptdir/$binutils-dollar.patch is missing
 [ -d mspgcc4 ] \
-    || svn co $repomspgcc4 mspgcc4 \
-    || die "can not fetch from mspgcc4 repository"
+    && { cd mspgcc4; svn up; cd ..; } \
+    || { svn co $repomspgcc4 mspgcc4 \
+      || die "can not fetch from mspgcc4 repository"; }
 [ -f $binutils.tar.bz2 ] \
     || curl -O $urlgnu/binutils/$binutils.tar.bz2 \
     || die "can not fetch tarball"

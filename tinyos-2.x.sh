@@ -6,8 +6,9 @@ scriptdir=$(dirname $0)
 builddir=build-tinyos-tools
 
 [ -d $tinyos ] \
-    || cvs -q -d $repotinyos co -P $tinyos \
-    || die "can not fetch from cvs repository"
+    && { cd $tinyos; cvs -q up; cd ..; } \
+    || { cvs -q -d $repotinyos co -P $tinyos \
+      || die "can not fetch from cvs repository"; }
 
 rm -rf $builddir
 cp -R $tinyos/tools $builddir
