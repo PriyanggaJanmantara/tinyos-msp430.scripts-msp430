@@ -2,8 +2,9 @@
 
 scriptdir=$(dirname $0)
 prefix=/stow
-urlbase=http://softlayer.dl.sourceforge.net/project/nescc/nescc/v1.3.1
+urlnesc=http://softlayer.dl.sourceforge.net/project/nescc/nescc/v1.3.1
 builddir=nesc-1.3.1
+
 expr $(uname -r) : 10.0 > /dev/null && osx10=yes
 
 function die() {
@@ -12,7 +13,7 @@ function die() {
 }
 
 [ -f nesc-1.3.1.tar.gz ] \
-    || curl -O $urlbase/nesc-1.3.1.tar.gz \
+    || curl -O $urlnesc/nesc-1.3.1.tar.gz \
     || die "can not fetch tarball"
 
 rm -rf $builddir
