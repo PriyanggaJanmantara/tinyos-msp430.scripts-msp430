@@ -9,8 +9,8 @@ function is_osx() {
     [[ $(uname) = Darwin ]] && return 0 || return 1
 }
 
-function is_osx10() {
-    [[ is_osx && $(uname -r) =~ "10.0" ]] && return 0 || return 1
+function is_osx_snow_leopard() {
+    [[ is_osx && $(uname -r) =~ "10.2" ]] && return 0 || return 1
 }
 
 function is_linux() {
