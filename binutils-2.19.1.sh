@@ -2,8 +2,8 @@
 
 scriptdir=$(dirname $0)
 prefix=/stow
-binutils=binutils-2.19
-cvsroot=:pserver:anonymous@mspgcc.cvs.sourceforge.net:/cvsroot/mspgcc
+binutils=binutils-2.19.1
+repourl=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
 urlbase=ftp://ftp.gnu.org/pub/gnu/binutils
 builddir=build-binutils
 
@@ -13,12 +13,12 @@ function die() {
 }
 
 [ -f $scriptdir/$binutils-dollar.patch ] || die $scriptdir/$binutils-dollar.patch is missing
-[ -d mspgcc-packaging ] || cvs -d $cvsroot co -d mspgcc-packaging -P packaging
+[ -d mspgcc4 ] || svn co $repourl mspgcc4
 [ -f $binutils.tar.bz2 ] || curl -O $urlbase/$binutils.tar.bz2
 
 rm -rf $binutils
 tar xjf $binutils.tar.bz2
-patch -p1 -d $binutils < mspgcc-packaging/patches/$binutils-patch
+patch -p1 -d $binutils < mspgcc4/$binutils.patch
 patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch
 
 rm -rf $builddir
