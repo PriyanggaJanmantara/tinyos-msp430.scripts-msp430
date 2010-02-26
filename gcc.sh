@@ -60,7 +60,7 @@ function build() {
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../$gcc/configure --target=msp430 --prefix=$prefix \
+    ../$gcc/configure --target=$target --prefix=$prefix \
 	--with-gnu-as --with-gnu-ld \
 	--disable-nls \
 	|| die "configure failed"

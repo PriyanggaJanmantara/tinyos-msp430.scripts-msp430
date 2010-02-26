@@ -31,9 +31,7 @@ function build() {
     mkdir $builddir
     cd $builddir
     is_osx_snow_leopard && disable_werror=--disable-werror || disable_werror=""
-    ../$binutils/configure \
-	--target=msp430 \
-	--prefix=$prefix \
+    ../$binutils/configure --target=$target --prefix=$prefix \
 	--disable-nls $disable_werror \
 	|| die "configure failed"
     make -j$(num_cpus) \

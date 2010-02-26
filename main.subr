@@ -18,10 +18,11 @@ which svn >/dev/null || die "missing svn"
 
 scriptdir=$(absolute_path $(dirname $0))
 scriptname=$(basename $0 .sh)
-buildtop=$PWD
-builddir=$PWD/build-$scriptname
 
 . $scriptdir/config.subr
+
+buildtop=$PWD
+builddir=$PWD/build-$target-$scriptname
 
 function usage {
     die "usage: $0 [--help|-h] [download|build|install|cleanup...]"
