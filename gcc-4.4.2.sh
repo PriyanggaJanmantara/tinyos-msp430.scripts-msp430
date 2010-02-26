@@ -9,13 +9,15 @@ builddir=build-gcc
 
 [ -d mspgcc ] || mkdir mspgcc
 cd mspgcc
-[ -d ngcc ] \
-    || cvs -q -d $repomspgcc co -P gcc \
-    || die "can not fetch gcc project from $repomspgcc repository"
+[ -d gcc ] \
+    && { cd gcc; cvs -q up; cd ..; } \
+    || { cvs -q -d $repomspgcc co -P gcc \
+      || die "can not fetch gcc project from $repomspgcc repository"; }
 cd ..
 [ -d mspgcc4 ] \
-    || svn co $repomspgcc4 mspgcc4 \
-    || die "can not fetch mspgcc4 project from $repomspgcc4 repository"
+    && { cd mspgcc4; svn up; cd ..; } \
+    || { svn co $repomspgcc4 mspgcc4 \
+      || die "can not fetch mspgcc4 project from $repomspgcc4 repository"; }
 [ -f $gcccore.tar.bz2 ] \
     || curl -O $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
     || die "can not fetch $gcccore.tar.bz2 tar ball"
