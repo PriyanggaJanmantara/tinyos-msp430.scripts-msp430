@@ -10,13 +10,16 @@ function die() {
     exit 1
 }
 
-[ -f $scriptdir/msp430-libc.patch ] || die $scriptdir/msp430-libc.patch is missing
-[ -d mspgcc-msp430-libc ] || \
-    cvs -d $cvsroot co -d mspgcc-msp430-libc -P msp430-libc
+[ -f $scriptdir/msp430-libc.patch ] \
+    || die $scriptdir/msp430-libc.patch is missing
+[ -d mspgcc-msp430-libc ] \
+    || cvs -d $cvsroot co -d mspgcc-msp430-libc -P msp430-libc \
+    || die "can not fetch cvs repository"
 
 rm -rf $builddir
 cp -R mspgcc-msp430-libc $builddir
-patch -p1 -d $builddir < $scriptdir/msp430-libc.patch
+patch -p1 -d $builddir < $scriptdir/msp430-libc.patch \
+    || die "apply patch failed"
 
 cd $builddir/src
 make -j32
