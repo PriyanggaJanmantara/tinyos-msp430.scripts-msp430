@@ -33,3 +33,4 @@ repolibusb=git://git.libusb.org/libusb.git
 # mspdebug
 urlmspdebug=http://homepages.xnet.co.nz/~dlbeer
 mspdebug=mspdebug-0.3
+is_linux && mspdebug=mspdebug-0.4
