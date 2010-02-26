@@ -12,7 +12,7 @@ cd mspgcc
 [ -d gcc ] \
     && { cd gcc; cvs -q up; cd ..; } \
     || { cvs -q -d $repomspgcc co -P gcc \
-      || die "can not fetch gcc project from $repomspgcc repository"; }
+    || die "can not fetch gcc project from $repomspgcc repository"; }
 cd ..
 [ -d mspgcc4 ] \
     && { cd mspgcc4; svn up; cd ..; } \
