@@ -2,6 +2,7 @@
 # installation by substituting @prefix@ for the actual tinyos tree
 # installation point.
 
+. $HOME/.bash_library/clist.sh
 . $HOME/.bash_library/path.sh
 
 export TOSROOT=
@@ -11,7 +12,8 @@ export MAKERULES=
 TOSROOT=/opt/tinyos/tinyos-2.x
 TOSDIR=$TOSROOT/tos
 MAKERULES=$TOSROOT/support/make/Makerules
-path::addpath $TOSROOT/support/sdk/java CLASSPATH
+$(clist::contains $CLASSPATH $TOSROOT/support/sdk/java/tinyos.jar) \
+	|| CLASSPATH=$(clist $TOSROOT/support/sdk/java/tinyos.jar $CLASSPATH)
 
 export TOSROOT
 export TOSDIR
