@@ -1,4 +1,4 @@
-#!/bin/sh -xu
+#!/bin/bash -xu
 
 scriptdir=$(dirname $0)
 . $scriptdir/config.sh
