@@ -7,30 +7,31 @@ gcccore=$(echo $gcc | sed 's/gcc-/gcc-core-/')
 
 builddir=build-gcc
 
-[ -d mspgcc ] || mkdir mspgcc
+[[ -d mspgcc ]] || mkdir mspgcc
 cd mspgcc
-[ -d gcc ] \
+[[ -d gcc ]] \
     && { cd gcc; cvs -q up; cd ..; } \
     || { cvs -q -d $repomspgcc co -P gcc \
     || die "can not fetch gcc project from $repomspgcc repository"; }
 cd ..
-[ -d mspgcc4 ] \
+[[ -d mspgcc4 ]] \
     && { cd mspgcc4; svn up; cd ..; } \
     || { svn co $repomspgcc4 mspgcc4 \
       || die "can not fetch mspgcc4 project from $repomspgcc4 repository"; }
-[ -f $gcccore.tar.bz2 ] \
-    || curl -O $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
+[[ -f $gcccore.tar.bz2 ]] \
+    || $fetch $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
     || die "can not fetch $gcccore.tar.bz2 tar ball"
-[ -f $gmp.tar.bz2 ] \
-    || curl -O $urlgnu/gmp/$gmp.tar.bz2 \
+[[ -f $gmp.tar.bz2 ]] \
+    || $fetch $urlgnu/gmp/$gmp.tar.bz2 \
     || die "can not fetch $gmp.tar.bz2 tar ball"
-[ -f $mpfr.tar.bz2 ] \
-    || curl -O $urlmpfr/$mpfr/$mpfr.tar.bz2 \
+[[ -f $mpfr.tar.bz2 ]] \
+    || $fetch $urlmpfr/$mpfr/$mpfr.tar.bz2 \
     || die "can not fetch $mpfr.tar.bz2 tar ball"
 
-{ tar cf - --exclude=.svn -C mspgcc4/ports gcc-4.x | tar xvf - -C mspgcc/gcc; } \
+{ tar cf - --exclude=.svn -C mspgcc4/ports gcc-4.x \
+    | tar xvf - -C mspgcc/gcc; } \
     || die "copy gcc-4.x port failed"
-if [ -f mspgcc4/msp$mspgccdir.patch ]; then
+if [[ -f mspgcc4/msp$mspgccdir.patch ]]; then
     patch -d mspgcc/gcc/$mspgccdir -p1 < mspgcc4/msp$mspgccdir.patch \
 	|| die "apply msp$mspgccdir.patch failed"
 fi
@@ -43,7 +44,7 @@ mv $gcc/$gmp $gcc/gmp
 rm -rf $gcc/mpfr
 tar xjf $mpfr.tar.bz2 -C $gcc
 mv $gcc/$mpfr $gcc/mpfr
-if [ -f mspgcc4/$gcc.patch ]; then
+if [[ -f mspgcc4/$gcc.patch ]]; then
     patch -d $gcc -p1 < mspgcc4/$gcc.patch \
 	|| die "apply $gcc.patch failed"
 fi

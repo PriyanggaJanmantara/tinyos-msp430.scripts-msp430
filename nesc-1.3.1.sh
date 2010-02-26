@@ -5,8 +5,8 @@ scriptdir=$(dirname $0)
 
 builddir=build-nesc
 
-[ -f $nesc.tar.gz ] \
-    || curl -O $urlnesc/$nesc.tar.gz \
+[[ -f $nesc.tar.gz ]] \
+    || $fetch $urlnesc/$nesc.tar.gz \
     || die "can not fetch tarball"
 
 rm -rf $builddir
