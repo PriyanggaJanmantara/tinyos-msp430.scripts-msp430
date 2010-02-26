@@ -8,7 +8,9 @@ builddir=build-mspdebug
 [[ -f $mspdebug.tar.gz ]] \
     || $fetch $urlmspdebug/$mspdebug.tar.gz \
     || die "can not fetch source file"
-which libusb-config >/dev/null \
+
+libusb=$(which libusb-legacy-config || which libusb-config) 
+[[ -x $libusb ]] \
     || die "libusb is not installed"
 
 rm -rf $builddir $mspdebug
@@ -19,6 +21,6 @@ is_osx \
     && COMPAT_FLAGS="-D'usb_detach_kernel_driver_np(x,y)'=0 -DB460800=460800" \
     || COMPAT_FLAGS=
 cd $builddir
-make CFLAGS+="$COMPAT_FLAGS" CFLAGS+=$(libusb-config --cflags) CFLAGS+=$(libusb-config --libs)
+make CFLAGS+="$COMPAT_FLAGS" CFLAGS+=$($libusb --cflags) CFLAGS+=$($libusb --libs)
 # sudo cp -p mspdebug $prefix/bin
 

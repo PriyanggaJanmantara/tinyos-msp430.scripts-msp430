@@ -25,7 +25,7 @@ patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
 rm -rf $builddir
 mkdir -p $builddir
 cd $builddir
-is_osx10 && disable_werror=--disable-werror || disable_werror=""
+is_osx_snow_leopard && disable_werror=--disable-werror || disable_werror=""
 ../$binutils/configure \
     --target=msp430 \
     --prefix=$prefix \
