@@ -18,6 +18,9 @@ function prepare() {
     tar xzf $mspdebug.tar.gz
     mv $mspdebug $builddir
 
+    [[ -f $scriptdir/$mspdebug-enhance_dis.patch ]] \
+	&& patch -d $builddir -p1 < $scriptdir/$mspdebug-enhance_dis.patch
+
     if is_osx; then
 	COMPAT_FLAGS="-D'usb_detach_kernel_driver_np(x,y)'=0"
 	COMPAT_FLAGS+=" -DB460800=460800"
