@@ -7,7 +7,7 @@ repomspgcc4=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
 urlgnu=ftp://ftp.gnu.org/pub/gnu/binutils
 builddir=build-binutils
 
-expr $(uname -r) : 10.0 > /dev/null && osx10=yes
+expr $(uname -r) : 10.0 > /dev/null && osx10=yes || osx10=no
 
 function die() {
     echo "$@" 1>&2
@@ -33,7 +33,7 @@ patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
 rm -rf $builddir
 mkdir -p $builddir
 cd $builddir
-[ -n "$osx10" ] && disable_werror=--disable-werror
+[ $osx10 = yes ] && disable_werror=--disable-werror
 ../$binutils/configure --target=msp430 --prefix=$prefix --disable-nls $disable_werror \
     || die "configure failed"
 make
