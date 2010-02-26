@@ -15,8 +15,9 @@ rm -rf $builddir
 mkdir -p $builddir
 cp -p mspdebug.c $builddir
 
+is_osx && CFLAGS=-D'usb_detach_kernel_driver_np(x,y)'=0 || CFLAGS=
 cd $builddir
-gcc -c mspdebug.c -D'usb_detach_kernel_driver_np(x,y)'=0 -O $(libusb-config --cflags) \
+gcc -c mspdebug.c -O $(libusb-config --cflags) $CFLAGS \
     || die "can not compile"
 gcc -o mspdebug mspdebug.o $(libusb-config --libs) \
     || die "can not link"
