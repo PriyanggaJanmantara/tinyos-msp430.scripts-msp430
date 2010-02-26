@@ -33,7 +33,7 @@ patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
 rm -rf $builddir
 mkdir -p $builddir
 cd $builddir
-[ $osx10 = yes ] && disable_werror=--disable-werror
+[ $osx10 = yes ] && disable_werror=--disable-werror || disable_werror=""
 ../$binutils/configure --target=msp430 --prefix=$prefix --disable-nls $disable_werror \
     || die "configure failed"
 make
