@@ -16,7 +16,7 @@ mkdir -p $builddir
 cp -p mspdebug.c $builddir
 
 cd $builddir
-gcc -c mspdebug.c -O $(libusb-config --cflags) \
+gcc -c mspdebug.c -D'usb_detach_kernel_driver_np(x,y)'=0 -O $(libusb-config --cflags) \
     || die "can not compile"
 gcc -o mspdebug mspdebug.o $(libusb-config --libs) \
     || die "can not link"
