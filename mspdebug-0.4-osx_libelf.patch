@@ -1,0 +1,21 @@
+diff -ur mspdebug-0.4/elf32.c build-mspdebug/elf32.c
+--- mspdebug-0.4/elf32.c	2010-01-15 10:29:51.000000000 +0900
++++ build-mspdebug/elf32.c	2010-02-01 15:23:25.000000000 +0900
+@@ -18,11 +18,17 @@
+ 
+ #include <errno.h>
+ #include <string.h>
++#ifdef __APPLE__
++#include <libelf.h>
++#else
+ #include <elf.h>
++#endif
+ #include "binfile.h"
+ #include "stab.h"
+ 
++#ifndef EM_MSP430
+ #define EM_MSP430	0x69
++#endif
+ 
+ static const u_int8_t elf32_id[] = {
+ 	ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3, ELFCLASS32
