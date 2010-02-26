@@ -43,3 +43,8 @@ PATH=$prefix/bin:$PATH
     || die "configure failed"
 make -j32
 # sudo make install
+
+repo=$prefix/repository/gcc-3.2.3
+echo rm $repo/lib/libeberty.a
+echo ln -s $prefix/msp430/include $repo/msp430
+echo ln -s $prefix/msp430/lib $repo/msp430
