@@ -1,8 +1,34 @@
 #!/bin/bash
 
-function die() {
+function error() {
     echo "$@" 1>&2
+}
+
+function die() {
+    error "$@"
     exit 1
+}
+
+function absolute_path() {
+    local abs
+    case $1 in
+    .) abs=${PWD};;
+    /*) abs=$1;;
+    *) abs=${PWD}/$1;;
+    esac
+    echo $abs
+}
+
+function add_path() {
+    local path=$1 p
+    shift
+    for p in "$@"; do
+	case $path in
+        *$p*);;
+	*) path=$p:$path;;
+	esac
+    done
+    echo $path
 }
 
 function is_osx() {
@@ -22,11 +48,3 @@ function num_cpus() {
     is_linux && { grep ^processor /proc/cpuinfo | wc -l; return; }
     echo 1
 }
-
-fetch="-none-"
-which wget >/dev/null && fetch="wget"
-which curl >/dev/null && fetch="curl -O"
-[[ $fetch = "-none-" ]] && die "missing wget or curl"
-which cvs >/dev/null || die "missing cvs"
-which svn >/dev/null || die "missing svn"
-which git >/dev/null || die "missing git"

@@ -1,24 +1,39 @@
-#!/bin/bash -xu
+#!/bin/bash -u
 
-scriptdir=$(dirname $0)
-. $scriptdir/config.sh
+. $(dirname $0 )/main.subr
 
-builddir=build-nesc
+function download() {
+    cd $buildtop
+    [[ -f $nesc.tar.gz ]] \
+	|| fetch $url_nesc/$nesc.tar.gz
+}
 
-[[ -f $nesc.tar.gz ]] \
-    || $fetch $urlnesc/$nesc.tar.gz \
-    || die "can not fetch tarball"
+function prepare() {
+    cd $buildtop
+    rm -rf $builddir
+    tar xzf $nesc.tar.gz
+    mv $nesc $builddir
+    is_osx_snow_leopard \
+	&& { patch -d $builddir -p1 < $scriptdir/$nesc-osx_snow_leopard.patch \
+	|| die "apply patch failed"; }
+}
 
-rm -rf $builddir
-tar xzf $nesc.tar.gz
-mv $nesc $builddir
-is_osx_snow_leopard \
-    && { patch -d $builddir -p1 < $scriptdir/$nesc-osx_snow_leopard.patch \
-      || die "apply patch failed"; }
+function build() {
+    cd $builddir
+    ./configure --prefix=$prefix --disable-nls \
+	|| die "configure failed"
+    make -j$(num_cpus) \
+	|| die "make filed"
+}
 
-cd $builddir
-./configure --prefix=$prefix --disable-nls \
-    || die "configure failed"
-make -j$(num_cpus) \
-    || die "make filed"
-# sudo make install
+function install() {
+    cd $builddir
+    sudo make install
+}
+
+function cleanup() {
+    cd $buildtop
+    rm -rf $builddir
+}
+
+main "$@"
