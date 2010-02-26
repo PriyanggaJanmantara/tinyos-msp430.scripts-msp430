@@ -1,0 +1,13 @@
+diff -ur nesc-1.3.1/tools/editor-modes/emacs/new-nesc.el build-nesc/tools/editor-modes/emacs/new-nesc.el
+--- nesc-1.3.1/tools/editor-modes/emacs/new-nesc.el	2005-05-12 09:13:05.000000000 +0900
++++ build-nesc/tools/editor-modes/emacs/new-nesc.el	2010-02-27 03:11:37.000000000 +0900
+@@ -82,6 +82,9 @@
+ 
+ (c-lang-defconst c-recognize-knr-p nesc nil)
+ 
++(c-lang-defconst c-label-kwds-regexp
++  nesc (c-make-keywords-re t '("case" "default:")))
++
+ ;; This gives post, call, signal a slightly incorrect priority
+ (c-lang-defconst c-operators
+   nesc (append '((prefix "post" "call" "signal"))
