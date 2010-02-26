@@ -60,8 +60,9 @@ function build() {
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../$gcc/configure --target=msp430 --prefix=$prefix --disable-nls \
-	--with-as=$prefix/bin/msp430-as --with-ld=$prefix/bin/msp430-ld \
+    ../$gcc/configure --target=msp430 --prefix=$prefix \
+	--with-gnu-as --with-gnu-ld \
+	--disable-nls \
 	|| die "configure failed"
     make -j$(num_cpus) \
 	|| die "make failed"
