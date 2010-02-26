@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -xu
 
 prefix=/stow
 giturl=git://git.libusb.org/libusb.git

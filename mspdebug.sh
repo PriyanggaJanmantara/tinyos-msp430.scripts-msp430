@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -xu
 
 prefix=/stow
 urlbase=http://homepages.xnet.co.nz/~dlbeer
