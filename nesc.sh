@@ -13,7 +13,7 @@ rm -rf $builddir
 tar xzf $nesc.tar.gz
 mv $nesc $builddir
 is_osx_snow_leopard \
-    && { patch -d $builddir -p1 < $scriptdir/$nesc-osx_10.patch \
+    && { patch -d $builddir -p1 < $scriptdir/$nesc-osx_snow_leopard.patch \
       || die "apply patch failed"; }
 
 cd $builddir
