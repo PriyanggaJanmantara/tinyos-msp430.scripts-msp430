@@ -34,7 +34,8 @@ function build() {
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../$gdb/configure --target=msp430 --prefix=$prefix --disable-nls \
+    ../$gdb/configure --target=$target --prefix=$prefix \
+	--disable-nls \
 	|| die "configure failed"
     make -j$(num_cpus) \
 	|| die "make failed"

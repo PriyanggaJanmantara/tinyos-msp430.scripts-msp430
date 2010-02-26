@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# target
+target=msp430
+
 # install prefix
 prefix=/opt/msp430
 
