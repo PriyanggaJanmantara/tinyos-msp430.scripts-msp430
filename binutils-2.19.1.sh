@@ -36,5 +36,6 @@ cd $builddir
 [ $osx10 = yes ] && disable_werror=--disable-werror || disable_werror=""
 ../$binutils/configure --target=msp430 --prefix=$prefix --disable-nls $disable_werror \
     || die "configure failed"
-make
+make \
+    || die "make failed"
 # sudo make install
