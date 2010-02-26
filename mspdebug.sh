@@ -21,6 +21,7 @@ is_osx \
     && COMPAT_FLAGS="-D'usb_detach_kernel_driver_np(x,y)'=0 -DB460800=460800" \
     || COMPAT_FLAGS=
 cd $builddir
-make CFLAGS+="$COMPAT_FLAGS" CFLAGS+=$($libusb --cflags) CFLAGS+=$($libusb --libs)
+make -j$(num_cpus) \
+    CFLAGS+="$COMPAT_FLAGS" CFLAGS+=$($libusb --cflags) CFLAGS+=$($libusb --libs)
 # sudo cp -p mspdebug $prefix/bin
 

@@ -17,6 +17,12 @@ function is_linux() {
     [[ $(uname) = Linux ]] && return 0 || return 1
 }
 
+function num_cpus() {
+    is_osx && { hwprefs cpu_count; return; }
+    is_linux && { grep ^processor /proc/cpuinfo | wc -l; return; }
+    echo 1
+}
+
 fetch="-none-"
 which wget >/dev/null && fetch="wget"
 which curl >/dev/null && fetch="curl -O"

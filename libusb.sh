@@ -14,5 +14,5 @@ cp -R libusb-1.0 $builddir
 cd $builddir
 ./autogen.sh
 ./configure --prefix=$prefix --disable-nls
-make
+make -j$(num_cpus)
 # sudo make install

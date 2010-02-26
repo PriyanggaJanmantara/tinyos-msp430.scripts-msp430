@@ -19,6 +19,6 @@ is_osx_snow_leopard \
 cd $builddir
 ./configure --prefix=$prefix --disable-nls \
     || die "configure failed"
-make \
+make -j$(num_cpus) \
     || die "make filed"
 # sudo make install

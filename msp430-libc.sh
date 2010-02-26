@@ -28,6 +28,6 @@ cd $builddir/src
 rm -f Makefile.new
 sed -e "s;/usr/local/msp430;$prefix;" Makefile > Makefile.new
 mv Makefile.new Makefile
-make \
+make -j$(num_cpus) \
     || die "make failed"
 # sudo make install
