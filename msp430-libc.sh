@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -xu
 
 scriptdir=$(dirname $0)
 prefix=/stow

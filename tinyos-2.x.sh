@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -xu
 
 cvsroot=:pserver:anonymous@tinyos.cvs.sourceforge.net:/cvsroot/tinyos
 
