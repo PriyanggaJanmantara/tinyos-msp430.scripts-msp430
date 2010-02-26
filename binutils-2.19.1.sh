@@ -3,9 +3,10 @@
 scriptdir=$(dirname $0)
 prefix=/stow
 binutils=binutils-2.19.1
-repourl=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
-urlbase=ftp://ftp.gnu.org/pub/gnu/binutils
+repomspgcc4=https://mspgcc4.svn.sourceforge.net/svnroot/mspgcc4
+urlgnu=ftp://ftp.gnu.org/pub/gnu/binutils
 builddir=build-binutils
+
 expr $(uname -r) : 10.0 > /dev/null && osx10=yes
 
 function die() {
@@ -16,10 +17,10 @@ function die() {
 [ -f $scriptdir/$binutils-dollar.patch ] \
     || die $scriptdir/$binutils-dollar.patch is missing
 [ -d mspgcc4 ] \
-    || svn co $repourl mspgcc4 \
+    || svn co $repomspgcc4 mspgcc4 \
     || die "can not fetch from mspgcc4 repository"
 [ -f $binutils.tar.bz2 ] \
-    || curl -O $urlbase/$binutils.tar.bz2 \
+    || curl -O $urlgnu/$binutils.tar.bz2 \
     || die "can not fetch tarball"
 
 rm -rf $binutils
