@@ -34,5 +34,6 @@ cd $builddir
 PATH=$prefix/bin:$PATH
 ../$gdb/configure --target=msp430 --prefix=$prefix --disable-nls \
     || die "configure failed"
-make
+make \
+    || die "make failed"
 # sudo make install

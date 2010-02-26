@@ -25,5 +25,6 @@ tar xzf nesc-1.3.1.tar.gz
 cd $builddir
 ./configure --prefix=$prefix --disable-nls \
     || die "configure failed"
-make
+make \
+    || die "make filed"
 # sudo make install
