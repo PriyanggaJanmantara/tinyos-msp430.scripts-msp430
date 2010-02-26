@@ -39,8 +39,16 @@ function die() {
     exit 1
 }
 
+function is_osx() {
+    [[ $(uname) = Darwin ]] && return 0 || return 1
+}
+
 function is_osx10() {
-    [[ $(uname) = Darwin && $(uname -r) =~ "10.0" ]] && return 0 || return 1
+    [[ is_osx && $(uname -r) =~ "10.0" ]] && return 0 || return 1
+}
+
+function is_linux() {
+    [[ $(uname) = Linux ]] && return 0 || return 1
 }
 
 fetch="-none-"
