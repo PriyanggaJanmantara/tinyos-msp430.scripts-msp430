@@ -1,36 +1,51 @@
-#!/bin/bash -xu
+#!/bin/bash -u
 
-scriptdir=$(dirname $0)
-. $scriptdir/config.sh
+. $(dirname $0)/main.subr
 
-builddir=build-binutils
+function download() {
+    cd $buildtop
+    [[ -f $scriptdir/$binutils-dollar.patch ]] \
+	|| die $scriptdir/$binutils-dollar.patch is missing
+    [[ -d mspgcc4 ]] \
+	&& { cd mspgcc4; svn up; cd ..; } \
+	|| { svn co $repo_mspgcc4 mspgcc4 \
+	|| die "can not fetch from mspgcc4 repository"; }
+    [[ -f $binutils.tar.bz2 ]] \
+	|| fetch $url_gnu/binutils/$binutils.tar.bz2
+}
 
-[[ -f $scriptdir/$binutils-dollar.patch ]] \
-    || die $scriptdir/$binutils-dollar.patch is missing
-[[ -d mspgcc4 ]] \
-    && { cd mspgcc4; svn up; cd ..; } \
-    || { svn co $repomspgcc4 mspgcc4 \
-      || die "can not fetch from mspgcc4 repository"; }
-[[ -f $binutils.tar.bz2 ]] \
-    || $fetch $urlgnu/binutils/$binutils.tar.bz2 \
-    || die "can not fetch tarball"
+function prepare() {
+    cd $buildtop
+    rm -rf $binutils
+    tar xjf $binutils.tar.bz2
+    patch -p1 -d $binutils < mspgcc4/$binutils.patch \
+	|| die "apply patch falied"
+    patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
+	|| die "apply patch failed"
+}
 
-rm -rf $binutils
-tar xjf $binutils.tar.bz2
-patch -p1 -d $binutils < mspgcc4/$binutils.patch \
-    || die "apply patch falied"
-patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
-    || die "apply patch failed"
+function build() {
+    rm -rf $builddir
+    mkdir $builddir
+    cd $builddir
+    is_osx_snow_leopard && disable_werror=--disable-werror || disable_werror=""
+    ../$binutils/configure \
+	--target=msp430 \
+	--prefix=$prefix \
+	--disable-nls $disable_werror \
+	|| die "configure failed"
+    make -j$(num_cpus) \
+	|| die "make failed"
+}
 
-rm -rf $builddir
-mkdir -p $builddir
-cd $builddir
-is_osx_snow_leopard && disable_werror=--disable-werror || disable_werror=""
-../$binutils/configure \
-    --target=msp430 \
-    --prefix=$prefix \
-    --disable-nls $disable_werror \
-    || die "configure failed"
-make -j$(num_cpus) \
-    || die "make failed"
-# sudo make install
+function install() {
+    cd $builddir
+    sudo make install
+}
+
+function cleanup() {
+    cd $buildtop
+    rm -rf $builddir $binutils
+}
+
+main "$@"
