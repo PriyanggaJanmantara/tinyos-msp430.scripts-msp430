@@ -22,7 +22,7 @@ cd $builddir
     || die "bootstrap failed"
 ./configure --prefix=$prefix --disable-nls \
     || die "configure failed"
-make \
+make -j$(num_cpus) \
     || die "make failed"
 
 # make install

@@ -31,6 +31,6 @@ is_osx_snow_leopard && disable_werror=--disable-werror || disable_werror=""
     --prefix=$prefix \
     --disable-nls $disable_werror \
     || die "configure failed"
-make \
+make -j$(num_cpus) \
     || die "make failed"
 # sudo make install
