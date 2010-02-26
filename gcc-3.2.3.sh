@@ -10,9 +10,12 @@ builddir=build-gcc
 
 [ -f $scriptdir/$gcc-config_gcc.patch ] \
     || die $scriptdir/$gcc-config_gcc.patch missing
-[ -d mspgcc-gcc ] \
-    || cvs -d $repomspgcc co -d mspgcc-gcc -P gcc \
+[ -d mspgcc ] || mkdir mspgcc
+cd mspgcc
+[ -d gcc ] \
+    || cvs -q -d $repomspgcc co -P gcc \
     || die "can not fetch from cvs repository"
+cd ..
 [ -f $gcccore.tar.bz2 ] \
     || curl -O $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
     || die "can not fetch tarball"
@@ -24,7 +27,7 @@ rm -rf $gcc
 tar xjf $gcccore.tar.bz2
 rm -rf gcc-3.3.6
 tar xjf gcc-core-3.3.6.tar.bz2
-tar cf - -C mspgcc-gcc/gcc-3.3 --exclude=CVS --exclude='THIS*' --exclude='*.patch' . | \
+tar cf - -C mspgcc/gcc/gcc-3.3 --exclude=CVS --exclude='THIS*' --exclude='*.patch' . | \
     tar xvf - -C $gcc
 (cd gcc-3.3.6; tar cf - $(find . -name '*darwin*' -o -name config.gcc)) | \
     tar xvf - -C $gcc

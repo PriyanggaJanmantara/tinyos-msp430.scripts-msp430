@@ -6,7 +6,7 @@ scriptdir=$(dirname $0)
 builddir=build-gdb
 
 [ -d mspgcc4 ] \
-    || svn co $repomspgcc4 mspgcc4 \
+    || svn -q co $repomspgcc4 mspgcc4 \
     || die "can not fetch mspgcc4 project from $repomspgcc4 repository"
 [ -f $gdb.tar.bz2 ] \
     || curl -O $urlgnu/gdb/$gdb.tar.bz2 \

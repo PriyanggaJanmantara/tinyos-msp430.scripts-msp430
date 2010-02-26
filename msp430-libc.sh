@@ -1,19 +1,22 @@
 #!/bin/sh -xu
 
 scriptdir=$(dirname $0)
-. $scriptdir/config
+. $scriptdir/config.sh
 
 builddir=build-msp430-libc
 
-[ -d mspgcc-msp430-libc ] \
-    || cvs -d $repomspgcc co -d mspgcc-msp430-libc -P msp430-libc \
+[ -d mspgcc ] || mkdir mspgcc
+cd mspgcc
+[ -d msp430-libc ] \
+    || cvs -q -d $repomspgcc co -P msp430-libc \
     || die "can not fetch cvs repository"
+cd ..
 [ -d mspgcc4 ] \
-    || svn co $repomspgcc4 mspgcc4 \
+    || svn -q co $repomspgcc4 mspgcc4 \
     || die "can not fetch mspgcc4 project from $repomspgcc4 repository"
 
 rm -rf $builddir
-cp -R mspgcc-msp430-libc $builddir
+cp -R mspgcc/msp430-libc $builddir
 patch -p1 -d $builddir < mspgcc4/msp430-libc.patch \
     || die "apply msp430-libc.patch failed"
 mkdir $builddir/src/msp1

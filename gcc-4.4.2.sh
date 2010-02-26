@@ -7,11 +7,14 @@ gcccore=$(echo $gcc | sed 's/gcc-/gcc-core-/')
 
 builddir=build-gcc
 
-[ -d mspgcc-gcc ] \
-    || cvs -d $repomspgcc co -d mspgcc-gcc -P gcc \
+[ -d mspgcc ] || mkdir mspgcc
+cd mspgcc
+[ -d ngcc ] \
+    || cvs -q -d $repomspgcc co -P gcc \
     || die "can not fetch gcc project from $repomspgcc repository"
+cd ..
 [ -d mspgcc4 ] \
-    || svn co $repomspgcc4 mspgcc4 \
+    || svn -q co $repomspgcc4 mspgcc4 \
     || die "can not fetch mspgcc4 project from $repomspgcc4 repository"
 [ -f $gcccore.tar.bz2 ] \
     || curl -O $urlgnu/gcc/$gcc/$gcccore.tar.bz2 \
@@ -23,10 +26,10 @@ builddir=build-gcc
     || curl -O $urlmpfr/$mpfr/$mpfr.tar.bz2 \
     || die "can not fetch $mpfr.tar.bz2 tar ball"
 
-{ tar cf - --exclude=.svn -C mspgcc4/ports gcc-4.x | tar xvf - -C mspgcc-gcc; } \
+{ tar cf - --exclude=.svn -C mspgcc4/ports gcc-4.x | tar xvf - -C mspgcc/gcc; } \
     || die "copy gcc-4.x port failed"
 if [ -f mspgcc4/msp$mspgccdir.patch ]; then
-    patch -d mspgcc-gcc/$mspgccdir -p1 < mspgcc4/msp$mspgccdir.patch \
+    patch -d mspgcc/gcc/$mspgccdir -p1 < mspgcc4/msp$mspgccdir.patch \
 	|| die "apply msp$mspgccdir.patch failed"
 fi
 
@@ -42,7 +45,7 @@ if [ -f mspgcc4/$gcc.patch ]; then
     patch -d $gcc -p1 < mspgcc4/$gcc.patch \
 	|| die "apply $gcc.patch failed"
 fi
-{ tar cf - --exclude=CVS -C mspgcc-gcc/$mspgccdir . | tar xvf - -C $gcc; } \
+{ tar cf - --exclude=CVS -C mspgcc/gcc/$mspgccdir . | tar xvf - -C $gcc; } \
     || die "copy $mspgccdir failed"
 
 rm -rf $builddir
