@@ -22,5 +22,5 @@ patch -p1 -d $builddir < $scriptdir/msp430-libc.patch \
     || die "apply patch failed"
 
 cd $builddir/src
-make -j32
+make
 # sudo make install

@@ -43,7 +43,7 @@ PATH=$prefix/bin:$PATH
 ../$gcc/configure --target=msp430 --prefix=$prefix --disable-nls \
     --with-as=$prefix/bin/msp430-as --with-ld=$prefix/bin/msp430-ld \
     || die "configure failed"
-make -j32
+make
 # sudo make install
 
 repo=$prefix/repository/$gcc
