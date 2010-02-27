@@ -1,0 +1,24 @@
+#!/bin/bash
+# -*- mode: shell-script; mode:flyspell-prog; -*-
+
+scriptdir=$(dirname ${BASH_ARGV[0]})
+if [[ ! -f $scriptdir/func.subr ]]; then
+    echo "$scriptdir/func.subr not found" 1>&2
+else
+    . $scriptdir/func.subr
+    scriptdir=$(absolute_path $scriptdir)
+
+    if [[ ! -f $scriptdir/config.subr ]]; then
+        echo "$scriptdir/config.subr not found" 1>&2
+    else
+        . $scriptdir/config.subr
+
+        PATH=$(add_path $PATH $prefix/sbin $prefix/bin)
+        MANPATH=$(add_path $MANPATH $prefix/man)
+    fi
+fi
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4
