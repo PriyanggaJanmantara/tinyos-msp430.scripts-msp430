@@ -1,5 +1,5 @@
 #!/bin/bash -u
-# -*- mode: shell-script; mode: flyspell-prog; -*-
+# -*- mode: shell-script; mode: flyspell-prog -*-
 
 . $(dirname $0)/main.subr
 
@@ -34,11 +34,13 @@ function prepare() {
         done
     fi
 
-    COMPAT_FLAGS=
+    CFLAGS=
+    LDFLAGS=
     if is_osx; then
-        COMPAT_FLAGS+="-D'usb_detach_kernel_driver_np(x,y)'=0"
-        COMPAT_FLAGS+=" -DB460800=460800"
-        COMPAT_FLAGS+=" -I/opt/local/include"
+        CFLAGS+=" -I/opt/local/include" # compatibility for libelf
+        CFLAGS+=" $($libusb --cflags)"  # compatibility for libusb
+        LDFLAGS+=" $($libusb --libs)"   # compatibility for libusb
+        CFLAGS+=" -DB460800=460800"
         if [[ "$scriptdir/$mspdebug-osx_*.patch" ]]; then
             for p in $scriptdir/$mspdebug-osx_*.patch; do
                 patch -d $builddir -p1 < $p \
@@ -51,8 +53,7 @@ function prepare() {
 
 function build() {   
     cd $builddir
-    make -j$(num_cpus) CFLAGS+="$COMPAT_FLAGS" \
-        CFLAGS+=$($libusb --cflags) CFLAGS+=$($libusb --libs)
+    make -j$(num_cpus) CFLAGS+="$CFLAGS" LDFLAGS+="$LDFLAGS"
 }
 
 function install() {
