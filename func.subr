@@ -1,4 +1,5 @@
 #!/bin/bash
+# -*- mode: shell-script; mode: flyspell-prog -*-
 
 function error() {
     echo "$@" 1>&2
@@ -23,10 +24,10 @@ function add_path() {
     local path=$1 p
     shift
     for p in "$@"; do
-	case $path in
+        case $path in
         *$p*);;
-	*) path=$p:$path;;
-	esac
+        *) path=$p:$path;;
+        esac
     done
     echo $path
 }
@@ -48,3 +49,8 @@ function num_cpus() {
     is_linux && { grep ^processor /proc/cpuinfo | wc -l; return; }
     echo 1
 }
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4:

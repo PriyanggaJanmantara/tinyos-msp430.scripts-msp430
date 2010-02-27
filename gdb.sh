@@ -1,16 +1,17 @@
 #!/bin/bash -u
+# -*- mode: shell-script; mode: flyspell-prog -*-
 
 . $(dirname $0)/main.subr
 
 function download() {
     cd $buildtop
     [[ -d mspgcc4 ]] \
-	&& { cd mspgcc4; svn up; cd ..; } \
-	|| { svn co $repo_mspgcc4 mspgcc4 \
-	|| die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
+        && { cd mspgcc4; svn up; cd ..; } \
+        || { svn co $repo_mspgcc4 mspgcc4 \
+        || die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $gdb.tar.bz2 ]] \
-	|| fetch $url_gnu/gdb/$gdb.tar.bz2 \
-	|| die "can not down load $gdb.tar.bz2 from $url_gnu"
+        || fetch $url_gnu/gdb/$gdb.tar.bz2 \
+        || die "can not down load $gdb.tar.bz2 from $url_gnu"
     return 0
 }
 
@@ -19,13 +20,13 @@ function prepare() {
     rm -rf $gdb
     tar xjf $gdb.tar.bz2
     { \
-	tar cf - --exclude=.svn -C mspgcc4/ports/gdb-6-and-7 . \
-	| tar xvf - -C $gdb;\
+        tar cf - --exclude=.svn -C mspgcc4/ports/gdb-6-and-7 . \
+        | tar xvf - -C $gdb;\
     } \
-	|| die "copy gdb-6-and-7 failed"
+        || die "copy gdb-6-and-7 failed"
     if [ -f mspgcc4/$gdb.patch ]; then
-	patch -d $gdb -p1 < mspgcc4/$gdb.patch \
-	    || die "apply $gdb.patch failed"
+        patch -d $gdb -p1 < mspgcc4/$gdb.patch \
+            || die "apply $gdb.patch failed"
     fi
     return 0
 }
@@ -35,10 +36,10 @@ function build() {
     mkdir $builddir
     cd $builddir
     ../$gdb/configure --target=$target --prefix=$prefix \
-	--disable-nls \
-	|| die "configure failed"
+        --disable-nls \
+        || die "configure failed"
     make -j$(num_cpus) \
-	|| die "make failed"
+        || die "make failed"
 }
 
 function install() {
@@ -52,3 +53,8 @@ function cleanup() {
 }
 
 main "$@"
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4:

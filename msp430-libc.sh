@@ -1,4 +1,5 @@
 #!/bin/bash -u
+# -*- mode: shell-script; mode: flyspell-prog -*-
 
 . $(dirname $0)/main.subr
 
@@ -7,14 +8,14 @@ function download() {
     [[ -d mspgcc ]] || mkdir mspgcc
     cd mspgcc
     [[ -d msp430-libc ]] \
-	&& { cd msp430-libc; cvs -q up; cd ..; } \
-	|| { cvs -q -d $repo_mspgcc co -P msp430-libc \
-	|| die "can not fetch cvs repository"; }
+        && { cd msp430-libc; cvs -q up; cd ..; } \
+        || { cvs -q -d $repo_mspgcc co -P msp430-libc \
+        || die "can not fetch cvs repository"; }
     cd ..
     [[ -d mspgcc4 ]] \
-	&& { cd mspgcc4; svn up; cd ..; } \
-	|| { svn co $repo_mspgcc4 mspgcc4 \
-	|| die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
+        && { cd mspgcc4; svn up; cd ..; } \
+        || { svn co $repo_mspgcc4 mspgcc4 \
+        || die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
     return 0
 }
 
@@ -23,7 +24,7 @@ function prepare() {
     rm -rf $builddir
     cp -R mspgcc/msp430-libc $builddir
     patch -p1 -d $builddir < mspgcc4/msp430-libc.patch \
-	|| die "apply mspgcc4/msp430-libc.patch failed"
+        || die "apply mspgcc4/msp430-libc.patch failed"
     mkdir -p $builddir/src/msp1
     mkdir -p $builddir/src/msp2
     return 0
@@ -35,7 +36,7 @@ function build() {
     sed -e "s;/usr/local/msp430;$prefix;" Makefile > Makefile.new
     mv Makefile.new Makefile
     make -j$(num_cpus) \
-	|| die "make failed"
+        || die "make failed"
 }
 
 function install() {
@@ -57,3 +58,8 @@ function cleanup() {
 }
 
 main "$@"
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4:
