@@ -20,8 +20,6 @@
 
 function download() {
     cd $buildtop
-    [[ -f $scriptdir/$binutils-dollar.patch ]] \
-        || die $scriptdir/$binutils-dollar.patch is missing
     [[ -d mspgcc4 ]] \
         && { cd mspgcc4; svn up; cd ..; } \
         || { svn co $repo_mspgcc4 mspgcc4 \
@@ -35,10 +33,16 @@ function prepare() {
     cd $buildtop
     rm -rf $binutils
     tar xjf $binutils.tar.bz2
+
     patch -p1 -d $binutils < mspgcc4/$binutils.patch \
         || die "apply patch falied"
-    patch -p1 -d $binutils < $scriptdir/$binutils-dollar.patch \
-        || die "apply patch failed"
+
+    if [[ -f "$scriptdir/$binutils-*.patch" ]]; then
+        for p in $scriptdir/$binutils-*.patch; do
+            patch -p1 -d $binutils < $p \
+                || die "patch $p failed"
+        done
+    fi
     return 0
 }
 
@@ -46,7 +50,9 @@ function build() {
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    is_osx_snow_leopard && disable_werror=--disable-werror || disable_werror=""
+
+    disable_werror=
+    is_osx_snow_leopard && disable_werror=--disable-werror
     ../$binutils/configure --target=$target --prefix=$prefix \
         --disable-nls $disable_werror \
         || die "configure failed"
