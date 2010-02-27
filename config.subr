@@ -1,18 +1,11 @@
 #!/bin/bash
+# -*- mode: shell-script; mode: flyspell-prog -*-
 
 # target
 target=msp430
 
 # install prefix
 prefix=/opt/msp430
-
-# tinyos
-repo_tinyos=:pserver:anonymous@tinyos.cvs.sourceforge.net:/cvsroot/tinyos
-tinyos=tinyos-2.x
-
-# nesc
-url_nesc=http://softlayer.dl.sourceforge.net/project/nescc/nescc/v1.3.1
-nesc=nesc-1.3.1
 
 # mspgcc & mspgcc4
 repo_mspgcc=:pserver:anonymous@mspgcc.cvs.sourceforge.net:/cvsroot/mspgcc
@@ -36,3 +29,7 @@ mspdebug=mspdebug-0.4
 repo_gdbproxy=:pserver:anonymous@gdbproxy.cvs.sourceforge.net:/cvsroot/gdbproxy
 gdbproxy=gdbproxy
 
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4:
