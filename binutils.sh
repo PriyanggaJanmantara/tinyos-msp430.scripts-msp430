@@ -37,12 +37,10 @@ function prepare() {
     patch -p1 -d $binutils < mspgcc4/$binutils.patch \
         || die "apply patch falied"
 
-    if [[ "$scriptdir/$binutils-*.patch" ]]; then
-        for p in $scriptdir/$binutils-*.patch; do
-            patch -p1 -d $binutils < $p \
-                || die "patch $p failed"
-        done
-    fi
+    for p in $scriptdir/$binutils-*.patch; do
+        [[ -f $p ]] && patch -p1 -d $binutils < $p \
+            || die "patch $p failed"
+    done
     return 0
 }
 

@@ -36,18 +36,14 @@ function prepare() {
     tar xzf $mspdebug.tar.gz
     mv $mspdebug $builddir
 
-    if [[ "$scriptdir/$mspdebug-fix_*.patch" ]]; then
-        for p in $scriptdir/$mspdebug-fix_*.patch; do
-            patch -d $builddir -p1 < $p \
-                || die "patch $p failed"
-        done
-    fi
-    if [[ "$scriptdir/$mspdebug-enhance_*.patch" ]]; then
-        for p in $scriptdir/$mspdebug-enhance_*.patch; do
-            patch -d $builddir -p1 < $p \
-                || die "patch $p failed"
-        done
-    fi
+    for p in $scriptdir/$mspdebug-fix_*.patch; do
+        [[ -f $p ]] && patch -d $builddir -p1 < $p \
+            || die "patch $p failed"
+    done
+    for p in $scriptdir/$mspdebug-enhance_*.patch; do
+        [[ -f $p ]] && patch -d $builddir -p1 < $p \
+            || die "patch $p failed"
+    done
 
     CFLAGS=
     LDFLAGS=
@@ -56,12 +52,10 @@ function prepare() {
         CFLAGS+=" $($libusb --cflags)"  # compatibility for libusb
         LDFLAGS+=" $($libusb --libs)"   # compatibility for libusb
         CFLAGS+=" -DB460800=460800"
-        if [[ "$scriptdir/$mspdebug-osx_*.patch" ]]; then
-            for p in $scriptdir/$mspdebug-osx_*.patch; do
-                patch -d $builddir -p1 < $p \
-                    || die "patch $p failed"
-            done
-        fi
+        for p in $scriptdir/$mspdebug-osx_*.patch; do
+            [[ -f $p ]] && patch -d $builddir -p1 < $p \
+                || die "patch $p failed"
+        done
     fi
     return 0
 }
