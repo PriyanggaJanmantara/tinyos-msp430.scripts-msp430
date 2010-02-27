@@ -16,6 +16,8 @@
 #  limitations under the License.
 #
 
+# We must not exit this script because this may be a part of login script.
+
 scriptdir=$(dirname ${BASH_ARGV[0]})
 if [[ ! -f $scriptdir/func.subr ]]; then
     echo "$scriptdir/func.subr not found" 1>&2
