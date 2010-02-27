@@ -1,4 +1,5 @@
 #!/bin/bash
+# -*- mode: shell-script; mode: flyspell-prog -*-
 
 . $(dirname ${BASH_ARGV[0]})/func.subr
 
@@ -10,7 +11,7 @@ which curl >/dev/null && fetch="curl -O"
 function fetch() {
     local url=$1
     $fetch $url \
-	|| die "can not fetch $url"
+        || die "can not fetch $url"
 }
 
 which cvs >/dev/null || die "missing cvs"
@@ -33,31 +34,36 @@ function main() {
     local -a cmds
 
     for i in "$@"; do
-	case $i in
-	    -h|--help) usage;;
-	    -*) die "unkown option $i, try --help";;
-	    *) cmds[${#cmds[@]}]=$i;;
-	esac
+        case $i in
+            -h|--help) usage;;
+            -*) die "unkown option $i, try --help";;
+            *) cmds[${#cmds[@]}]=$i;;
+        esac
     done
 
     PATH=$prefix/bin:$PATH
     if [[ ${#cmds[@]} -eq 0 ]]; then
-	set -x; download && prepare && build; set +x
-	echo "To install $scriptname under $prefix, run '$0 install'"
+        set -x; download && prepare && build; set +x
+        echo "To install $scriptname under $prefix, run '$0 install'"
     else
-	for cmd in "${cmds[@]}"; do
+        for cmd in "${cmds[@]}"; do
             case $cmd in
             download)
-	        set -x; download || die "download failed"; set +x;;
+                set -x; download || die "download failed"; set +x;;
             build)
                 set -x; prepare && build || die "build failed"; set +x;;
             install)
-		set -x; install || die "install failed"; set +x;;
+                set -x; install || die "install failed"; set +x;;
             cleanup)
                 set -x; cleanup; set +x;;
             *)
-	        die "unknown command '$cmd'";;
+                die "unknown command '$cmd'";;
             esac
-	done
+        done
     fi
 }
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4:
