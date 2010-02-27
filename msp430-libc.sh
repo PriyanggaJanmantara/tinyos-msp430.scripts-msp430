@@ -1,5 +1,5 @@
 #!/bin/bash -u
-# -*- mode: shell-script; mode: flyspell-prog -*-
+# -*- mode: shell-script; mode: flyspell-prog; -*-
 
 . $(dirname $0)/main.subr
 
