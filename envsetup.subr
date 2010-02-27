@@ -31,7 +31,7 @@ else
         . $scriptdir/config.subr
 
         PATH=$(add_path $PATH $prefix/sbin $prefix/bin)
-        MANPATH=$(add_path $MANPATH $prefix/man)
+        MANPATH=$(add_path $MANPATH $prefix/man $prefix/share/man)
     fi
 fi
 
