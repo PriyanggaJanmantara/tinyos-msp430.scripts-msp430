@@ -55,13 +55,12 @@ function prepare() {
             || die "apply msp$mspgccdir.patch failed"
     fi
 
-    rm -rf $gcc
     tar xjf $gcccore.tar.bz2
-    rm -rf $gcc/gmp
     tar xjf $gmp.tar.bz2 -C $gcc
+    [[ -d $gcc/gmp ]] && rm -rf $gcc/gmp
     mv $gcc/$gmp $gcc/gmp
-    rm -rf $gcc/mpfr
     tar xjf $mpfr.tar.bz2 -C $gcc
+    [[ -d $gcc/mpfr ]] && rm -rf $gcc/mpfr
     mv $gcc/$mpfr $gcc/mpfr
     if [[ -f mspgcc4/$gcc.patch ]]; then
         patch -d $gcc -p1 < mspgcc4/$gcc.patch \
@@ -77,6 +76,7 @@ function build() {
     mkdir $builddir
     cd $builddir
     ../$gcc/configure --target=$target --prefix=$prefix \
+        --mandir=$prefix/share/man --infodir=$prefix/share/info \
         --with-gnu-as --with-gnu-ld \
         --disable-nls \
         || die "configure failed"

@@ -32,7 +32,7 @@ function download() {
 
 function prepare() {
     cd $buildtop
-    rm -rf $builddir $mspdebug
+    rm -rf $builddir
     tar xzf $mspdebug.tar.gz
     mv $mspdebug $builddir
 

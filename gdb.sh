@@ -32,7 +32,6 @@ function download() {
 
 function prepare() {
     cd $buildtop
-    rm -rf $gdb
     tar xjf $gdb.tar.bz2
     { \
         tar cf - --exclude=.svn -C mspgcc4/ports/gdb-6-and-7 . \
