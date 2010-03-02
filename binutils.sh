@@ -31,7 +31,6 @@ function download() {
 
 function prepare() {
     cd $buildtop
-    rm -rf $binutils
     tar xjf $binutils.tar.bz2
 
     patch -p1 -d $binutils < mspgcc4/$binutils.patch \
