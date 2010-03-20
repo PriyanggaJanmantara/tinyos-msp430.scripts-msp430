@@ -1,6 +1,16 @@
-diff -urp mspdebug-0.4/dis.c build-mspdebug/dis.c
---- mspdebug-0.4/dis.c	2010-01-15 10:29:51.000000000 +0900
-+++ build-mspdebug/dis.c	2010-02-12 16:58:48.000000000 +0900
+--- mspdebug-0.5-dist/main.c	2010-03-20 12:39:52.000000000 +0900
++++ mspdebug-0.5/main.c	2010-03-21 02:57:02.000000000 +0900
+@@ -195,7 +195,7 @@ static int cmd_dis(char **arg)
+ 	char *len_text = get_arg(arg);
+ 	int offset = 0;
+ 	int length = 0x40;
+-	u_int8_t buf[512];
++	u_int8_t buf[0x1000];
+ 
+ 	if (!off_text) {
+ 		fprintf(stderr, "md: offset must be specified\n");
+--- mspdebug-0.5-dist/dis.c	2010-03-20 12:39:52.000000000 +0900
++++ mspdebug-0.5/dis.c	2010-03-21 03:01:16.000000000 +0900
 @@ -442,63 +442,63 @@ static const char *msp_op_name(msp430_op
  		const char      *mnemonic;
  	} ops[] = {
@@ -162,24 +172,3 @@ diff -urp mspdebug-0.4/dis.c build-mspdebug/dis.c
  	}
  
  	buf[count] = 0;
-diff -urp mspdebug-0.4/main.c build-mspdebug/main.c
---- mspdebug-0.4/main.c	2010-01-15 10:29:51.000000000 +0900
-+++ build-mspdebug/main.c	2010-02-12 16:57:55.000000000 +0900
-@@ -171,7 +171,7 @@ static void disassemble(u_int16_t offset
- 		}
- 
- 		if (retval >= 0) {
--			char buf[32];
-+			char buf[100];
- 
- 			dis_format(buf, sizeof(buf), &insn);
- 			printf("%s", buf);
-@@ -191,7 +191,7 @@ static int cmd_dis(char **arg)
- 	char *len_text = get_arg(arg);
- 	int offset = 0;
- 	int length = 0x40;
--	u_int8_t buf[512];
-+	u_int8_t buf[0x1000];
- 
- 	if (!off_text) {
- 		fprintf(stderr, "md: offset must be specified\n");
