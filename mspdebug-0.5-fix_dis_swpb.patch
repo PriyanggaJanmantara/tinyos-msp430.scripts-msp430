@@ -1,7 +1,7 @@
-diff -urp mspdebug-0.4/dis.c build-mspdebug/dis.c
---- mspdebug-0.4/dis.c	2010-01-15 10:29:51.000000000 +0900
-+++ build-mspdebug/dis.c	2010-02-12 17:17:09.000000000 +0900
-@@ -443,7 +443,7 @@ static const char *msp_op_name(msp430_op
+diff -ur mspdebug-0.5-dist/dis.c mspdebug-0.5/dis.c
+--- mspdebug-0.5-dist/dis.c	2010-03-20 12:39:52.000000000 +0900
++++ mspdebug-0.5/dis.c	2010-03-21 02:50:35.000000000 +0900
+@@ -443,7 +443,7 @@
  	} ops[] = {
  		/* Single operand */
  		{MSP430_OP_RRC,         "RRC"},

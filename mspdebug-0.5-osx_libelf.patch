@@ -1,6 +1,5 @@
-diff -ur mspdebug-0.4/elf32.c build-mspdebug/elf32.c
---- mspdebug-0.4/elf32.c	2010-01-15 10:29:51.000000000 +0900
-+++ build-mspdebug/elf32.c	2010-02-01 15:23:25.000000000 +0900
+--- mspdebug-0.5-dist/elf32.c	2010-03-20 12:39:52.000000000 +0900
++++ mspdebug-0.5/elf32.c	2010-03-21 02:51:49.000000000 +0900
 @@ -18,11 +18,17 @@
  
  #include <errno.h>

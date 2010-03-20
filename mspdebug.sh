@@ -37,12 +37,16 @@ function prepare() {
     mv $mspdebug $builddir
 
     for p in $scriptdir/$mspdebug-fix_*.patch; do
-        [[ -f $p ]] && patch -d $builddir -p1 < $p \
-            || die "patch $p failed"
+        if [[ -f $p ]]; then
+            patch -d $builddir -p1 < $p \
+                || die "patch $p failed"
+        fi
     done
     for p in $scriptdir/$mspdebug-enhance_*.patch; do
-        [[ -f $p ]] && patch -d $builddir -p1 < $p \
-            || die "patch $p failed"
+        if [[ -f $p ]]; then
+            patch -d $builddir -p1 < $p \
+                || die "patch $p failed"
+        fi
     done
 
     CFLAGS=
@@ -53,8 +57,10 @@ function prepare() {
         LDFLAGS+=" $($libusb --libs)"   # compatibility for libusb
         CFLAGS+=" -DB460800=460800"
         for p in $scriptdir/$mspdebug-osx_*.patch; do
-            [[ -f $p ]] && patch -d $builddir -p1 < $p \
-                || die "patch $p failed"
+            if [[ -f $p ]]; then
+                patch -d $builddir -p1 < $p \
+                    || die "patch $p failed"
+            fi
         done
     fi
     return 0
@@ -62,12 +68,12 @@ function prepare() {
 
 function build() {   
     cd $builddir
-    make -j$(num_cpus) CFLAGS+="$CFLAGS" LDFLAGS+="$LDFLAGS"
+    make -j$(num_cpus) PREFIX=$prefix CFLAGS+="$CFLAGS" LDFLAGS+="$LDFLAGS"
 }
 
 function install() {
     cd $builddir
-    sudo cp mspdebug $prefix/bin
+    sudo make PREFIX=$prefix install
 }
 
 function cleanup() {
