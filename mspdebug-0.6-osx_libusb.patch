@@ -1,14 +1,3 @@
---- mspdebug-0.5-dist/Makefile	2010-03-20 12:39:52.000000000 +0900
-+++ mspdebug-0.5/Makefile	2010-03-21 02:53:54.000000000 +0900
-@@ -33,7 +33,7 @@
- 
- mspdebug: main.o fet.o rf2500.o dis.o uif.o ihex.o elf32.o stab.o util.o \
- 	  bsl.o sim.o symmap.o
--	$(CC) $(CFLAGS) -o $@ $^ -lusb
-+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lusb
- 
- .c.o:
- 	$(CC) $(CFLAGS) -O1 -Wall -o $@ -c $*.c
 --- mspdebug-0.5-dist/rf2500.c	2010-03-20 12:39:52.000000000 +0900
 +++ mspdebug-0.5/rf2500.c	2010-03-21 02:53:35.000000000 +0900
 @@ -56,9 +56,11 @@ static int usbtr_open_interface(struct u

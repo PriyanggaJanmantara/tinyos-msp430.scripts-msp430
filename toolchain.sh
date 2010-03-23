@@ -20,7 +20,7 @@
 
 PATH=$prefix/bin:$PATH
 
-modules="binutils gcc msp430-libc mspdebug"
+modules="binutils gcc msp430-libc gdb mspdebug"
 
 if [[ $# -eq 0 ]]; then
     for module in $modules; do
