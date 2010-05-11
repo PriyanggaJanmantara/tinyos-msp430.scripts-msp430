@@ -1,0 +1,145 @@
+diff -ur mspdebug-0.7-dist/cproc_util.c mspdebug-0.7/cproc_util.c
+--- mspdebug-0.7-dist/cproc_util.c	2010-04-30 14:17:11.000000000 +0900
++++ mspdebug-0.7/cproc_util.c	2010-05-11 22:38:51.000000000 +0900
+@@ -133,7 +133,7 @@
+ 
+ 	len = snprintf(buf + total, max_len - total,
+ 		       "\x1b[36m%s%s\x1b[0m", opname,
+-		       insn->is_byte_op ? ".B" : "");
++		       insn->is_byte_op ? ".b" : "");
+ 	tlen = textlen(buf + total);
+ 	total += len;
+ 
+diff -ur mspdebug-0.7-dist/dis.c mspdebug-0.7/dis.c
+--- mspdebug-0.7-dist/dis.c	2010-04-30 14:17:11.000000000 +0900
++++ mspdebug-0.7/dis.c	2010-05-11 22:33:55.000000000 +0900
+@@ -455,63 +455,63 @@
+ 	const char      *mnemonic;
+ } opcode_names[] = {
+ 	/* Single operand */
+-	{MSP430_OP_RRC,         "RRC"},
+-	{MSP430_OP_SWPB,        "SWPB"},
+-	{MSP430_OP_RRA,         "RRA"},
+-	{MSP430_OP_SXT,         "SXT"},
+-	{MSP430_OP_PUSH,        "PUSH"},
+-	{MSP430_OP_CALL,        "CALL"},
+-	{MSP430_OP_RETI,        "RETI"},
++	{MSP430_OP_RRC,         "rrc"},
++	{MSP430_OP_SWPB,        "swpb"},
++	{MSP430_OP_RRA,         "rra"},
++	{MSP430_OP_SXT,         "sxt"},
++	{MSP430_OP_PUSH,        "push"},
++	{MSP430_OP_CALL,        "call"},
++	{MSP430_OP_RETI,        "reti"},
+ 
+ 	/* Jump */
+-	{MSP430_OP_JNZ,         "JNZ"},
+-	{MSP430_OP_JZ,          "JZ"},
+-	{MSP430_OP_JNC,         "JNC"},
+-	{MSP430_OP_JC,          "JC"},
+-	{MSP430_OP_JN,          "JN"},
+-	{MSP430_OP_JL,          "JL"},
+-	{MSP430_OP_JGE,         "JGE"},
+-	{MSP430_OP_JMP,         "JMP"},
++	{MSP430_OP_JNZ,         "jnz"},
++	{MSP430_OP_JZ,          "jz"},
++	{MSP430_OP_JNC,         "jnc"},
++	{MSP430_OP_JC,          "jc"},
++	{MSP430_OP_JN,          "jn"},
++	{MSP430_OP_JL,          "jl"},
++	{MSP430_OP_JGE,         "jge"},
++	{MSP430_OP_JMP,         "jmp"},
+ 
+ 	/* Double operand */
+-	{MSP430_OP_MOV,         "MOV"},
+-	{MSP430_OP_ADD,         "ADD"},
+-	{MSP430_OP_ADDC,        "ADDC"},
+-	{MSP430_OP_SUBC,        "SUBC"},
+-	{MSP430_OP_SUB,         "SUB"},
+-	{MSP430_OP_CMP,         "CMP"},
+-	{MSP430_OP_DADD,        "DADD"},
+-	{MSP430_OP_BIT,         "BIT"},
+-	{MSP430_OP_BIC,         "BIC"},
+-	{MSP430_OP_BIS,         "BIS"},
+-	{MSP430_OP_XOR,         "XOR"},
+-	{MSP430_OP_AND,         "AND"},
++	{MSP430_OP_MOV,         "mov"},
++	{MSP430_OP_ADD,         "add"},
++	{MSP430_OP_ADDC,        "addc"},
++	{MSP430_OP_SUBC,        "subc"},
++	{MSP430_OP_SUB,         "sub"},
++	{MSP430_OP_CMP,         "cmp"},
++	{MSP430_OP_DADD,        "dadd"},
++	{MSP430_OP_BIT,         "bit"},
++	{MSP430_OP_BIC,         "bic"},
++	{MSP430_OP_BIS,         "bis"},
++	{MSP430_OP_XOR,         "xor"},
++	{MSP430_OP_AND,         "and"},
+ 
+ 	/* Emulated instructions */
+-	{MSP430_OP_ADC,         "ADC"},
+-	{MSP430_OP_BR,          "BR"},
+-	{MSP430_OP_CLR,         "CLR"},
+-	{MSP430_OP_CLRC,        "CLRC"},
+-	{MSP430_OP_CLRN,        "CLRN"},
+-	{MSP430_OP_CLRZ,        "CLRZ"},
+-	{MSP430_OP_DADC,        "DADC"},
+-	{MSP430_OP_DEC,         "DEC"},
+-	{MSP430_OP_DECD,        "DECD"},
+-	{MSP430_OP_DINT,        "DINT"},
+-	{MSP430_OP_EINT,        "EINT"},
+-	{MSP430_OP_INC,         "INC"},
+-	{MSP430_OP_INCD,        "INCD"},
+-	{MSP430_OP_INV,         "INV"},
+-	{MSP430_OP_NOP,         "NOP"},
+-	{MSP430_OP_POP,         "POP"},
+-	{MSP430_OP_RET,         "RET"},
+-	{MSP430_OP_RLA,         "RLA"},
+-	{MSP430_OP_RLC,         "RLC"},
+-	{MSP430_OP_SBC,         "SBC"},
+-	{MSP430_OP_SETC,        "SETC"},
+-	{MSP430_OP_SETN,        "SETN"},
+-	{MSP430_OP_SETZ,        "SETZ"},
+-	{MSP430_OP_TST,         "TST"}
++	{MSP430_OP_ADC,         "adc"},
++	{MSP430_OP_BR,          "br"},
++	{MSP430_OP_CLR,         "clr"},
++	{MSP430_OP_CLRC,        "clrc"},
++	{MSP430_OP_CLRN,        "clrn"},
++	{MSP430_OP_CLRZ,        "clrz"},
++	{MSP430_OP_DADC,        "dadc"},
++	{MSP430_OP_DEC,         "dec"},
++	{MSP430_OP_DECD,        "decd"},
++	{MSP430_OP_DINT,        "dint"},
++	{MSP430_OP_EINT,        "eint"},
++	{MSP430_OP_INC,         "inc"},
++	{MSP430_OP_INCD,        "incd"},
++	{MSP430_OP_INV,         "inv"},
++	{MSP430_OP_NOP,         "nop"},
++	{MSP430_OP_POP,         "pop"},
++	{MSP430_OP_RET,         "ret"},
++	{MSP430_OP_RLA,         "rla"},
++	{MSP430_OP_RLC,         "rlc"},
++	{MSP430_OP_SBC,         "sbc"},
++	{MSP430_OP_SETC,        "setc"},
++	{MSP430_OP_SETN,        "setn"},
++	{MSP430_OP_SETZ,        "setz"},
++	{MSP430_OP_TST,         "tst"}
+ };
+ 
+ /* Return the mnemonic for an operation, if possible. */
+@@ -538,10 +538,10 @@
+ }
+ 
+ static const char *const msp430_reg_names[] = {
+-	"PC",  "SP",  "SR",  "R3",
+-	"R4",  "R5",  "R6",  "R7",
+-	"R8",  "R9",  "R10", "R11",
+-	"R12", "R13", "R14", "R15"
++	"pc",  "sp",  "sr",  "r3",
++	"r4",  "r5",  "r6",  "r7",
++	"r8",  "r9",  "r10", "r11",
++	"r12", "r13", "r14", "r15"
+ };
+ 
+ msp430_reg_t dis_reg_from_name(const char *name)
