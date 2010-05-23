@@ -20,13 +20,21 @@
 
 fetch="-none-"
 which wget >/dev/null && fetch="wget"
-which curl >/dev/null && fetch="curl -O"
+which curl >/dev/null && fetch="curl"
 [[ $fetch = "-none-" ]] && die "missing wget or curl"
 
 function fetch() {
     local url=$1
-    $fetch $url \
-        || die "can not fetch $url"
+    if [[ $fetch = "wget" ]]; then
+        $fetch $url \
+            || die "can not fetch $url"
+    elif [[ $fetch = "curl" ]]; then
+        local out=${url##*/}
+        $fetch -o ${out%\?*} -L $url \
+            || die "can not fetch $url"
+    else
+        die "unknown fetch method: $fetch"
+    fi
 }
 
 which cvs >/dev/null || die "missing cvs"

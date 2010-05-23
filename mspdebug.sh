@@ -25,7 +25,7 @@ libusb=$(which libusb-legacy-config || which libusb-config)
 function download() {
     cd $buildtop
     [[ -f $mspdebug.tar.gz ]] \
-        || fetch $url_mspdebug/$mspdebug.tar.gz \
+        || fetch $url_mspdebug \
         || die "can not download $mspdebug.tar.gz from $url_mspdebug"
     return 0
 }
