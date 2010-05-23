@@ -1,7 +1,7 @@
-diff -ur mspdebug-0.7-dist/cproc_util.c mspdebug-0.7/cproc_util.c
---- mspdebug-0.7-dist/cproc_util.c	2010-04-30 14:17:11.000000000 +0900
-+++ mspdebug-0.7/cproc_util.c	2010-05-11 22:38:51.000000000 +0900
-@@ -133,7 +133,7 @@
+diff -urp mspdebug-0.8-dist/cproc_util.c mspdebug-0.8/cproc_util.c
+--- mspdebug-0.8-dist/cproc_util.c	2010-05-22 14:42:10.000000000 +0900
++++ mspdebug-0.8/cproc_util.c	2010-05-23 14:30:24.000000000 +0900
+@@ -133,7 +133,7 @@ static int dis_format(stab_t stab, char 
  
  	len = snprintf(buf + total, max_len - total,
  		       "\x1b[36m%s%s\x1b[0m", opname,
@@ -10,10 +10,10 @@ diff -ur mspdebug-0.7-dist/cproc_util.c mspdebug-0.7/cproc_util.c
  	tlen = textlen(buf + total);
  	total += len;
  
-diff -ur mspdebug-0.7-dist/dis.c mspdebug-0.7/dis.c
---- mspdebug-0.7-dist/dis.c	2010-04-30 14:17:11.000000000 +0900
-+++ mspdebug-0.7/dis.c	2010-05-11 22:33:55.000000000 +0900
-@@ -455,63 +455,63 @@
+diff -urp mspdebug-0.8-dist/dis.c mspdebug-0.8/dis.c
+--- mspdebug-0.8-dist/dis.c	2010-05-22 14:42:10.000000000 +0900
++++ mspdebug-0.8/dis.c	2010-05-23 14:31:10.000000000 +0900
+@@ -455,66 +455,66 @@ static const struct {
  	const char      *mnemonic;
  } opcode_names[] = {
  	/* Single operand */
@@ -100,7 +100,6 @@ diff -ur mspdebug-0.7-dist/dis.c mspdebug-0.7/dis.c
 -	{MSP430_OP_SETC,        "SETC"},
 -	{MSP430_OP_SETN,        "SETN"},
 -	{MSP430_OP_SETZ,        "SETZ"},
--	{MSP430_OP_TST,         "TST"}
 +	{MSP430_OP_ADC,         "adc"},
 +	{MSP430_OP_BR,          "br"},
 +	{MSP430_OP_CLR,         "clr"},
@@ -124,11 +123,15 @@ diff -ur mspdebug-0.7-dist/dis.c mspdebug-0.7/dis.c
 +	{MSP430_OP_SETC,        "setc"},
 +	{MSP430_OP_SETN,        "setn"},
 +	{MSP430_OP_SETZ,        "setz"},
-+	{MSP430_OP_TST,         "tst"}
+ 	{MSP430_OP_TST,         "TST"}
  };
  
- /* Return the mnemonic for an operation, if possible. */
-@@ -538,10 +538,10 @@
+-/* Return the mnemonic for an operation, if possible. */
++/* return the mnemonic for an operation, if possible. */
+ const char *dis_opcode_name(msp430_op_t op)
+ {
+ 	int i;
+@@ -538,10 +538,10 @@ int dis_opcode_from_name(const char *nam
  }
  
  static const char *const msp430_reg_names[] = {
@@ -142,4 +145,4 @@ diff -ur mspdebug-0.7-dist/dis.c mspdebug-0.7/dis.c
 +	"r12", "r13", "r14", "r15"
  };
  
- msp430_reg_t dis_reg_from_name(const char *name)
+ int dis_reg_from_name(const char *name)
