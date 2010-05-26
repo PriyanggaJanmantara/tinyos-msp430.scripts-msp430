@@ -37,7 +37,8 @@ url_mpfr=http://www.mpfr.org
 gdb=gdb-7.0.1
 
 # mspdebug
-url_mspdebug=http://downloads.sourceforge.net/project/mspdebug/mspdebug-0.8.tar.gz?use_mirror=cdnetworks-us-2
+repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
+#url_mspdebug=http://downloads.sourceforge.net/project/mspdebug/mspdebug-0.8.tar.gz?use_mirror=cdnetworks-us-2
 mspdebug=mspdebug-0.8
 
 # gdbproxy

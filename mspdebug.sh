@@ -24,25 +24,25 @@ libusb=$(which libusb-legacy-config || which libusb-config)
 
 function download() {
     cd $buildtop
-    [[ -f $mspdebug.tar.gz ]] \
-        || fetch $url_mspdebug \
-        || die "can not download $mspdebug.tar.gz from $url_mspdebug"
+    [[ -d mspdebug ]] \
+        && { cd mspdebug; git pull; cd ..; } \
+        || { git clone $repo_mspdebug \
+        || die "can not fetch mspdebug project from $repo_mspdebug"; }
     return 0
 }
 
 function prepare() {
     cd $buildtop
     rm -rf $builddir
-    tar xzf $mspdebug.tar.gz
-    mv $mspdebug $builddir
+    cp -rp mspdebug $builddir
 
-    for p in $scriptdir/$mspdebug-fix_*.patch; do
+    for p in $scriptdir/mspdebug-fix_*.patch; do
         if [[ -f $p ]]; then
             patch -d $builddir -p1 < $p \
                 || die "patch $p failed"
         fi
     done
-    for p in $scriptdir/$mspdebug-enhance_*.patch; do
+    for p in $scriptdir/mspdebug-enhance_*.patch; do
         if [[ -f $p ]]; then
             patch -d $builddir -p1 < $p \
                 || die "patch $p failed"
@@ -55,8 +55,7 @@ function prepare() {
         CFLAGS+=" -I/opt/local/include" # compatibility for libelf
         CFLAGS+=" $($libusb --cflags)"  # compatibility for libusb
         LDFLAGS+=" $($libusb --libs)"   # compatibility for libusb
-        CFLAGS+=" -DB460800=460800"
-        for p in $scriptdir/$mspdebug-osx_*.patch; do
+        for p in $scriptdir/mspdebug-osx_*.patch; do
             if [[ -f $p ]]; then
                 patch -d $builddir -p1 < $p \
                     || die "patch $p failed"

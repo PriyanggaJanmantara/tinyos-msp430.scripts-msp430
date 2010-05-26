@@ -1,6 +1,6 @@
-diff -urp mspdebug-0.8-dist/cproc_util.c mspdebug-0.8/cproc_util.c
---- mspdebug-0.8-dist/cproc_util.c	2010-05-22 14:42:10.000000000 +0900
-+++ mspdebug-0.8/cproc_util.c	2010-05-23 14:30:24.000000000 +0900
+diff -urp mspdebug/cproc_util.c mspdebug-dis_lowercase/cproc_util.c
+--- mspdebug/cproc_util.c	2010-05-26 11:53:57.000000000 +0900
++++ mspdebug-dis_lowercase/cproc_util.c	2010-05-27 00:05:07.000000000 +0900
 @@ -133,7 +133,7 @@ static int dis_format(stab_t stab, char 
  
  	len = snprintf(buf + total, max_len - total,
@@ -10,10 +10,10 @@ diff -urp mspdebug-0.8-dist/cproc_util.c mspdebug-0.8/cproc_util.c
  	tlen = textlen(buf + total);
  	total += len;
  
-diff -urp mspdebug-0.8-dist/dis.c mspdebug-0.8/dis.c
---- mspdebug-0.8-dist/dis.c	2010-05-22 14:42:10.000000000 +0900
-+++ mspdebug-0.8/dis.c	2010-05-23 14:31:10.000000000 +0900
-@@ -455,66 +455,66 @@ static const struct {
+diff -urp mspdebug/dis.c mspdebug-dis_lowercase/dis.c
+--- mspdebug/dis.c	2010-05-26 11:53:57.000000000 +0900
++++ mspdebug-dis_lowercase/dis.c	2010-05-27 00:06:47.000000000 +0900
+@@ -455,63 +455,63 @@ static const struct {
  	const char      *mnemonic;
  } opcode_names[] = {
  	/* Single operand */
@@ -100,6 +100,7 @@ diff -urp mspdebug-0.8-dist/dis.c mspdebug-0.8/dis.c
 -	{MSP430_OP_SETC,        "SETC"},
 -	{MSP430_OP_SETN,        "SETN"},
 -	{MSP430_OP_SETZ,        "SETZ"},
+-	{MSP430_OP_TST,         "TST"}
 +	{MSP430_OP_ADC,         "adc"},
 +	{MSP430_OP_BR,          "br"},
 +	{MSP430_OP_CLR,         "clr"},
@@ -123,14 +124,10 @@ diff -urp mspdebug-0.8-dist/dis.c mspdebug-0.8/dis.c
 +	{MSP430_OP_SETC,        "setc"},
 +	{MSP430_OP_SETN,        "setn"},
 +	{MSP430_OP_SETZ,        "setz"},
- 	{MSP430_OP_TST,         "TST"}
++	{MSP430_OP_TST,         "tst"}
  };
  
--/* Return the mnemonic for an operation, if possible. */
-+/* return the mnemonic for an operation, if possible. */
- const char *dis_opcode_name(msp430_op_t op)
- {
- 	int i;
+ /* Return the mnemonic for an operation, if possible. */
 @@ -538,10 +538,10 @@ int dis_opcode_from_name(const char *nam
  }
  
