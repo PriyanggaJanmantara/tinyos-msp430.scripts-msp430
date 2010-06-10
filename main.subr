@@ -60,7 +60,7 @@ function main() {
         case $i in
             -h|--help) usage;;
             -*) die "unkown option $i, try --help";;
-            *) cmds[${#cmds[@]}]=$i;;
+            *) cmds+=($i);;
         esac
     done
 
