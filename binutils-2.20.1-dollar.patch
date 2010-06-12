@@ -1,5 +1,5 @@
---- binutils-2.19-dist/gas/config/tc-msp430.h	2007-07-03 04:01:04.000000000 -0700
-+++ binutils-2.19/gas/config/tc-msp430.h	2009-10-13 02:33:35.000000000 -0700
+--- binutils-2.20.1-dist/gas/config/tc-msp430.h	2007-07-03 20:01:04.000000000 +0900
++++ binutils-2.20.1/gas/config/tc-msp430.h	2010-06-12 23:22:20.000000000 +0900
 @@ -99,6 +99,7 @@
  
  #define LEX_DOLLAR 0
