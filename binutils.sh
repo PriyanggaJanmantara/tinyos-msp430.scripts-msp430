@@ -37,7 +37,8 @@ function prepare() {
         || die "apply patch falied"
 
     for p in $scriptdir/$binutils-*.patch; do
-        [[ -f $p ]] && patch -p1 -d $binutils < $p \
+        [[ -f $p ]] || continue
+        patch -p1 -d $binutils < $p \
             || die "patch $p failed"
     done
     return 0

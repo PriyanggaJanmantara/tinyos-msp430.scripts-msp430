@@ -37,16 +37,14 @@ function prepare() {
     cp -rp mspdebug $builddir
 
     for p in $scriptdir/mspdebug-fix_*.patch; do
-        if [[ -f $p ]]; then
-            patch -d $builddir -p1 < $p \
-                || die "patch $p failed"
-        fi
+        [[ -f $p ]] || continue
+        patch -d $builddir -p1 < $p \
+            || die "patch $p failed"
     done
     for p in $scriptdir/mspdebug-enhance_*.patch; do
-        if [[ -f $p ]]; then
-            patch -d $builddir -p1 < $p \
-                || die "patch $p failed"
-        fi
+        [[ -f $p ]] || continue
+        patch -d $builddir -p1 < $p \
+            || die "patch $p failed"
     done
 
     CFLAGS=
@@ -56,10 +54,9 @@ function prepare() {
         CFLAGS+=" $($libusb --cflags)"  # compatibility for libusb
         LDFLAGS+=" $($libusb --libs)"   # compatibility for libusb
         for p in $scriptdir/mspdebug-osx_*.patch; do
-            if [[ -f $p ]]; then
-                patch -d $builddir -p1 < $p \
-                    || die "patch $p failed"
-            fi
+            [[ -f $p ]] || continue
+            patch -d $builddir -p1 < $p \
+                || die "patch $p failed"
         done
     fi
     return 0
