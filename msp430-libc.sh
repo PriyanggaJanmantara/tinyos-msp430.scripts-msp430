@@ -20,48 +20,39 @@
 
 function download() {
     cd $buildtop
-    [[ -d mspgcc ]] || mkdir mspgcc
-    cd mspgcc
-    [[ -d msp430-libc ]] \
-        && { cd msp430-libc; cvs -q up; cd ..; } \
-        || { cvs -q -d $repo_mspgcc co -P msp430-libc \
-        || die "can not fetch cvs repository"; }
-    cd ..
     [[ -d mspgcc4 ]] \
         && { cd mspgcc4; svn up; cd ..; } \
         || { svn co $repo_mspgcc4 mspgcc4 \
         || die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
+    [[ -f $msp430libc.tar.bz2 ]] \
+        || fetch $url_msp430libc/$msp430libc.tar.bz2
     return 0
 }
 
 function prepare() {
     cd $buildtop
     rm -rf $builddir
-    cp -R mspgcc/msp430-libc $builddir
-    patch -p1 -d $builddir < mspgcc4/msp430-libc.patch \
-        || die "apply mspgcc4/msp430-libc.patch failed"
-    mkdir -p $builddir/src/msp1
-    mkdir -p $builddir/src/msp2
+    tar xjf $msp430libc.tar.bz2
+
     return 0
 }
 
 function build() {
+    rm -rf $builddir
+    mv $msp430libc $builddir
     cd $builddir/src
-    rm -f Makefile.new
-    sed -e "s;/usr/local/msp430;$prefix;" Makefile > Makefile.new
-    mv Makefile.new Makefile
-    make -j$(num_cpus) \
+    make -j$(num_cpus) PREFIX=$prefix \
         || die "make failed"
 }
 
 function install() {
     cd $builddir/src
-    sudo make install
+    sudo make install PREFIX=$prefix
 
     cd $buildtop
 
-    sudo rm -f $prefix/lib/libstdc.a
-    sudo echo '!<arch>' > $prefix/lib/libstdc.a
+    echo '!<arch>' > $builddir/0lib.tmp
+    sudo mv $builddir/0lib.tmp $prefix/lib/libstdc++.a
 
     sudo rm -f $prefix/msp430/include/inttypes.h
     sudo ln -s $prefix/msp430/include/sys/inttypes.h $prefix/msp430/include/inttypes.h
