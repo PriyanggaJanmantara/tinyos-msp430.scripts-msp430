@@ -1,19 +1,6 @@
-diff -urp mspdebug/cproc_util.c mspdebug-dis_lowercase/cproc_util.c
---- mspdebug/cproc_util.c	2010-05-26 11:53:57.000000000 +0900
-+++ mspdebug-dis_lowercase/cproc_util.c	2010-05-27 00:05:07.000000000 +0900
-@@ -133,7 +133,7 @@ static int dis_format(stab_t stab, char 
- 
- 	len = snprintf(buf + total, max_len - total,
- 		       "\x1b[36m%s%s\x1b[0m", opname,
--		       insn->is_byte_op ? ".B" : "");
-+		       insn->is_byte_op ? ".b" : "");
- 	tlen = textlen(buf + total);
- 	total += len;
- 
-diff -urp mspdebug/dis.c mspdebug-dis_lowercase/dis.c
---- mspdebug/dis.c	2010-05-26 11:53:57.000000000 +0900
-+++ mspdebug-dis_lowercase/dis.c	2010-05-27 00:06:47.000000000 +0900
-@@ -455,63 +455,63 @@ static const struct {
+--- mspdebug/dis.c.~1~	2010-08-23 23:40:14.000000000 +0900
++++ mspdebug/dis.c	2010-08-23 23:48:33.000000000 +0900
+@@ -830,124 +830,124 @@ static const struct {
  	const char      *mnemonic;
  } opcode_names[] = {
  	/* Single operand */
@@ -100,7 +87,7 @@ diff -urp mspdebug/dis.c mspdebug-dis_lowercase/dis.c
 -	{MSP430_OP_SETC,        "SETC"},
 -	{MSP430_OP_SETN,        "SETN"},
 -	{MSP430_OP_SETZ,        "SETZ"},
--	{MSP430_OP_TST,         "TST"}
+-	{MSP430_OP_TST,         "TST"},
 +	{MSP430_OP_ADC,         "adc"},
 +	{MSP430_OP_BR,          "br"},
 +	{MSP430_OP_CLR,         "clr"},
@@ -124,11 +111,119 @@ diff -urp mspdebug/dis.c mspdebug-dis_lowercase/dis.c
 +	{MSP430_OP_SETC,        "setc"},
 +	{MSP430_OP_SETN,        "setn"},
 +	{MSP430_OP_SETZ,        "setz"},
-+	{MSP430_OP_TST,         "tst"}
++	{MSP430_OP_TST,         "tst"},
+ 
+ 	/* MSP430X double operand (extension word) */
+-	{MSP430_OP_MOVX,        "MOVX"},
+-	{MSP430_OP_ADDX,        "ADDX"},
+-	{MSP430_OP_ADDCX,       "ADDCX"},
+-	{MSP430_OP_SUBCX,       "SUBCX"},
+-	{MSP430_OP_SUBX,        "SUBX"},
+-	{MSP430_OP_CMPX,        "CMPX"},
+-	{MSP430_OP_DADDX,       "DADDX"},
+-	{MSP430_OP_BITX,        "BITX"},
+-	{MSP430_OP_BICX,        "BICX"},
+-	{MSP430_OP_BISX,        "BISX"},
+-	{MSP430_OP_XORX,        "XORX"},
+-	{MSP430_OP_ANDX,        "ANDX"},
++	{MSP430_OP_MOVX,        "movx"},
++	{MSP430_OP_ADDX,        "addx"},
++	{MSP430_OP_ADDCX,       "addcx"},
++	{MSP430_OP_SUBCX,       "subcx"},
++	{MSP430_OP_SUBX,        "subx"},
++	{MSP430_OP_CMPX,        "cmpx"},
++	{MSP430_OP_DADDX,       "daddx"},
++	{MSP430_OP_BITX,        "bitx"},
++	{MSP430_OP_BICX,        "bicx"},
++	{MSP430_OP_BISX,        "bisx"},
++	{MSP430_OP_XORX,        "xorx"},
++	{MSP430_OP_ANDX,        "andx"},
+ 
+ 	/* MSP430X single operand (extension word) */
+-	{MSP430_OP_RRCX,        "RRCX"},
+-	{MSP430_OP_RRUX,        "RRUX"},
+-	{MSP430_OP_SWPBX,       "SWPBX"},
+-	{MSP430_OP_RRAX,        "RRAX"},
+-	{MSP430_OP_SXTX,        "SXTX"},
+-	{MSP430_OP_PUSHX,       "PUSHX"},
++	{MSP430_OP_RRCX,        "rrcx"},
++	{MSP430_OP_RRUX,        "rrux"},
++	{MSP430_OP_SWPBX,       "swpbx"},
++	{MSP430_OP_RRAX,        "rrax"},
++	{MSP430_OP_SXTX,        "sxtx"},
++	{MSP430_OP_PUSHX,       "pushx"},
+ 
+ 	/* MSP430X group 13xx */
+-	{MSP430_OP_CALLA,	"CALLA"},
++	{MSP430_OP_CALLA,	"calla"},
+ 
+ 	/* MSP430X group 14xx */
+-	{MSP430_OP_PUSHM,	"PUSHM"},
+-	{MSP430_OP_POPM,	"POPM"},
++	{MSP430_OP_PUSHM,	"pushm"},
++	{MSP430_OP_POPM,	"popm"},
+ 
+ 	/* MSP430X address instructions */
+-	{MSP430_OP_MOVA,        "MOVA"},
+-	{MSP430_OP_CMPA,        "CMPA"},
+-	{MSP430_OP_SUBA,	"SUBA"},
+-	{MSP430_OP_ADDA,	"ADDA"},
++	{MSP430_OP_MOVA,        "mova"},
++	{MSP430_OP_CMPA,        "cmpa"},
++	{MSP430_OP_SUBA,	"suba"},
++	{MSP430_OP_ADDA,	"adda"},
+ 
+ 	/* MSP430X group 00xx, non-address */
+-	{MSP430_OP_RRCM,        "RRCM"},
+-	{MSP430_OP_RRAM,        "RRAM"},
+-	{MSP430_OP_RLAM,	"RLAM"},
+-	{MSP430_OP_RRUM,	"RRUM"},
++	{MSP430_OP_RRCM,        "rrcm"},
++	{MSP430_OP_RRAM,        "rram"},
++	{MSP430_OP_RLAM,	"rlam"},
++	{MSP430_OP_RRUM,	"rrum"},
+ 
+ 	/* MSP430X emulated instructions */
+-	{MSP430_OP_ADCX,	"ADCX"},
+-	{MSP430_OP_BRA,		"BRA"},
+-	{MSP430_OP_RETA,	"RETA"},
+-	{MSP430_OP_CLRX,	"CLRX"},
+-	{MSP430_OP_DADCX,	"DADCX"},
+-	{MSP430_OP_DECX,	"DECX"},
+-	{MSP430_OP_DECDA,	"DECDA"},
+-	{MSP430_OP_DECDX,	"DECDX"},
+-	{MSP430_OP_INCX,	"INCX"},
+-	{MSP430_OP_INCDA,	"INCDA"},
+-	{MSP430_OP_INVX,	"INVX"},
+-	{MSP430_OP_RLAX,	"RLAX"},
+-	{MSP430_OP_RLCX,	"RLCX"},
+-	{MSP430_OP_SECX,	"SECX"},
+-	{MSP430_OP_TSTA,	"TSTA"},
+-	{MSP430_OP_TSTX,	"TSTX"},
+-	{MSP430_OP_POPX,	"POPX"},
+-	{MSP430_OP_INCDX,	"INCDX"}
++	{MSP430_OP_ADCX,	"adcx"},
++	{MSP430_OP_BRA,		"bra"},
++	{MSP430_OP_RETA,	"reta"},
++	{MSP430_OP_CLRX,	"clrx"},
++	{MSP430_OP_DADCX,	"dadcx"},
++	{MSP430_OP_DECX,	"decx"},
++	{MSP430_OP_DECDA,	"decda"},
++	{MSP430_OP_DECDX,	"decdx"},
++	{MSP430_OP_INCX,	"incx"},
++	{MSP430_OP_INCDA,	"incda"},
++	{MSP430_OP_INVX,	"invx"},
++	{MSP430_OP_RLAX,	"rlax"},
++	{MSP430_OP_RLCX,	"rlcx"},
++	{MSP430_OP_SECX,	"secx"},
++	{MSP430_OP_TSTA,	"tsta"},
++	{MSP430_OP_TSTX,	"tstx"},
++	{MSP430_OP_POPX,	"popx"},
++	{MSP430_OP_INCDX,	"incdx"}
  };
  
  /* Return the mnemonic for an operation, if possible. */
-@@ -538,10 +538,10 @@ int dis_opcode_from_name(const char *nam
+@@ -974,10 +974,10 @@ int dis_opcode_from_name(const char *nam
  }
  
  static const char *const msp430_reg_names[] = {
@@ -143,3 +238,17 @@ diff -urp mspdebug/dis.c mspdebug-dis_lowercase/dis.c
  };
  
  int dis_reg_from_name(const char *name)
+--- mspdebug/output_util.c.~1~	2010-08-23 23:40:14.000000000 +0900
++++ mspdebug/output_util.c	2010-08-23 23:47:00.000000000 +0900
+@@ -123,9 +123,9 @@ static int dis_format(const struct msp43
+ 		opname = "???";
+ 
+ 	if (insn->dsize == MSP430_DSIZE_BYTE)
+-		suffix = ".B";
++		suffix = ".b";
+ 	else if (insn->dsize == MSP430_DSIZE_AWORD)
+-		suffix = ".A";
++		suffix = ".a";
+ 	else if (insn->dsize == MSP430_DSIZE_UNKNOWN)
+ 		suffix = ".?";
+ 
