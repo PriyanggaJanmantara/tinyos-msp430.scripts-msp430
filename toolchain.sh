@@ -23,8 +23,10 @@ PATH=$prefix/bin:$PATH
 modules="binutils gcc msp430-libc gdb mspdebug"
 
 if [[ $# -eq 0 ]]; then
-    for module in $modules; do
-	$scriptdir/$module.sh download build install
+    for cmd in download build install; do
+        for module in $modules; do
+	    $scriptdir/$module.sh $cmd
+        done
     done
 elif [[ $1 == "cleanup" ]]; then
     for module in $modules; do
