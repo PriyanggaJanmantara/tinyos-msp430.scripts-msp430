@@ -42,7 +42,7 @@ url_msp430libc=http://sourceforge.net/projects/mspgcc4/files/msp430-libc
 
 # mspdebug
 repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
-mspdebug=mspdebug-0.8
+mspdebug=mspdebug-0.12
 
 # gdbproxy
 #repo_gdbproxy=:pserver:anonymous@gdbproxy.cvs.sourceforge.net:/cvsroot/gdbproxy
