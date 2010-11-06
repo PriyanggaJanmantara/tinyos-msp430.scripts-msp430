@@ -21,9 +21,9 @@
 function download() {
     cd $buildtop
     [[ -d mspgcc4 ]] \
-        && { cd mspgcc4; svn up; cd ..; } \
-        || { svn co $repo_mspgcc4 mspgcc4 \
-        || die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
+        && { cd mspgcc4; git pull; cd ..; } \
+        || { git clone $repo_mspgcc4 mspgcc4 \
+        || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $msp430libc.tar.bz2 ]] \
         || fetch $url_msp430libc/$msp430libc.tar.bz2
     return 0
