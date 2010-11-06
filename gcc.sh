@@ -30,9 +30,9 @@ function download() {
         || die "can not fetch gcc project from $repo_mspgcc repository"; }
     cd ..
     [[ -d mspgcc4 ]] \
-        && { cd mspgcc4; svn up; cd ..; } \
-        || { svn co $repo_mspgcc4 mspgcc4 \
-        || die "can not fetch mspgcc4 project from $repo_mspgcc4 repository"; }
+        && { cd mspgcc4; git pull; cd ..; } \
+        || { git clone $repo_mspgcc4 mspgcc4 \
+        || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $gcccore.tar.bz2 ]] \
         || fetch $url_gnu/gcc/$gcc/$gcccore.tar.bz2 \
         || die "can not download $gcccore.tar.bz2 from $url_gnu"
@@ -47,7 +47,7 @@ function download() {
 
 function prepare() {
     cd $buildtop
-    { tar cf - --exclude=.svn -C mspgcc4/ports gcc-4.x \
+    { tar cf - --exclude=.git -C mspgcc4/ports gcc-4.x \
         | tar xvf - -C mspgcc/gcc; } \
         || die "copy gcc-4.x port failed"
     if [[ -f mspgcc4/msp$mspgccdir.patch ]]; then

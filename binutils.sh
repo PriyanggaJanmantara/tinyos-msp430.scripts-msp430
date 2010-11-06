@@ -21,9 +21,9 @@
 function download() {
     cd $buildtop
     [[ -d mspgcc4 ]] \
-        && { cd mspgcc4; svn up; cd ..; } \
-        || { svn co $repo_mspgcc4 mspgcc4 \
-        || die "can not fetch from mspgcc4 repository"; }
+        && { cd mspgcc4; git pull; cd ..; } \
+        || { git clone $repo_mspgcc4 mspgcc4 \
+        || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $binutils.tar.bz2 ]] \
         || fetch $url_gnu/binutils/$binutils.tar.bz2
     return 0
