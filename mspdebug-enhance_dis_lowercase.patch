@@ -1,5 +1,7 @@
---- mspdebug/dis.c.~1~	2010-08-23 23:40:14.000000000 +0900
-+++ mspdebug/dis.c	2010-08-23 23:48:33.000000000 +0900
+diff --git a/dis.c b/dis.c
+index b18428b..c421ebc 100644
+--- a/dis.c
++++ b/dis.c
 @@ -830,124 +830,124 @@ static const struct {
  	const char      *mnemonic;
  } opcode_names[] = {
@@ -223,7 +225,7 @@
  };
  
  /* Return the mnemonic for an operation, if possible. */
-@@ -974,10 +974,10 @@ int dis_opcode_from_name(const char *nam
+@@ -974,10 +974,10 @@ int dis_opcode_from_name(const char *name)
  }
  
  static const char *const msp430_reg_names[] = {
@@ -238,9 +240,11 @@
  };
  
  int dis_reg_from_name(const char *name)
---- mspdebug/output_util.c.~1~	2010-08-23 23:40:14.000000000 +0900
-+++ mspdebug/output_util.c	2010-08-23 23:47:00.000000000 +0900
-@@ -123,9 +123,9 @@ static int dis_format(const struct msp43
+diff --git a/output_util.c b/output_util.c
+index 6bbb36c..698826e 100644
+--- a/output_util.c
++++ b/output_util.c
+@@ -123,9 +123,9 @@ static int dis_format(const struct msp430_instruction *insn)
  		opname = "???";
  
  	if (insn->dsize == MSP430_DSIZE_BYTE)

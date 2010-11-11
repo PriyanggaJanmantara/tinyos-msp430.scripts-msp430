@@ -1,6 +1,8 @@
---- mspdebug/Makefile.~1~	2010-09-26 17:55:39.000000000 +0900
-+++ mspdebug/Makefile	2010-10-16 00:47:00.000000000 +0900
-@@ -60,7 +60,7 @@
+diff --git a/Makefile b/Makefile
+index bd8cd5e..eccd4c7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -60,7 +60,7 @@ mspdebug: main.o fet.o rf2500.o dis.o uif.o olimex.o ihex.o elf32.o stab.o \
  	  reader.o vector.o output_util.o expr.o fet_error.o binfile.o \
  	  fet_db.o usbutil.o titext.o srec.o device.o coff.o opdb.o output.o \
  	  cmddb.o stdcmd.o prog.o flash_bsl.o
