@@ -29,15 +29,15 @@ mspgccdir=gcc-4.x
 
 # gnu
 url_gnu=ftp://ftp.gnu.org/pub/gnu
-binutils=binutils-2.20.1
+binutils=binutils-2.21
 gcc=gcc-4.4.5
 gmp=gmp-4.3.2
 mpfr=mpfr-2.4.2
 url_mpfr=http://www.mpfr.org
-gdb=gdb-7.1
+gdb=gdb-7.2
 
 # msp430-libc
-msp430libc=msp430-libc-ti_20101114
+msp430libc=msp430-libc-ti_20110130
 url_msp430libc=http://sourceforge.net/projects/mspgcc4/files/msp430-libc
 
 # mspdebug
