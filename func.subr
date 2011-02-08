@@ -56,8 +56,11 @@ function add_path() {
     shift
     for p in "$@"; do
         [[ -d $p ]] || continue
+        p=${p%/}
         case $path in
-        *$p*);;
+        $p:*) ;;
+        *:$p:*) ;;
+        *:$p) ;;
         *) path=$p:$path;;
         esac
     done
@@ -69,7 +72,7 @@ function is_osx() {
 }
 
 function is_osx_snow_leopard() {
-    [[ is_osx && $(hwprefs os_class) = "Snow Leopard" ]]
+    [[ $(is_osx) && $(hwprefs os_class) = "Snow Leopard" ]]
 }
 
 function is_linux() {
