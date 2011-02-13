@@ -1,0 +1,15 @@
+--- msp430-libc-ti_20110130/src/Makefile.~1~	2011-01-31 03:58:21.000000000 +0900
++++ msp430-libc-ti_20110130/src/Makefile	2011-02-14 03:58:00.000000000 +0900
+@@ -20,9 +20,9 @@
+ SRC_ROOT := .
+ BUILD_ROOT = ./Build
+ 
+-override CC = msp430-gcc
+-override AS = msp430-gcc -x assembler-with-cpp
+-override AR = msp430-ar
++override CC = $(bindir)/msp430-gcc
++override AS = $(bindir)/msp430-gcc -x assembler-with-cpp
++override AR = $(bindir)/msp430-ar
+ RM = rm
+ INSTALL = install -c -m644 $^/
+ 
