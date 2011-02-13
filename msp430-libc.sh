@@ -49,13 +49,17 @@ function prepare() {
     cd $buildtop
     rm -rf $builddir
     tar xjf $msp430libc.tar.bz2
+    mv $msp430libc $builddir
 
+    for p in $scriptdir/msp430-libc-fix_*.patch; do
+        [[ -f $p ]] || continue
+        patch -d $builddir -p1 < $p \
+            || die "patch $p failed"
+    done
     return 0
 }
 
 function build() {
-    rm -rf $builddir
-    mv $msp430libc $builddir
     cd $builddir/src
     make -j$(num_cpus) PREFIX=$prefix \
         || die "make failed"
