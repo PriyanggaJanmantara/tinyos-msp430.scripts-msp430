@@ -53,7 +53,7 @@ url_mpfr=http://www.mpfr.org
 gdb=gdb-7.2
 
 # msp430-libc
-msp430libc=msp430-libc-ti_20110130
+msp430libc=msp430-libc-ti_20110213
 url_msp430libc=http://sourceforge.net/projects/mspgcc4/files/msp430-libc
 
 # mspdebug
