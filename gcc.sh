@@ -84,6 +84,12 @@ function prepare() {
     fi
     { tar cf - --exclude=CVS -C mspgcc/gcc/$mspgccdir . | tar xvf - -C $gcc; } \
         || die "copy $mspgccdir failed"
+
+    for p in $scriptdir/$gcccore-fix_*.patch; do
+        [[ -f $p ]] || continue
+        patch -d $gcc -p1 < $p \
+            || die "patch $p failed"
+    done
     return 0
 }
 
