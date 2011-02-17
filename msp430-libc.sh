@@ -51,7 +51,7 @@ function prepare() {
     tar xjf $msp430libc.tar.bz2
     mv $msp430libc $builddir
 
-    for p in $scriptdir/msp430-libc-fix_*.patch; do
+    for p in $scriptdir/$msp430libc-fix_*.patch; do
         [[ -f $p ]] || continue
         patch -d $builddir -p1 < $p \
             || die "patch $p failed"
