@@ -41,8 +41,7 @@ function download() {
         || { git clone $repo_mspgcc4 mspgcc4 \
         || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $gdb.tar.bz2 ]] \
-        || fetch $url_gnu/gdb/$gdb.tar.bz2 \
-        || die "can not down load $gdb.tar.bz2 from $url_gnu"
+        || fetch $url_gdb $gdb.tar.bz2
     return 0
 }
 
