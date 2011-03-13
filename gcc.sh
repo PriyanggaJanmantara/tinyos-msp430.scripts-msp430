@@ -34,8 +34,6 @@
 
 . $(dirname $0)/main.subr
 
-gcccore=$(echo $gcc | sed 's/gcc-/gcc-core-/')
-
 function download() {
     cd $buildtop
     [[ -d mspgcc ]] || mkdir mspgcc
@@ -50,14 +48,11 @@ function download() {
         || { git clone $repo_mspgcc4 mspgcc4 \
         || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $gcccore.tar.bz2 ]] \
-        || fetch $url_gnu/gcc/$gcc/$gcccore.tar.bz2 \
-        || die "can not download $gcccore.tar.bz2 from $url_gnu"
+        || fetch $url_gcccore $gcccore.tar.bz2
     [[ -f $gmp.tar.bz2 ]] \
-        || fetch $url_gnu/gmp/$gmp.tar.bz2 \
-        || die "can not download $gmp.tar.bz2 from $url_gnu"
+        || fetch $url_gmp $gmp.tar.bz2 
     [[ -f $mpfr.tar.bz2 ]] \
-        || fetch $url_mpfr/$mpfr/$mpfr.tar.bz2 \
-        || die "can not download $mpfr.tar.bz2 from $url_mpfr"
+        || fetch $url_mpfr $mpfr.tar.bz2
     return 0
 }
 

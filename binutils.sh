@@ -41,7 +41,7 @@ function download() {
         || { git clone $repo_mspgcc4 mspgcc4 \
         || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
     [[ -f $binutils.tar.bz2 ]] \
-        || fetch $url_gnu/binutils/$binutils.tar.bz2
+        || fetch $url_binutils $binutils.tar.bz2
     return 0
 }
 
