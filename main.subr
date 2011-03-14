@@ -55,6 +55,7 @@ function fetch() {
 
 which cvs >/dev/null || die "missing cvs"
 which svn >/dev/null || die "missing svn"
+which git >/dev/null || die "missing git"
 
 scriptdir=$(absolute_path $(dirname $0))
 scriptname=$(basename $0 .sh)
