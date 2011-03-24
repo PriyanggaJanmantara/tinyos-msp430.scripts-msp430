@@ -36,27 +36,15 @@
 
 function download() {
     cd $buildtop
-    [[ -d mspgcc4 ]] \
-        && { cd mspgcc4; git pull; cd ..; } \
-        || { git clone $repo_mspgcc4 mspgcc4 \
-        || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
-    [[ -f $binutils.tar.bz2 ]] \
-        || fetch $url_binutils $binutils.tar.bz2
+    [[ -d mspgcc ]] || mkdir mspgcc
+    [[ -d mspgcc/binutils ]] \
+        && { cd mspgcc/binutils; git pull; cd $buildtop; } \
+        || { git clone $repo_binutils mspgcc/binutils \
+        || die "can not clone binutils project from $repo_binutils repository"; }
     return 0
 }
 
 function prepare() {
-    cd $buildtop
-    tar xjf $binutils.tar.bz2
-
-    patch -p1 -d $binutils < mspgcc4/$binutils.patch \
-        || die "apply patch falied"
-
-    for p in $scriptdir/$binutils-fix_*.patch; do
-        [[ -f $p ]] || continue
-        patch -d $binutils -p1 < $p \
-            || die "patch $p failed"
-    done
     return 0
 }
 
@@ -64,11 +52,8 @@ function build() {
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-
-    disable_werror=
-    is_osx_snow_leopard && disable_werror=--disable-werror
-    ../$binutils/configure --target=$target --prefix=$prefix \
-        --disable-nls $disable_werror \
+    ../mspgcc/binutils/configure --target=$target --prefix=$prefix \
+        --disable-nls \
         || die "configure failed"
     make -j$(num_cpus) \
         || die "make failed"
@@ -81,7 +66,7 @@ function install() {
 
 function cleanup() {
     cd $buildtop
-    rm -rf $builddir $binutils
+    rm -rf $builddir
 }
 
 main "$@"

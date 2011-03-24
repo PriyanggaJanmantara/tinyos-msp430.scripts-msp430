@@ -37,54 +37,40 @@
 function download() {
     cd $buildtop
     [[ -d mspgcc ]] || mkdir mspgcc
-    cd mspgcc
-    [[ -d gcc ]] \
-        && { cd gcc; cvs -q up; cd ..; } \
-        || { cvs -q -d $repo_mspgcc co -P gcc \
-        || die "can not fetch gcc project from $repo_mspgcc repository"; }
-    cd ..
-    [[ -d mspgcc4 ]] \
-        && { cd mspgcc4; git pull; cd ..; } \
-        || { git clone $repo_mspgcc4 mspgcc4 \
-        || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
-    [[ -f $gcccore.tar.bz2 ]] \
-        || fetch $url_gcccore $gcccore.tar.bz2
+    [[ -d mspgcc/gcc ]] \
+        && { cd mspgcc/gcc; git pull; cd $buildtop; } \
+        || { git clone $repo_gcc mspgcc/gcc \
+        || die "can not clone gcc project from $repo_gcc repository"; }
     [[ -f $gmp.tar.bz2 ]] \
         || fetch $url_gmp $gmp.tar.bz2 
     [[ -f $mpfr.tar.bz2 ]] \
         || fetch $url_mpfr $mpfr.tar.bz2
+    [[ -f $mpc.tar.gz ]] \
+        || fetch $url_mpc $mpc.tar.gz
     return 0
 }
 
 function prepare() {
     cd $buildtop
-    { tar cf - --exclude=.git -C mspgcc4/ports gcc-4.x \
-        | tar xvf - -C mspgcc/gcc; } \
-        || die "copy gcc-4.x port failed"
-    if [[ -f mspgcc4/msp$mspgccdir.patch ]]; then
-        patch -d mspgcc/gcc/$mspgccdir -p1 < mspgcc4/msp$mspgccdir.patch \
-            || die "apply msp$mspgccdir.patch failed"
-    fi
 
-    tar xjf $gcccore.tar.bz2
-    tar xjf $gmp.tar.bz2 -C $gcc
-    [[ -d $gcc/gmp ]] && rm -rf $gcc/gmp
-    mv $gcc/$gmp $gcc/gmp
-    tar xjf $mpfr.tar.bz2 -C $gcc
-    [[ -d $gcc/mpfr ]] && rm -rf $gcc/mpfr
-    mv $gcc/$mpfr $gcc/mpfr
-    if [[ -f mspgcc4/$gcc.patch ]]; then
-        patch -d $gcc -p1 < mspgcc4/$gcc.patch \
-            || die "apply $gcc.patch failed"
-    fi
-    { tar cf - --exclude=CVS -C mspgcc/gcc/$mspgccdir . | tar xvf - -C $gcc; } \
-        || die "copy $mspgccdir failed"
+    tar xjf $gmp.tar.bz2
+    [[ -d mspgcc/gcc/gmp ]] && rm -f mspgcc/gcc/gmp
+    ln -s $buildtop/$gmp mspgcc/gcc/gmp
 
-    for p in $scriptdir/$gcccore-fix_*.patch; do
+    tar xjf $mpfr.tar.bz2
+    [[ -d mspgcc/gcc/mpfr ]] && rm -f mspgcc/gcc/mpfr
+    ln -s $buildtop/$mpfr mspgcc/gcc/mpfr
+
+    tar xzf $mpc.tar.gz
+    [[ -d mspgcc/gcc/mpc ]] && rm -f mspgcc/gcc/mpc
+    ln -s $buildtop/$mpc mspgcc/gcc/mpc
+
+    for p in $scriptdir/gcc-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $gcc -p1 < $p \
+        patch -d mspgcc/gcc -p1 < $p \
             || die "patch $p failed"
     done
+
     return 0
 }
 
@@ -92,9 +78,9 @@ function build() {
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../$gcc/configure --target=$target --prefix=$prefix \
+    ../mspgcc/gcc/configure --target=$target --prefix=$prefix \
         --mandir=$prefix/share/man --infodir=$prefix/share/info \
-        --with-gnu-as --with-gnu-ld \
+        --enable-languages="c,c++" --with-gnu-as --with-gnu-ld \
         --disable-nls \
         || die "configure failed"
     make -j$(num_cpus) \
@@ -107,8 +93,11 @@ function install() {
 }
 
 function cleanup() {
+    cd $buildtop/mspgcc/gcc
+    rm -f gmp mpfr mpc
+    git checkout .
     cd $buildtop
-    rm -rf $builddir $gcc
+    rm -rf $builddir $gmp $mpfr $mpc
 }
 
 main "$@"

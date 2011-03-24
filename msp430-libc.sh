@@ -36,51 +36,45 @@
 
 function download() {
     cd $buildtop
-    [[ -d mspgcc4 ]] \
-        && { cd mspgcc4; git pull; cd ..; } \
-        || { git clone $repo_mspgcc4 mspgcc4 \
-        || die "can not clone mspgcc4 project from $repo_mspgcc4 repository"; }
-    [[ -f $msp430libc.tar.bz2 ]] \
-        || fetch $url_msp430libc $msp430libc.tar.bz2
+    [[ -d mspgcc ]] || mkdir mspgcc
+    [[ -d mspgcc/msp430-libc ]] \
+        && { cd mspgcc/msp430-libc; git pull; cd $buildtop; } \
+        || { git clone $repo_msp430libc mspgcc/msp430-libc \
+        || die "can not clone msp430-libc project from $repo_msp430libc repository"; }
+    [[ -d mspgcc/msp430mcu ]] \
+        && { cd mspgcc/msp430mcu; git pull; cd $buildtop; } \
+        || { git clone $repo_msp430mcu mspgcc/msp430mcu \
+        || die "can not clone msp430mcu project from $repo_msp430mcu repository"; }
     return 0
 }
 
 function prepare() {
-    cd $buildtop
-    rm -rf $builddir
-    tar xjf $msp430libc.tar.bz2
-    mv $msp430libc $builddir
-
-    for p in $scriptdir/$msp430libc-fix_*.patch; do
+    for p in $scriptdir/msp430mcu-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $builddir -p1 < $p \
+        patch -d mspgcc/msp430mcu -p1 < $p \
             || die "patch $p failed"
     done
+
     return 0
 }
 
 function build() {
-    cd $builddir/src
+    cd $buildtop/mspgcc/msp430-libc/src
+    rm -rf Build
     make -j$(num_cpus) PREFIX=$prefix \
         || die "make failed"
 }
 
 function install() {
-    cd $builddir/src
+    cd $buildtop/mspgcc/msp430-libc/src
     sudo make install PREFIX=$prefix
-
-    cd $buildtop
-
-    echo '!<arch>' > $builddir/0lib.tmp
-    sudo mv $builddir/0lib.tmp $prefix/lib/libstdc++.a
-
-    sudo rm -f $prefix/msp430/include/inttypes.h
-    sudo ln -s $prefix/msp430/include/sys/inttypes.h $prefix/msp430/include/inttypes.h
+    cd $buildtop/mspgcc/msp430mcu
+    sudo sh scripts/install.sh $prefix $buildtop/mspgcc
 }
 
 function cleanup() {
-    cd $buildtop
-    rm -rf $builddir
+    cd $buildtop/mspgcc/msp430-libc/src
+    rm -rf Build
 }
 
 main "$@"
