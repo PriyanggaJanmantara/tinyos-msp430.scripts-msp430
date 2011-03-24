@@ -1,0 +1,13 @@
+diff --git a/scripts/install.sh b/scripts/install.sh
+index 6ee027e..873cf1a 100755
+--- a/scripts/install.sh
++++ b/scripts/install.sh
+@@ -2,7 +2,7 @@
+ #
+ 
+ PREFIX=${1:-/msp430/install/dev}
+-ROOT=${MSP430_ROOT:-/msp430}/msp430mcu
++ROOT=${2:-${MSP430_ROOT:-/msp430}}/msp430mcu
+ UPSTREAM=${ROOT}/upstream
+ ANALYSIS=${ROOT}/analysis
+ SCRIPTS=${ROOT}/scripts

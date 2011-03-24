@@ -1,0 +1,11 @@
+diff --git a/gcc/config/msp430/msp430-gcc.c b/gcc/config/msp430/msp430-gcc.c
+index 244cc94..d9b3431 100644
+--- a/gcc/config/msp430/msp430-gcc.c
++++ b/gcc/config/msp430/msp430-gcc.c
+@@ -51,5 +51,5 @@ msp430_mculdscriptpath (int argc, const char **argv)
+   if (0 == argc)
+     return 0;
+   return concat (PREFIX, dir_sep, DEFAULT_TARGET_MACHINE, dir_sep, "lib",
+-		 dir_sep, "ldscripts", dir_sep, argv[argc - 1], 0);
++		 dir_sep, "ldscripts", dir_sep, argv[argc - 1], NULL);
+ }

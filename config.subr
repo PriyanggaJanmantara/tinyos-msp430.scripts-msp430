@@ -38,28 +38,25 @@ target=msp430
 # install prefix
 prefix=/opt/msp430
 
-# mspgcc & mspgcc4
-repo_mspgcc=:pserver:anonymous@mspgcc.cvs.sourceforge.net:/cvsroot/mspgcc
-repo_mspgcc4=git://mspgcc4.git.sourceforge.net/gitroot/mspgcc4/mspgcc4
-mspgccdir=gcc-4.x
+# mspgcc
+repo_mspgcc=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
+repo_binutils=$repo_mspgcc/binutils
+repo_gcc=$repo_mspgcc/gcc
+repo_msp430libc=$repo_mspgcc/msp430-libc
+repo_msp430mcu=$repo_mspgcc/msp430mcu
 
 # gnu
-binutils=binutils-2.21
-gcc=gcc-4.4.5
-gcccore=${gcc/gcc-/gcc-core-}
 gmp=gmp-4.3.2
 mpfr=mpfr-2.4.2
 gdb=gdb-7.2
 url_gnu=ftp://ftp.gnu.org/pub/gnu
-url_binutils=$url_gnu/binutils/$binutils.tar.bz2
-url_gcccore=$url_gnu/gcc/$gcc/$gcccore.tar.bz2
 url_gmp=$url_gnu/gmp/$gmp.tar.bz2
 url_gdb=$url_gnu/gdb/$gdb.tar.bz2
 url_mpfr=http://www.mpfr.org/$mpfr/$mpfr.tar.bz2
 
-# msp430-libc
-msp430libc=msp430-libc-ti_20110213
-url_msp430libc=http://sourceforge.net/projects/mspgcc4/files/msp430-libc/$msp430libc.tar.bz2/download
+# mpc
+mpc=mpc-0.8.2
+url_mpc=http://www.multiprecision.org/mpc/download/$mpc.tar.gz
 
 # mspdebug
 repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
