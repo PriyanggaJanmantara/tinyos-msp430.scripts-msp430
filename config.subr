@@ -58,13 +58,12 @@ url_mpfr=http://www.mpfr.org/$mpfr/$mpfr.tar.bz2
 mpc=mpc-0.8.2
 url_mpc=http://www.multiprecision.org/mpc/download/$mpc.tar.gz
 
+# mspgcc4 for gdb
+repo_mspgcc4=git://mspgcc4.git.sourceforge.net/gitroot/mspgcc4/mspgcc4
+
 # mspdebug
 repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
 mspdebug=mspdebug-0.12
-
-# gdbproxy
-#repo_gdbproxy=:pserver:anonymous@gdbproxy.cvs.sourceforge.net:/cvsroot/gdbproxy
-#gdbproxy=gdbproxy
 
 # Local Variables:
 # indent-tabs-mode: nil
