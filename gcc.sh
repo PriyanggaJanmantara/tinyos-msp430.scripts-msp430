@@ -38,7 +38,7 @@ function download() {
     cd $buildtop
     [[ -d mspgcc ]] || mkdir mspgcc
     [[ -d mspgcc/gcc ]] \
-        && { cd mspgcc/gcc; git pull; cd $buildtop; } \
+        && { cd mspgcc/gcc; git checkout .; git pull; cd $buildtop; } \
         || { git clone $repo_gcc mspgcc/gcc \
         || die "can not clone gcc project from $repo_gcc repository"; }
     [[ -f $gmp.tar.bz2 ]] \

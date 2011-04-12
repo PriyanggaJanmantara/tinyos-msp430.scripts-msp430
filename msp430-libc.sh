@@ -42,7 +42,7 @@ function download() {
         || { git clone $repo_msp430libc mspgcc/msp430-libc \
         || die "can not clone msp430-libc project from $repo_msp430libc repository"; }
     [[ -d mspgcc/msp430mcu ]] \
-        && { cd mspgcc/msp430mcu; git pull; cd $buildtop; } \
+        && { cd mspgcc/msp430mcu; git checkout .; git pull; cd $buildtop; } \
         || { git clone $repo_msp430mcu mspgcc/msp430mcu \
         || die "can not clone msp430mcu project from $repo_msp430mcu repository"; }
     return 0
@@ -75,6 +75,8 @@ function install() {
 function cleanup() {
     cd $buildtop/mspgcc/msp430-libc/src
     rm -rf Build
+    cd $buildtop/mspgcc/msp430mcu
+    git checkout .
 }
 
 main "$@"
