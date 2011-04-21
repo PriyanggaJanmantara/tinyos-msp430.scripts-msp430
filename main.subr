@@ -43,7 +43,7 @@ function fetch() {
     [[ $# -eq 2 ]] || die "usage: fetch url out_file"
     local url=$1 out=$2
     if [[ $fetch = "wget" ]]; then
-        $fetch -o $out $url \
+        $fetch -O $out $url \
             || die "can not fetch $url"
     elif [[ $fetch = "curl" ]]; then
         $fetch -o $out -L $url \
