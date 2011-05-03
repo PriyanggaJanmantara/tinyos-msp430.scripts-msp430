@@ -1,0 +1,59 @@
+From d1903991382ba47cbd70434b9ed6da97454aa133 Mon Sep 17 00:00:00 2001
+From: Peter A. Bigot <pabigot@users.sourceforge.net>
+Date: Tue, 3 May 2011 06:15:17 -0500
+Subject: [PATCH] SF 3296698: unoptimized code for bit field/union
+
+If structures aren't aligned to word boundaries, the compiler generates some
+really bad code.
+---
+ gcc/config/msp430/msp430.h                  |    2 +-
+ gcc/testsuite/gcc.target/msp430/sf3296698.c |   24 ++++++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletions(-)
+ create mode 100644 gcc/testsuite/gcc.target/msp430/sf3296698.c
+
+diff --git a/gcc/config/msp430/msp430.h b/gcc/config/msp430/msp430.h
+index 22fcb7f..a7cf8cb 100644
+--- a/gcc/config/msp430/msp430.h
++++ b/gcc/config/msp430/msp430.h
+@@ -242,7 +242,7 @@ extern int target_flags;
+ #define BIGGEST_ALIGNMENT 16
+ #define MINIMUM_ATOMIC_ALIGNMENT BITS_PER_UNIT
+ #define EMPTY_FIELD_BOUNDARY 16
+-/* DEFAULT: #define STRUCTURE_SIZE_BOUNDARY BITS_PER_UNIT */
++#define STRUCTURE_SIZE_BOUNDARY 16
+ #define STRICT_ALIGNMENT 1
+ /* DEFAULT: #define MAX_FIXED_MODE_SIZE GET_MODE_BITSIZE (DImode) */
+ 
+diff --git a/gcc/testsuite/gcc.target/msp430/sf3296698.c b/gcc/testsuite/gcc.target/msp430/sf3296698.c
+new file mode 100644
+index 0000000..8bf7ca6
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/msp430/sf3296698.c
+@@ -0,0 +1,24 @@
++/* { dg-do compile } */
++/* { dg-options "-Os" } */
++
++typedef struct {
++    int bit:1;
++    int :15;
++} type_x;
++
++static inline type_x getX() {
++    union {
++      int f;
++      type_x t;
++    } c;
++    c.f = *(int *)0x100;
++    return c.t;
++}
++
++extern void subr();
++
++void func() {
++  /* { dg-final { scan-assembler "\n\tbit.b\t#1,&256\n\tjeq\t.L1\n\tcall\t#subr\n" } } */
++  if (getX().bit)
++    subr();
++}
+-- 
+1.7.2.3
+
