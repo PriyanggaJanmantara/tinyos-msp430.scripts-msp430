@@ -44,22 +44,19 @@ repo_binutils=$repo_mspgcc/binutils
 repo_gcc=$repo_mspgcc/gcc
 repo_msp430libc=$repo_mspgcc/msp430-libc
 repo_msp430mcu=$repo_mspgcc/msp430mcu
+repo_gdb=$repo_mspgcc/gdb
+branch_gdb=legacy/release/gdb-7.2
 
 # gnu
 gmp=gmp-4.3.2
 mpfr=mpfr-2.4.2
-gdb=gdb-7.2
 url_gnu=ftp://ftp.gnu.org/pub/gnu
 url_gmp=$url_gnu/gmp/$gmp.tar.bz2
-url_gdb=$url_gnu/gdb/$gdb.tar.bz2
 url_mpfr=http://www.mpfr.org/$mpfr/$mpfr.tar.bz2
 
 # mpc
 mpc=mpc-0.8.2
 url_mpc=http://www.multiprecision.org/mpc/download/$mpc.tar.gz
-
-# mspgcc4 for gdb
-repo_mspgcc4=git://mspgcc4.git.sourceforge.net/gitroot/mspgcc4/mspgcc4
 
 # mspdebug
 repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
