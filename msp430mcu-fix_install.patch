@@ -1,13 +1,13 @@
 diff --git a/scripts/install.sh b/scripts/install.sh
-index 6ee027e..873cf1a 100755
+index 3d71e63..6a6768d 100755
 --- a/scripts/install.sh
 +++ b/scripts/install.sh
-@@ -2,7 +2,7 @@
- #
+@@ -4,7 +4,7 @@
+ # This file is part of msp430mcu (http://sourceforge.net/projects/mspgcc/)
  
  PREFIX=${1:-/msp430/install/dev}
--ROOT=${MSP430_ROOT:-/msp430}/msp430mcu
-+ROOT=${2:-${MSP430_ROOT:-/msp430}}/msp430mcu
- UPSTREAM=${ROOT}/upstream
- ANALYSIS=${ROOT}/analysis
- SCRIPTS=${ROOT}/scripts
+-MSP430MCU_ROOT=${MSP430MCU_ROOT:-${MSP430_ROOT:-/msp430}/msp430mcu}
++MSP430MCU_ROOT=${2:-${MSP430MCU_ROOT:-${MSP430_ROOT:-/msp430}/msp430mcu}}
+ UPSTREAM=${MSP430MCU_ROOT}/upstream
+ ANALYSIS=${MSP430MCU_ROOT}/analysis
+ SCRIPTS=${MSP430MCU_ROOT}/scripts

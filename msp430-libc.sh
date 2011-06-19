@@ -69,7 +69,7 @@ function install() {
     cd $buildtop/mspgcc/msp430-libc/src
     sudo make install PREFIX=$prefix
     cd $buildtop/mspgcc/msp430mcu
-    sudo sh scripts/install.sh $prefix $buildtop/mspgcc
+    sudo sh scripts/install.sh $prefix $buildtop/mspgcc/msp430mcu
 }
 
 function cleanup() {
