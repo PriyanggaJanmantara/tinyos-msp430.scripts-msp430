@@ -36,11 +36,17 @@
 
 function download() {
     cd $buildtop
-    [[ -d mspgcc ]] || mkdir mspgcc
-    [[ -d mspgcc/gcc ]] \
-        && { cd mspgcc/gcc; git checkout .; git pull; cd $buildtop; } \
-        || { git clone $repo_gcc mspgcc/gcc \
-        || die "can not clone gcc project from $repo_gcc repository"; }
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        [[ -f $gcc.tar.bz2 ]] \
+            || fetch $url_gcc $gcc.tar.bz2 \
+            || die "can not fetch gcc from $url_gcc"
+    else
+        [[ -d $gcc ]] \
+            && { cd $gcc; git checkout .; git pull; cd $buildtop; } \
+            || { git clone $repo_gcc $gcc \
+            || die "can not clone gcc project from $repo_gcc repository"; }
+    fi
     [[ -f $gmp.tar.bz2 ]] \
         || fetch $url_gmp $gmp.tar.bz2 
     [[ -f $mpfr.tar.bz2 ]] \
@@ -51,34 +57,39 @@ function download() {
 }
 
 function prepare() {
-    cd $buildtop
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        rm -rf $gcc
+        tar xjf $gcc.tar.bz2
+        patch -p1 -d $gcc < $patch_gcc
+    fi
 
     tar xjf $gmp.tar.bz2
-    [[ -d mspgcc/gcc/gmp ]] && rm -f mspgcc/gcc/gmp
-    ln -s $buildtop/$gmp mspgcc/gcc/gmp
+    [[ -d $gcc/gmp ]] && rm -f $gcc/gmp
+    ln -s $buildtop/$gmp $gcc/gmp
 
     tar xjf $mpfr.tar.bz2
-    [[ -d mspgcc/gcc/mpfr ]] && rm -f mspgcc/gcc/mpfr
-    ln -s $buildtop/$mpfr mspgcc/gcc/mpfr
+    [[ -d $gcc/mpfr ]] && rm -f $gcc/mpfr
+    ln -s $buildtop/$mpfr $gcc/mpfr
 
     tar xzf $mpc.tar.gz
-    [[ -d mspgcc/gcc/mpc ]] && rm -f mspgcc/gcc/mpc
-    ln -s $buildtop/$mpc mspgcc/gcc/mpc
+    [[ -d $gcc/mpc ]] && rm -f $gcc/mpc
+    ln -s $buildtop/$mpc $gcc/mpc
 
     for p in $scriptdir/gcc-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d mspgcc/gcc -p1 < $p \
+        patch -d $gcc -p1 < $p \
             || die "patch $p failed"
     done
-
     return 0
 }
 
 function build() {
+    msp430_prepare
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../mspgcc/gcc/configure --target=$target --prefix=$prefix \
+    ../$gcc/configure --target=$target --prefix=$prefix \
         --mandir=$prefix/share/man --infodir=$prefix/share/info \
         --enable-languages="c,c++" --with-gnu-as --with-gnu-ld \
         --disable-nls \
@@ -93,9 +104,14 @@ function install() {
 }
 
 function cleanup() {
-    cd $buildtop/mspgcc/gcc
-    rm -f gmp mpfr mpc
-    git checkout .
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        rm -rf $buildtop/$gcc
+    else
+        cd $buildtop/$gcc
+        rm -f gmp mpfr mpc
+        git checkout .
+    fi
     cd $buildtop
     rm -rf $builddir $gmp $mpfr $mpc
 }

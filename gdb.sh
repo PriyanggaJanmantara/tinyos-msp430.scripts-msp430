@@ -35,21 +35,31 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    cd $buildtop
-    [[ -d mspgcc ]] || mkdir mspgcc
-    [[ -d mspgcc/gdb ]] \
-        && { cd mspgcc/gdb; git checkout .; git pull; cd $buildtop; } \
-        || { git clone $repo_gdb mspgcc/gdb -b $branch_gdb \
-        || die "can not clone gdb project from $repo_gdb repository"; }
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        [[ -f $gdb.tar.bz2 ]] \
+            || fetch $url_gdb $gdb.tar.bz2 \
+            || die "can not fetch gdb from $url_gdb"
+    else
+        [[ -d $gdb ]] \
+            && { cd $gdb; git checkout .; git pull; cd $buildtop; } \
+            || { git clone $repo_gdb $gdb -b $branch_gdb \
+            || die "can not clone gdb project from $repo_gdb repository"; }
+    fi
     return 0
 }
 
 function prepare() {
-    cd $buildtop
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        rm -rf $gdb
+        tar xjf $gdb.tar.bz2
+        patch -p1 -d $gdb < $patch_gdb
+    fi
 
     for p in $scriptdir/gdb-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d mspgcc/gdb -p1 < $p \
+        patch -d $gdb -p1 < $p \
             || die "patch $p failed"
     done
 
@@ -57,10 +67,11 @@ function prepare() {
 }
 
 function build() {
+    msp430_prepare
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../mspgcc/gdb/configure --target=$target --prefix=$prefix \
+    ../$gdb/configure --target=$target --prefix=$prefix \
         --disable-nls \
         || die "configure failed"
     make -j$(num_cpus) \
@@ -73,9 +84,13 @@ function install() {
 }
 
 function cleanup() {
-    cd $buildtop/mspgcc/gdb
-    git checkout .
-    cd $buildtop
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        rm -rf $gdb
+    else
+        cd $buildtop/$gdb
+        git checkout .
+    fi
     rm -rf $builddir
 }
 
