@@ -35,24 +35,38 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    cd $buildtop
-    [[ -d mspgcc ]] || mkdir mspgcc
-    [[ -d mspgcc/binutils ]] \
-        && { cd mspgcc/binutils; git pull; cd $buildtop; } \
-        || { git clone $repo_binutils mspgcc/binutils \
-        || die "can not clone binutils project from $repo_binutils repository"; }
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        [[ -f $binutils.tar.bz2 ]] \
+            || fetch $url_binutils $binutils.tar.bz2 \
+            || die "can not fetch binutils from $url_binutils"
+    else
+        [[ -d $binutils ]] \
+            && { cd $binutils; git pull; cd $buildtop; } \
+            || { git clone $repo_binutils $binutils \
+            || die "can not clone binutils project from $repo_binutils repository"; }
+    fi
     return 0
 }
 
 function prepare() {
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        patch_binutils=$(msp430_patch_file binutils)
+        binutils=$(msp430_gnu_version $patch_binutils)
+        rm -rf $binutils
+        tar xjf $binutils.tar.bz2
+        patch -p1 -d $binutils < $patch_binutils
+    fi
     return 0
 }
 
 function build() {
+    msp430_prepare
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
-    ../mspgcc/binutils/configure --target=$target --prefix=$prefix \
+    ../$binutils/configure --target=$target --prefix=$prefix \
         --disable-nls \
         || die "configure failed"
     make -j$(num_cpus) \
@@ -65,7 +79,13 @@ function install() {
 }
 
 function cleanup() {
-    cd $buildtop
+    msp430_prepare
+    if [[ $release_mspgcc ]]; then
+        rm -rf $binutils
+    else
+        cd $binutils
+        git checkout .
+    fi
     rm -rf $builddir
 }
 

@@ -38,19 +38,30 @@ target=msp430
 # install prefix
 prefix=/opt/msp430
 
+release_mspgcc=mspgcc-20110716
+#release_mspgcc=
+
+release_mspdebug=mspdebug-0.16
+#release_mspdebug=
+
 # mspgcc
-repo_mspgcc=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
-repo_binutils=$repo_mspgcc/binutils
-repo_gcc=$repo_mspgcc/gcc
-repo_msp430libc=$repo_mspgcc/msp430-libc
-repo_msp430mcu=$repo_mspgcc/msp430mcu
-repo_gdb=$repo_mspgcc/gdb
-branch_gdb=legacy/release/gdb-7.2
+url_gnu=ftp://ftp.gnu.org/pub/gnu
+if [[ $release_mspgcc ]]; then
+    url_mspgcc_base=http://sourceforge.net/projects/mspgcc/files
+    url_mspgcc=$url_mspgcc_base/mspgcc/$release_mspgcc.tar.bz2/download
+else
+    repo_mspgcc=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
+    repo_binutils=$repo_mspgcc/binutils
+    repo_gcc=$repo_mspgcc/gcc
+    repo_msp430libc=$repo_mspgcc/msp430-libc
+    repo_msp430mcu=$repo_mspgcc/msp430mcu
+    repo_gdb=$repo_mspgcc/gdb
+    branch_gdb=legacy/release/gdb-7.2
+fi
 
 # gnu
 gmp=gmp-4.3.2
 mpfr=mpfr-2.4.2
-url_gnu=ftp://ftp.gnu.org/pub/gnu
 url_gmp=$url_gnu/gmp/$gmp.tar.bz2
 url_mpfr=http://www.mpfr.org/$mpfr/$mpfr.tar.bz2
 
@@ -59,8 +70,70 @@ mpc=mpc-0.8.2
 url_mpc=http://www.multiprecision.org/mpc/download/$mpc.tar.gz
 
 # mspdebug
-repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
-mspdebug=mspdebug-0.12
+if [[ $release_mspdebug ]]; then
+    mspdebug=$release_mspdebug
+    url_mspdebug=http://sourceforge.net/projects/mspdebug/files/$mspdebug.tar.gz/download
+else
+    repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
+    mspdebug=mspdebug
+fi
+
+function msp430_patch_file() {
+    echo $release_mspgcc/msp430-$1-*.patch
+}
+
+function msp430_gnu_version() {
+    local tmp=$(basename $1 .patch)
+    tmp=${tmp#msp430-}
+    echo ${tmp%-*}
+}
+
+function msp430_version() {
+    echo $1-$(basename $(cat $release_mspgcc/$1.version))
+}
+
+function msp430_prepare() {
+    cd $buildtop
+    if [[ $release_mspgcc ]]; then
+        if [[ ! -d $release_mspgcc ]]; then
+            [[ -f $release_mspgcc.tar.bz2 ]] \
+                || fetch $url_mspgcc $release_mspgcc.tar.bz2 \
+                || die "can not fetch mspgcc from $url_mspgcc"
+            tar xjf $release_mspgcc.tar.bz2
+        fi
+
+        patch_binutils=$(msp430_patch_file binutils)
+        binutils=$(msp430_gnu_version $patch_binutils)
+        url_binutils=$url_gnu/binutils/$binutils.tar.bz2
+
+        patch_gcc=$(msp430_patch_file gcc)
+        gcc=$(msp430_gnu_version $patch_gcc)
+        url_gcc=$url_gnu/gcc/$gcc/$gcc.tar.bz2
+
+        msp430libc=$(msp430_version msp430-libc)
+        url_msp430libc=$url_mspgcc_base/msp430-libc/$msp430libc.tar.bz2
+        msp430mcu=$(msp430_version msp430mcu)
+        url_msp430mcu=$url_mspgcc_base/msp430mcu/$msp430mcu.tar.bz2
+
+        patch_gdb=$(msp430_patch_file gdb)
+        gdb=$(msp430_gnu_version $patch_gdb)
+        url_gdb=$url_gnu/gdb/$gdb.tar.bz2
+    else
+        binutils=mspgcc-binutils
+        gcc=mspgcc-gcc
+        msp430libc=mspgcc-msp430-libc
+        msp430mcu=mspgcc-msp430mcu
+        gdb=mspgcc-gdb
+        if [[ -d mspgcc ]]; then
+            mv -f mspgcc/binutils $binutils
+            mv -f mspgcc/gcc $gcc
+            mv -f mspgcc/msp430-libc $msp430libc
+            mv -f mspgcc/msp430mcu $msp430mcu
+            mv -f mspgcc/gdb $gdb
+            rm -rf mspgcc
+        fi
+    fi
+}
 
 # Local Variables:
 # indent-tabs-mode: nil
