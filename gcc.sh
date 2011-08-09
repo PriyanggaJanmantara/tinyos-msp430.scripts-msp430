@@ -36,7 +36,6 @@
 
 function download() {
     cd $buildtop
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         [[ -f $gcc.tar.bz2 ]] \
             || fetch $url_gcc $gcc.tar.bz2 \
@@ -57,7 +56,6 @@ function download() {
 }
 
 function prepare() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         rm -rf $gcc
         tar xjf $gcc.tar.bz2
@@ -85,7 +83,6 @@ function prepare() {
 }
 
 function build() {
-    msp430_prepare
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
@@ -104,7 +101,6 @@ function install() {
 }
 
 function cleanup() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         rm -rf $buildtop/$gcc
     else

@@ -35,7 +35,6 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         [[ -f $gdb.tar.bz2 ]] \
             || fetch $url_gdb $gdb.tar.bz2 \
@@ -50,7 +49,6 @@ function download() {
 }
 
 function prepare() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         rm -rf $gdb
         tar xjf $gdb.tar.bz2
@@ -67,7 +65,6 @@ function prepare() {
 }
 
 function build() {
-    msp430_prepare
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
@@ -84,7 +81,6 @@ function install() {
 }
 
 function cleanup() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         rm -rf $gdb
     else

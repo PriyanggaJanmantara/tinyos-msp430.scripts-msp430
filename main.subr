@@ -59,10 +59,10 @@ which git >/dev/null || die "missing git"
 
 scriptdir=$(absolute_path $(dirname $0))
 scriptname=$(basename $0 .sh)
+buildtop=$PWD
 
 . $scriptdir/config.subr
 
-buildtop=$PWD
 builddir=$PWD/build-$target-$scriptname
 
 function usage {

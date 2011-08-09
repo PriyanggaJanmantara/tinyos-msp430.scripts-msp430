@@ -35,7 +35,6 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         [[ -f $msp430libc.tar.bz2 ]] \
             || fetch $url_msp430libc $msp430libc.tar.bz2 \
@@ -57,7 +56,6 @@ function download() {
 }
 
 function prepare() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         rm -rf $msp430libc
         tar xjf $msp430libc.tar.bz2
@@ -81,7 +79,6 @@ function prepare() {
 }
 
 function build() {
-    msp430_prepare
     cd $msp430libc/src
     rm -rf Build
     make -j$(num_cpus) PREFIX=$prefix \
@@ -89,7 +86,6 @@ function build() {
 }
 
 function install() {
-    msp430_prepare
     cd $buildtop/$msp430libc/src
     sudo make install PREFIX=$prefix
     cd $buildtop/$msp430mcu
@@ -97,7 +93,6 @@ function install() {
 }
 
 function cleanup() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         cd $buildtop
         rm -rf $msp430libc $msp430mcu
