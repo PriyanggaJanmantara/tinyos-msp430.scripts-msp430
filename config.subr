@@ -95,12 +95,11 @@ function msp430_version() {
 function msp430_prepare() {
     cd $buildtop
     if [[ $release_mspgcc ]]; then
-        if [[ ! -d $release_mspgcc ]]; then
-            [[ -f $release_mspgcc.tar.bz2 ]] \
-                || fetch $url_mspgcc $release_mspgcc.tar.bz2 \
-                || die "can not fetch mspgcc from $url_mspgcc"
-            tar xjf $release_mspgcc.tar.bz2
-        fi
+        [[ -f $release_mspgcc.tar.bz2 ]] \
+            || fetch $url_mspgcc $release_mspgcc.tar.bz2 \
+            || die "can not fetch mspgcc from $url_mspgcc"
+        [[ ! -d $release_mspgcc ]] \
+            || tar xjf $release_mspgcc.tar.bz2
 
         patch_binutils=$(msp430_patch_file binutils)
         binutils=$(msp430_gnu_version $patch_binutils)
@@ -134,6 +133,8 @@ function msp430_prepare() {
         fi
     fi
 }
+
+msp430_prepare
 
 # Local Variables:
 # indent-tabs-mode: nil

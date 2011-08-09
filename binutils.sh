@@ -35,7 +35,6 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         [[ -f $binutils.tar.bz2 ]] \
             || fetch $url_binutils $binutils.tar.bz2 \
@@ -50,10 +49,7 @@ function download() {
 }
 
 function prepare() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
-        patch_binutils=$(msp430_patch_file binutils)
-        binutils=$(msp430_gnu_version $patch_binutils)
         rm -rf $binutils
         tar xjf $binutils.tar.bz2
         patch -p1 -d $binutils < $patch_binutils
@@ -62,7 +58,6 @@ function prepare() {
 }
 
 function build() {
-    msp430_prepare
     rm -rf $builddir
     mkdir $builddir
     cd $builddir
@@ -79,7 +74,6 @@ function install() {
 }
 
 function cleanup() {
-    msp430_prepare
     if [[ $release_mspgcc ]]; then
         rm -rf $binutils
     else
