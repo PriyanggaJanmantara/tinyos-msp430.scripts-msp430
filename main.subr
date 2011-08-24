@@ -62,6 +62,9 @@ scriptname=$(basename $0 .sh)
 buildtop=$PWD
 
 . $scriptdir/config.subr
+if declare -F config_prepare >/dev/null; then
+    set -x; config_prepare; set +x
+fi
 
 builddir=$PWD/build-$target-$scriptname
 
