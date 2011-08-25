@@ -35,21 +35,21 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    if [[ $release_mspgcc ]]; then
-        [[ -f $gdb.tar.bz2 ]] \
-            || fetch $url_gdb $gdb.tar.bz2 \
-            || die "can not fetch gdb from $url_gdb"
-    else
+    if [[ $release_mspgcc == current ]]; then
         [[ -d $gdb ]] \
             && { cd $gdb; git checkout .; git pull; cd $buildtop; } \
             || { git clone $repo_gdb $gdb -b $branch_gdb \
             || die "can not clone gdb project from $repo_gdb repository"; }
+    else
+        fetch $url_gdb $gdb.tar.bz2
     fi
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc ]]; then
+    if [[ $release_mspgcc == current ]]; then
+        :
+    else
         rm -rf $gdb
         tar xjf $gdb.tar.bz2
         patch -p1 -d $gdb < $patch_gdb
@@ -81,11 +81,11 @@ function install() {
 }
 
 function cleanup() {
-    if [[ $release_mspgcc ]]; then
-        rm -rf $gdb
-    else
+    if [[ $release_mspgcc == current ]]; then
         cd $buildtop/$gdb
         git checkout .
+    else
+        rm -rf $gdb
     fi
     rm -rf $builddir
 }

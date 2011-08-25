@@ -35,14 +35,7 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    if [[ $release_mspgcc ]]; then
-        [[ -f $msp430libc.tar.bz2 ]] \
-            || fetch $url_msp430libc $msp430libc.tar.bz2 \
-            || die "can not fetch msp430-libc from $url_msp430libc"
-        [[ -f $msp430mcu.tar.bz2 ]] \
-            || fetch $url_msp430mcu $msp430mcu.tar.bz2 \
-            || die "can not fetch msp430mcu from $url_msp430mcu"
-    else
+    if [[ $release_mspgcc == current ]]; then
         [[ -d $msp430libc ]] \
             && { cd $msp430libc; git pull; cd $buildtop; } \
             || { git clone $repo_msp430libc $msp430libc \
@@ -51,16 +44,25 @@ function download() {
             && { cd $msp430mcu; git checkout .; git pull; cd $buildtop; } \
             || { git clone $repo_msp430mcu $msp430mcu \
             || die "can not clone msp430mcu project from $repo_msp430mcu repository"; }
+    else
+        fetch $url_msp430libc $msp430libc.tar.bz2
+        fetch $url_msp430mcu $msp430mcu.tar.bz2
+        msp430_download_patches $msp430libc
+        msp430_download_patches $msp430mcu
     fi
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc ]]; then
+    if [[ $release_mspgcc == current ]]; then
+        :
+    else
         rm -rf $msp430libc
         tar xjf $msp430libc.tar.bz2
+        msp430_apply_patches $msp430libc $msp430libc
         rm -rf $msp430mcu
         tar xjf $msp430mcu.tar.bz2
+        msp430_apply_patches $msp430mcu $msp430mcu
     fi
 
     for p in $scriptdir/msp430-libc-fix_*.patch; do
@@ -93,16 +95,16 @@ function install() {
 }
 
 function cleanup() {
-    if [[ $release_mspgcc ]]; then
-        cd $buildtop
-        rm -rf $msp430libc $msp430mcu
-    else
+    if [[ $release_mspgcc == current ]]; then
         cd $buildtop/$msp430libc/src
         rm -rf Build
         git checkout .
 
         cd $buildtop/$msp430mcu
         git checkout .
+    else
+        cd $buildtop
+        rm -rf $msp430libc $msp430mcu
     fi
 }
 
