@@ -35,24 +35,26 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    if [[ $release_mspgcc ]]; then
-        [[ -f $binutils.tar.bz2 ]] \
-            || fetch $url_binutils $binutils.tar.bz2 \
-            || die "can not fetch binutils from $url_binutils"
-    else
+    if [[ $release_mspgcc == current ]]; then
         [[ -d $binutils ]] \
             && { cd $binutils; git pull; cd $buildtop; } \
             || { git clone $repo_binutils $binutils \
             || die "can not clone binutils project from $repo_binutils repository"; }
+    else
+        fetch $url_binutils $binutils.tar.bz2
+        msp430_download_patches msp430-$binutils
     fi
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc ]]; then
+    if [[ $release_mspgcc == current ]]; then
+        :
+    else
         rm -rf $binutils
         tar xjf $binutils.tar.bz2
-        patch -p1 -d $binutils < $patch_binutils
+        cat $patch_binutils | patch -p1 -d $binutils
+        msp430_apply_patches msp430-$binutils $binutils
     fi
     return 0
 }
@@ -74,11 +76,11 @@ function install() {
 }
 
 function cleanup() {
-    if [[ $release_mspgcc ]]; then
-        rm -rf $binutils
-    else
+    if [[ $release_mspgcc == current ]]; then
         cd $binutils
         git checkout .
+    else
+        rm -rf $binutils
     fi
     rm -rf $builddir
 }

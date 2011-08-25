@@ -36,30 +36,29 @@
 
 function download() {
     cd $buildtop
-    if [[ $release_mspgcc ]]; then
-        [[ -f $gcc.tar.bz2 ]] \
-            || fetch $url_gcc $gcc.tar.bz2 \
-            || die "can not fetch gcc from $url_gcc"
-    else
+    if [[ $release_mspgcc == current ]]; then
         [[ -d $gcc ]] \
             && { cd $gcc; git checkout .; git pull; cd $buildtop; } \
             || { git clone $repo_gcc $gcc \
             || die "can not clone gcc project from $repo_gcc repository"; }
+    else
+        fetch $url_gcc $gcc.tar.bz2
+        msp430_download_patches msp430-$gcc
     fi
-    [[ -f $gmp.tar.bz2 ]] \
-        || fetch $url_gmp $gmp.tar.bz2 
-    [[ -f $mpfr.tar.bz2 ]] \
-        || fetch $url_mpfr $mpfr.tar.bz2
-    [[ -f $mpc.tar.gz ]] \
-        || fetch $url_mpc $mpc.tar.gz
+    fetch $url_gmp $gmp.tar.bz2
+    fetch $url_mpfr $mpfr.tar.bz2
+    fetch $url_mpc $mpc.tar.gz
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc ]]; then
+    if [[ $release_mspgcc == current ]]; then
+        :
+    else
         rm -rf $gcc
         tar xjf $gcc.tar.bz2
-        patch -p1 -d $gcc < $patch_gcc
+        cat $patch_gcc | patch -p1 -d $gcc
+        msp430_apply_patches msp430-$gcc $gcc
     fi
 
     tar xjf $gmp.tar.bz2
@@ -76,7 +75,7 @@ function prepare() {
 
     for p in $scriptdir/gcc-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $gcc -p1 < $p \
+        cat $p | patch -d $gcc -p1 \
             || die "patch $p failed"
     done
     return 0
@@ -101,12 +100,12 @@ function install() {
 }
 
 function cleanup() {
-    if [[ $release_mspgcc ]]; then
-        rm -rf $buildtop/$gcc
-    else
+    if [[ $release_mspgcc == current ]]; then
         cd $buildtop/$gcc
         rm -f gmp mpfr mpc
         git checkout .
+    else
+        rm -rf $buildtop/$gcc
     fi
     cd $buildtop
     rm -rf $builddir $gmp $mpfr $mpc

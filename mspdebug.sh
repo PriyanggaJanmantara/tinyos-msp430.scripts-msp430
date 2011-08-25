@@ -40,15 +40,13 @@ libusb=$(which libusb-legacy-config || which libusb-config)
 
 function download() {
     cd $buildtop
-    if [[ $release_mspdebug ]]; then
-        [[ -f $mspdebug.tar.gz ]] \
-            || fetch $url_mspdebug $mspdebug.tar.gz \
-            || die "can not fetch mspdebug from $url_mspdebug"
-    else
+    if [[ $release_mspdebug == current ]]; then
         [[ -d $mspdebug ]] \
             && { cd $mspdebug; git pull; cd ..; } \
             || { git clone $repo_mspdebug \
             || die "can not fetch mspdebug project from $repo_mspdebug"; }
+    else
+        fetch $url_mspdebug $mspdebug.tar.gz
     fi
     return 0
 }
@@ -56,7 +54,9 @@ function download() {
 function prepare() {
     cd $buildtop
     rm -rf $builddir
-    if [[ $release_mspdebug ]]; then
+    if [[ $release_mspdebug == current ]]; then
+        :
+    else
         rm -rf $mspdebug
         tar xzf $mspdebug.tar.gz
         mv $mspdebug $builddir
