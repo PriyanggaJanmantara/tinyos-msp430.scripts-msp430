@@ -145,6 +145,8 @@ function config_prepare() {
         patch_binutils=$(msp430_patch_file binutils)
         binutils=$(msp430_gnu_version $patch_binutils)
         url_binutils=$url_gnu/binutils/$binutils.tar.bz2
+        [[ $binutils == binutils-2.21.1 ]] \
+            && url_binutils=${url_binutils/2.21.1/2.21.1a}
 
         patch_gcc=$(msp430_patch_file gcc)
         gcc=$(msp430_gnu_version $patch_gcc)
