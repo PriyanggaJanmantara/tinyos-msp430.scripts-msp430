@@ -153,6 +153,8 @@ function config_prepare() {
 
         gdb=$(mspgcc::gnu_version gdb)
         url_gdb=$url_gnu/gdb/$gdb.tar.bz2
+        [[ $gdb == gdb-7.2 ]] \
+            && url_gdb=${url_gdb/7.2/7.2a}
 
         url_patches_base=$url_mspgcc_base/Patches/LTS/${release_mspgcc#mspgcc-}
         patchesdir=$buildtop/$release_mspgcc-patches
