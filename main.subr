@@ -34,7 +34,6 @@
 
 . $(dirname ${BASH_ARGV[0]})/func.subr
 
-which cvs >/dev/null || die "missing cvs"
 which svn >/dev/null || die "missing svn"
 which git >/dev/null || die "missing git"
 
