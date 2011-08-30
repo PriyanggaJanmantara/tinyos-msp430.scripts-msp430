@@ -43,7 +43,7 @@ function download() {
             || die "can not clone gcc project from $repo_gcc repository"; }
     else
         fetch $url_gcc $gcc.tar.bz2
-        msp430_download_patches msp430-$gcc
+        mspgcc::download_patches msp430-$gcc
     fi
     fetch $url_gmp $gmp.tar.bz2
     fetch $url_mpfr $mpfr.tar.bz2
@@ -57,8 +57,8 @@ function prepare() {
     else
         rm -rf $gcc
         tar xjf $gcc.tar.bz2
-        cat $patch_gcc | patch -p1 -d $gcc
-        msp430_apply_patches msp430-$gcc $gcc
+        mspgcc::gnu_patch gcc | patch -p1 -d $gcc
+        mspgcc::apply_patches msp430-$gcc $gcc
     fi
 
     tar xjf $gmp.tar.bz2

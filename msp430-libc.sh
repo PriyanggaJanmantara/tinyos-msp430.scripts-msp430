@@ -47,8 +47,8 @@ function download() {
     else
         fetch $url_msp430libc $msp430libc.tar.bz2
         fetch $url_msp430mcu $msp430mcu.tar.bz2
-        msp430_download_patches $msp430libc
-        msp430_download_patches $msp430mcu
+        mspgcc::download_patches $msp430libc
+        mspgcc::download_patches $msp430mcu
     fi
     return 0
 }
@@ -59,10 +59,10 @@ function prepare() {
     else
         rm -rf $msp430libc
         tar xjf $msp430libc.tar.bz2
-        msp430_apply_patches $msp430libc $msp430libc
+        mspgcc::apply_patches $msp430libc $msp430libc
         rm -rf $msp430mcu
         tar xjf $msp430mcu.tar.bz2
-        msp430_apply_patches $msp430mcu $msp430mcu
+        mspgcc::apply_patches $msp430mcu $msp430mcu
     fi
 
     for p in $scriptdir/msp430-libc-fix_*.patch; do

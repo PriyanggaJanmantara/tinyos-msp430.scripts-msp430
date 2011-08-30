@@ -34,31 +34,6 @@
 
 . $(dirname ${BASH_ARGV[0]})/func.subr
 
-fetch="-none-"
-which wget >/dev/null && fetch="wget"
-which curl >/dev/null && fetch="curl"
-[[ $fetch = "-none-" ]] && die "missing wget or curl"
-
-function fetch() {
-    [[ $# -eq 2 ]] || die "usage: fetch url out_file"
-    local url=$1 out=$2
-    [[ -f $out ]] \
-        && return
-    case $fetch in
-        wget)
-            $fetch -O $out $url \
-                || die "can not fetch $out from $url"
-            ;;
-        curl)
-            $fetch -o $out -L $url \
-                || die "can not fetch $out from $url"
-            ;;
-        *)
-            die "unknown fetch method: $fetch"
-            ;;
-    esac
-}
-
 which cvs >/dev/null || die "missing cvs"
 which svn >/dev/null || die "missing svn"
 which git >/dev/null || die "missing git"
@@ -68,14 +43,10 @@ scriptname=$(basename $0 .sh)
 buildtop=$PWD
 
 . $scriptdir/config.subr
-if declare -F config_prepare >/dev/null; then
-    set -x; config_prepare; set +x
-fi
-
-builddir=$PWD/build-$target-$scriptname
+builddir=$buildtop/build-$target-$scriptname
 
 function usage {
-    die "usage: $0 [--help|-h] [download|build|install|cleanup...]"
+    die "usage: $0 [--help|-h] [download|build|install|clean|cleanup...]"
 }
 
 function main() {
@@ -90,6 +61,10 @@ function main() {
         esac
     done
 
+    if declare -F config_prepare >/dev/null; then
+        set -x; config_prepare; set +x
+    fi
+
     PATH=$prefix/bin:$PATH
     if [[ ${#cmds[@]} -eq 0 ]]; then
         set -x; download && prepare && build; set +x
@@ -103,7 +78,7 @@ function main() {
                 set -x; prepare && build || die "build failed"; set +x;;
             install)
                 set -x; install || die "install failed"; set +x;;
-            cleanup)
+            clean|cleanup)
                 set -x; cleanup; set +x;;
             *)
                 die "unknown command '$cmd'";;

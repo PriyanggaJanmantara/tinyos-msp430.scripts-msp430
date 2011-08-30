@@ -42,7 +42,7 @@ function download() {
             || die "can not clone binutils project from $repo_binutils repository"; }
     else
         fetch $url_binutils $binutils.tar.bz2
-        msp430_download_patches msp430-$binutils
+        mspgcc::download_patches msp430-$binutils
     fi
     return 0
 }
@@ -53,8 +53,8 @@ function prepare() {
     else
         rm -rf $binutils
         tar xjf $binutils.tar.bz2
-        cat $patch_binutils | patch -p1 -d $binutils
-        msp430_apply_patches msp430-$binutils $binutils
+        mspgcc::gnu_patch binutils | patch -p1 -d $binutils
+        mspgcc::apply_patches msp430-$binutils $binutils
     fi
     return 0
 }

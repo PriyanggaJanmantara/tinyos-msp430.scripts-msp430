@@ -52,7 +52,7 @@ function prepare() {
     else
         rm -rf $gdb
         tar xjf $gdb.tar.bz2
-        patch -p1 -d $gdb < $patch_gdb
+        mspgcc::gnu_patch gdb | patch -p1 -d $gdb
     fi
 
     for p in $scriptdir/gdb-fix_*.patch; do

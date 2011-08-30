@@ -91,6 +91,22 @@ function num_cpus() {
     echo $((n * 2))
 }
 
+function fetch() {
+    [[ $# -eq 2 ]] || die "usage: fetch url out_file"
+    local url=$1 out=$2
+    [[ -f $out ]] \
+        && return
+    if is_lunux; then
+        wget -O $out $url \
+            || die "can not fetch $out from $url"
+    elif is_osx; then
+        curl -o $out -L $url \
+            || die "can not fetch $out from $url"
+    else
+        die "unknown host architecture"
+    fi
+}
+
 # Local Variables:
 # indent-tabs-mode: nil
 # End:

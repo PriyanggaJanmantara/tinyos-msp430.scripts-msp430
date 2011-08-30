@@ -78,21 +78,22 @@ else
     url_mspdebug=http://sourceforge.net/projects/mspdebug/files/$mspdebug.tar.gz/download
 fi
 
-function msp430_patch_file() {
-    echo $release_mspgcc/msp430-$1-*.patch
+function mspgcc::gnu_patch() {
+    tar xjf $release_mspgcc.tar.bz2 -O $release_mspgcc/msp430-$1-*.patch 2>/dev/null
 }
 
-function msp430_gnu_version() {
-    local tmp=$(basename $1 .patch)
-    tmp=${tmp#msp430-}
+function mspgcc::gnu_version() {
+    local tmp=$(tar tjf $release_mspgcc.tar.bz2 $release_mspgcc/msp430-$1-*.patch 2>/dev/null)
+    tmp=${tmp%.patch}
+    tmp=${tmp#$release_mspgcc/msp430-}
     echo ${tmp%-*}
 }
 
-function msp430_libc_version() {
-    echo $1-$(basename $(cat $release_mspgcc/$1.version))
+function mspgcc::libc_version() {
+    echo $1-$(tar xjf $release_mspgcc.tar.bz2 -O $release_mspgcc/$1.version)
 }
 
-function msp430_list_patches() {
+function mspgcc::list_patches() {
     local prog=$1
     cat $patchesdir/README.rst | \
     while read line; do
@@ -102,18 +103,16 @@ function msp430_list_patches() {
     sort
 }
 
-function msp430_download_patches() {
+function mspgcc::download_patches() {
     local prog=$1
-    for p in $(msp430_list_patches $prog); do
-        [[ -f $patchesdir/$p ]] \
-            || fetch $url_patches_base/$p/download $patchesdir/$p \
-            || die "can not fetch $p from $url_patches_base"
+    for p in $(mspgcc::list_patches $prog); do
+        fetch $url_patches_base/$p/download $patchesdir/$p
     done
 }
 
-function msp430_apply_patches() {
+function mspgcc::apply_patches() {
     local prog=$1 dir=$2
-    for p in $(msp430_list_patches $prog); do
+    for p in $(mspgcc::list_patches $prog); do
         cat $patchesdir/$p | patch -p1 -d $dir \
             || dir "patch $p failed"
     done
@@ -128,6 +127,7 @@ function config_prepare() {
         msp430mcu=mspgcc-msp430mcu
         gdb=mspgcc-gdb
         if [[ -d mspgcc ]]; then
+        # update build directory for compatibility
             mv -f mspgcc/binutils $binutils
             mv -f mspgcc/gcc $gcc
             mv -f mspgcc/msp430-libc $msp430libc
@@ -136,38 +136,29 @@ function config_prepare() {
             rm -rf mspgcc
         fi
     else
-        [[ -f $release_mspgcc.tar.bz2 ]] \
-            || fetch $url_mspgcc $release_mspgcc.tar.bz2 \
-            || die "can not fetch mspgcc from $url_mspgcc"
-        [[ -d $release_mspgcc ]] \
-            || tar xjf $release_mspgcc.tar.bz2
+        fetch $url_mspgcc $release_mspgcc.tar.bz2
 
-        patch_binutils=$(msp430_patch_file binutils)
-        binutils=$(msp430_gnu_version $patch_binutils)
+        binutils=$(mspgcc::gnu_version binutils)
         url_binutils=$url_gnu/binutils/$binutils.tar.bz2
         [[ $binutils == binutils-2.21.1 ]] \
             && url_binutils=${url_binutils/2.21.1/2.21.1a}
 
-        patch_gcc=$(msp430_patch_file gcc)
-        gcc=$(msp430_gnu_version $patch_gcc)
+        gcc=$(mspgcc::gnu_version gcc)
         url_gcc=$url_gnu/gcc/$gcc/$gcc.tar.bz2
 
-        msp430libc=$(msp430_libc_version msp430-libc)
+        msp430libc=$(mspgcc::libc_version msp430-libc)
         url_msp430libc=$url_mspgcc_base/msp430-libc/$msp430libc.tar.bz2
-        msp430mcu=$(msp430_libc_version msp430mcu)
+        msp430mcu=$(mspgcc::libc_version msp430mcu)
         url_msp430mcu=$url_mspgcc_base/msp430mcu/$msp430mcu.tar.bz2
 
-        patch_gdb=$(msp430_patch_file gdb)
-        gdb=$(msp430_gnu_version $patch_gdb)
+        gdb=$(mspgcc::gnu_version gdb)
         url_gdb=$url_gnu/gdb/$gdb.tar.bz2
 
         url_patches_base=$url_mspgcc_base/Patches/LTS/${release_mspgcc#mspgcc-}
         patchesdir=$buildtop/$release_mspgcc-patches
         [[ -d $patchesdir ]] \
             || mkdir -p $patchesdir
-        [[ -f $patchesdir/README.rst ]] \
-            || fetch $url_patches_base/README.rst/download $patchesdir/README.rst \
-            || die "can not fetch README.rst from $url_patches_base"
+        fetch $url_patches_base/README.rst/download $patchesdir/README.rst
     fi
 }
 
