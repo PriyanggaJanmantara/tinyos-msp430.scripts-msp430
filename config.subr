@@ -79,7 +79,9 @@ else
 fi
 
 function mspgcc::gnu_patch() {
-    tar xjf $release_mspgcc.tar.bz2 -O $release_mspgcc/msp430-$1-*.patch 2>/dev/null
+    local wild
+    is_linux && wild=--wildcards
+    tar xjf $release_mspgcc.tar.bz2 -O $wild $release_mspgcc/msp430-$1-*.patch 2>/dev/null
 }
 
 function mspgcc::gnu_version() {
