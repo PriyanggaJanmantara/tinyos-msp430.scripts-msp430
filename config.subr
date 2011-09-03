@@ -83,7 +83,9 @@ function mspgcc::gnu_patch() {
 }
 
 function mspgcc::gnu_version() {
-    local tmp=$(tar tjf $release_mspgcc.tar.bz2 $release_mspgcc/msp430-$1-*.patch 2>/dev/null)
+    local wild
+    is_linux && wild=--wildcards
+    local tmp=$(tar tjf $release_mspgcc.tar.bz2 $wild $release_mspgcc/msp430-$1-*.patch 2>/dev/null)
     tmp=${tmp%.patch}
     tmp=${tmp#$release_mspgcc/msp430-}
     echo ${tmp%-*}

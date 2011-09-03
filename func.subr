@@ -97,7 +97,7 @@ function fetch() {
     [[ -f $out ]] \
         && return
     if is_linux; then
-        wget -N -O $out $url \
+        wget -O $out $url \
             || die "can not fetch $out from $url"
     elif is_osx; then
         curl -R -o $out -L $url \
