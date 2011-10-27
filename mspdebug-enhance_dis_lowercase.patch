@@ -1,7 +1,7 @@
-diff --git a/dis.c b/dis.c
+diff --git a/util/dis.c b/util/dis.c
 index b18428b..c421ebc 100644
---- a/dis.c
-+++ b/dis.c
+--- a/util/dis.c
++++ b/util/dis.c
 @@ -830,124 +830,124 @@ static const struct {
  	const char      *mnemonic;
  } opcode_names[] = {
@@ -240,10 +240,10 @@ index b18428b..c421ebc 100644
  };
  
  int dis_reg_from_name(const char *name)
-diff --git a/output_util.c b/output_util.c
+diff --git a/util/output_util.c b/util/output_util.c
 index 6bbb36c..698826e 100644
---- a/output_util.c
-+++ b/output_util.c
+--- a/util/output_util.c
++++ b/util/output_util.c
 @@ -123,9 +123,9 @@ static int dis_format(const struct msp430_instruction *insn)
  		opname = "???";
  

@@ -62,14 +62,16 @@ function prepare() {
         mv $mspdebug $builddir
     fi
 
+    local optp=-p1
+    [[ $release_mspdebug =~ mspdebug-[0-9.]+ ]] && optp=-p2
     for p in $scriptdir/mspdebug-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $builddir -p1 < $p \
+        patch -d $builddir $optp < $p \
             || die "patch $p failed"
     done
     for p in $scriptdir/mspdebug-enhance_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $builddir -p1 < $p \
+        patch -d $builddir $optp < $p \
             || die "patch $p failed"
     done
 
