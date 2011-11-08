@@ -41,7 +41,7 @@ prefix=/opt/msp430
 release_mspgcc=mspgcc-20110716
 #release_mspgcc=current
 
-release_mspdebug=mspdebug-0.17
+release_mspdebug=mspdebug-0.18
 #release_mspdebug=current
 
 # mspgcc
