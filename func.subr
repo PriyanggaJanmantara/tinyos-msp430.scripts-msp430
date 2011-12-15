@@ -72,7 +72,7 @@ function is_osx() {
 }
 
 function is_osx_snow_leopard() {
-    [[ $(is_osx) && $(hwprefs os_class) = "Snow Leopard" ]]
+    [[ $(uname) =~ ^10.8 ]]
 }
 
 function is_linux() {
@@ -82,7 +82,7 @@ function is_linux() {
 function num_cpus() {
     local n
     if is_osx; then
-        n=$(hwprefs cpu_count)
+        n=$(sysctl -n hw.ncpu)
     elif is_linux; then
         n=$(grep ^processor /proc/cpuinfo | wc -l)
     else
