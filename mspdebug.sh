@@ -55,7 +55,7 @@ function prepare() {
     cd $buildtop
     rm -rf $builddir
     if [[ $release_mspdebug == current ]]; then
-        cp -rp $mspdebug $builddir
+        rsync -arC $mspdebug/ $builddir/
     else
         rm -rf $mspdebug
         tar xzf $mspdebug.tar.gz
