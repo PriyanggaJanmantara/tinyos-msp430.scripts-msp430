@@ -73,12 +73,7 @@ function prepare() {
             || die "patch $p failed"
     done
 
-    CFLAGS=
-    LDFLAGS=
     if is_osx; then
-        CFLAGS+=" -I/opt/local/include" # compatibility for libelf
-        CFLAGS+=" $($libusb --cflags)"  # compatibility for libusb
-        LDFLAGS+=" $($libusb --libs)"   # compatibility for libusb
         for p in $scriptdir/mspdebug-osx_*.patch; do
             [[ -f $p ]] || continue
             patch -d $builddir -p1 < $p \
@@ -90,7 +85,7 @@ function prepare() {
 
 function build() {   
     cd $builddir
-    make -j$(num_cpus) PREFIX=$prefix CFLAGS+="$CFLAGS" LDFLAGS+="$LDFLAGS"
+    make -j$(num_cpus) PREFIX=$prefix
 }
 
 function install() {
