@@ -39,11 +39,11 @@ libusb=$(which libusb-legacy-config || which libusb-config)
     || die "libusb is not installed"
 
 function download() {
-    cd $buildtop
+    do_cd $buildtop
     if [[ $release_mspdebug == current ]]; then
         [[ -d $mspdebug ]] \
-            && { cd $mspdebug; git pull; cd ..; } \
-            || { git clone $repo_mspdebug \
+            && { do_cd $mspdebug; do_cmd git pull; do_cd ..; } \
+            || { do_cmd git clone $repo_mspdebug \
             || die "can not fetch mspdebug project from $repo_mspdebug"; }
     else
         fetch $url_mspdebug $mspdebug.tar.gz
@@ -52,31 +52,31 @@ function download() {
 }
 
 function prepare() {
-    cd $buildtop
-    rm -rf $builddir
+    do_cd $buildtop
+    do_cmd rm -rf $builddir
     if [[ $release_mspdebug == current ]]; then
-        rsync -arC $mspdebug/ $builddir/
+        do_cmd rsync -arC $mspdebug/ $builddir/
     else
-        rm -rf $mspdebug
-        tar xzf $mspdebug.tar.gz
-        mv $mspdebug $builddir
+        do_cmd rm -rf $mspdebug
+        do_cmd tar xzf $mspdebug.tar.gz
+        do_cmd mv $mspdebug $builddir
     fi
 
     for p in $scriptdir/mspdebug-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $builddir -p1 < $p \
+        do_cmd "patch -d $builddir -p1 < $p" \
             || die "patch $p failed"
     done
     for p in $scriptdir/mspdebug-enhance_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $builddir -p1 < $p \
+        do_cmd "patch -d $builddir -p1 < $p" \
             || die "patch $p failed"
     done
 
     if is_osx; then
         for p in $scriptdir/mspdebug-osx_*.patch; do
             [[ -f $p ]] || continue
-            patch -d $builddir -p1 < $p \
+            do_cmd "patch -d $builddir -p1 < $p" \
                 || die "patch $p failed"
         done
     fi
@@ -84,18 +84,18 @@ function prepare() {
 }
 
 function build() {   
-    cd $builddir
-    make -j$(num_cpus) PREFIX=$prefix
+    do_cd $builddir
+    do_cmd make -j$(num_cpus) PREFIX=$prefix
 }
 
 function install() {
-    cd $builddir
-    sudo make PREFIX=$prefix install
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) PREFIX=$prefix install
 }
 
 function cleanup() {
-    cd $buildtop
-    rm -rf $builddir
+    do_cd $buildtop
+    do_cmd rm -rf $builddir
 }
 
 main "$@"

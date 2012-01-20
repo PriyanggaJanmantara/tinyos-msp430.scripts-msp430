@@ -32,13 +32,19 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-function error() {
+function die() {
     echo "$@" 1>&2
+    exit 1
 }
 
-function die() {
-    error "$@"
-    exit 1
+function do_cmd() {
+    echo "#####" "$@" 1>&2
+    eval "$@"
+}
+
+function do_cd() {
+    echo "#####" cd "$@" 1>&2
+    cd "$@"
 }
 
 function absolute_path() {
@@ -97,10 +103,10 @@ function fetch() {
     [[ -f $out ]] \
         && return
     if is_linux; then
-        wget -O $out $url \
+        do_cmd wget -O $out $url \
             || die "can not fetch $out from $url"
     elif is_osx; then
-        curl -R -o $out -L $url \
+        do_cmd curl -R -o $out -L $url \
             || die "can not fetch $out from $url"
     else
         die "unknown host architecture"

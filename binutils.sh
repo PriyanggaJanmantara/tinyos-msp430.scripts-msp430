@@ -37,8 +37,8 @@
 function download() {
     if [[ $release_mspgcc == current ]]; then
         [[ -d $binutils ]] \
-            && { cd $binutils; git pull; cd $buildtop; } \
-            || { git clone $repo_binutils $binutils \
+            && { do_cd $binutils; do_cmd git pull; do_cd $buildtop; } \
+            || { do_cmd git clone $repo_binutils $binutils \
             || die "can not clone binutils project from $repo_binutils repository"; }
     else
         fetch $url_binutils $binutils.tar.bz2
@@ -51,38 +51,38 @@ function prepare() {
     if [[ $release_mspgcc == current ]]; then
         :
     else
-        rm -rf $binutils
-        tar xjf $binutils.tar.bz2
-        mspgcc::gnu_patch binutils | patch -p1 -d $binutils
+        do_cmd rm -rf $binutils
+        do_cmd tar xjf $binutils.tar.bz2
+        mspgcc::gnu_patch binutils | do_cmd patch -p1 -d $binutils
         mspgcc::apply_patches msp430-$binutils $binutils
     fi
     return 0
 }
 
 function build() {
-    rm -rf $builddir
-    mkdir $builddir
-    cd $builddir
-    ../$binutils/configure --target=$target --prefix=$prefix \
+    do_cmd rm -rf $builddir
+    do_cmd mkdir $builddir
+    do_cd $builddir
+    do_cmd ../$binutils/configure --target=$target --prefix=$prefix \
         --disable-nls \
         || die "configure failed"
-    make -j$(num_cpus) \
+    do_cmd make -j$(num_cpus) \
         || die "make failed"
 }
 
 function install() {
-    cd $builddir
-    sudo make install
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
     if [[ $release_mspgcc == current ]]; then
-        cd $binutils
-        git checkout .
+        do_cd $binutils
+        do_cmd git checkout .
     else
-        rm -rf $binutils
+        do_cmd rm -rf $binutils
     fi
-    rm -rf $builddir
+    do_cmd rm -rf $builddir
 }
 
 main "$@"

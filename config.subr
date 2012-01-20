@@ -81,7 +81,7 @@ fi
 function mspgcc::gnu_patch() {
     local wild
     is_linux && wild=--wildcards
-    tar xjf $release_mspgcc.tar.bz2 -O $wild $release_mspgcc/msp430-$1-*.patch 2>/dev/null
+    do_cmd "tar xjf $release_mspgcc.tar.bz2 -O $wild $release_mspgcc/msp430-$1-*.patch 2>/dev/null"
 }
 
 function mspgcc::gnu_version() {
@@ -117,13 +117,13 @@ function mspgcc::download_patches() {
 function mspgcc::apply_patches() {
     local prog=$1 dir=$2
     for p in $(mspgcc::list_patches $prog); do
-        cat $patchesdir/$p | patch -p1 -d $dir \
+        do_cmd "patch -p1 -d $dir < $patchesdir/$p" \
             || dir "patch $p failed"
     done
 }
 
 function config_prepare() {
-    cd $buildtop
+    do_cd $buildtop
     if [[ $release_mspgcc == current ]]; then
         binutils=mspgcc-binutils
         gcc=mspgcc-gcc
@@ -132,12 +132,12 @@ function config_prepare() {
         gdb=mspgcc-gdb
         if [[ -d mspgcc ]]; then
         # update build directory for compatibility
-            mv -f mspgcc/binutils $binutils
-            mv -f mspgcc/gcc $gcc
-            mv -f mspgcc/msp430-libc $msp430libc
-            mv -f mspgcc/msp430mcu $msp430mcu
-            mv -f mspgcc/gdb $gdb
-            rm -rf mspgcc
+            do_cmd mv -f mspgcc/binutils $binutils
+            do_cmd mv -f mspgcc/gcc $gcc
+            do_cmd mv -f mspgcc/msp430-libc $msp430libc
+            do_cmd mv -f mspgcc/msp430mcu $msp430mcu
+            do_cmd mv -f mspgcc/gdb $gdb
+            do_cmd rm -rf mspgcc
         fi
     else
         fetch $url_mspgcc $release_mspgcc.tar.bz2

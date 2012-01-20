@@ -35,11 +35,11 @@
 . $(dirname $0)/main.subr
 
 function download() {
-    cd $buildtop
+    do_cd $buildtop
     if [[ $release_mspgcc == current ]]; then
         [[ -d $gcc ]] \
-            && { cd $gcc; git checkout .; git pull; cd $buildtop; } \
-            || { git clone $repo_gcc $gcc \
+            && { do_cd $gcc; do_cmd git checkout .; do_cmd git pull; do_cd $buildtop; } \
+            || { do_cmd git clone $repo_gcc $gcc \
             || die "can not clone gcc project from $repo_gcc repository"; }
     else
         fetch $url_gcc $gcc.tar.bz2
@@ -55,60 +55,60 @@ function prepare() {
     if [[ $release_mspgcc == current ]]; then
         :
     else
-        rm -rf $gcc
-        tar xjf $gcc.tar.bz2
-        mspgcc::gnu_patch gcc | patch -p1 -d $gcc
+        do_cmd rm -rf $gcc
+        do_cmd tar xjf $gcc.tar.bz2
+        mspgcc::gnu_patch gcc | do_cmd patch -p1 -d $gcc
         mspgcc::apply_patches msp430-$gcc $gcc
     fi
 
-    tar xjf $gmp.tar.bz2
-    [[ -d $gcc/gmp ]] && rm -f $gcc/gmp
-    ln -s $buildtop/$gmp $gcc/gmp
+    do_cmd tar xjf $gmp.tar.bz2
+    [[ -d $gcc/gmp ]] && do_cmd rm -f $gcc/gmp
+    do_cmd ln -s $buildtop/$gmp $gcc/gmp
 
-    tar xjf $mpfr.tar.bz2
-    [[ -d $gcc/mpfr ]] && rm -f $gcc/mpfr
-    ln -s $buildtop/$mpfr $gcc/mpfr
+    do_cmd tar xjf $mpfr.tar.bz2
+    [[ -d $gcc/mpfr ]] && do_cmd rm -f $gcc/mpfr
+    do_cmd ln -s $buildtop/$mpfr $gcc/mpfr
 
-    tar xzf $mpc.tar.gz
-    [[ -d $gcc/mpc ]] && rm -f $gcc/mpc
-    ln -s $buildtop/$mpc $gcc/mpc
+    do_cmd tar xzf $mpc.tar.gz
+    [[ -d $gcc/mpc ]] && do_cmd rm -f $gcc/mpc
+    do_cmd ln -s $buildtop/$mpc $gcc/mpc
 
     for p in $scriptdir/gcc-fix_*.patch; do
         [[ -f $p ]] || continue
-        cat $p | patch -d $gcc -p1 \
+        do_cmd "patch -d $gcc -p1 < $p" \
             || die "patch $p failed"
     done
     return 0
 }
 
 function build() {
-    rm -rf $builddir
-    mkdir $builddir
-    cd $builddir
-    ../$gcc/configure --target=$target --prefix=$prefix \
+    do_cmd rm -rf $builddir
+    do_cmd mkdir $builddir
+    do_cd $builddir
+    do_cmd ../$gcc/configure --target=$target --prefix=$prefix \
         --mandir=$prefix/share/man --infodir=$prefix/share/info \
         --enable-languages="c,c++" --with-gnu-as --with-gnu-ld \
         --disable-nls \
         || die "configure failed"
-    make -j$(num_cpus) \
+    do_cmd make -j$(num_cpus) \
         || die "make failed"
 }
 
 function install() {
-    cd $builddir
-    sudo make install
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
     if [[ $release_mspgcc == current ]]; then
-        cd $buildtop/$gcc
-        rm -f gmp mpfr mpc
-        git checkout .
+        do_cd $buildtop/$gcc
+        do_cmd rm -f gmp mpfr mpc
+        do_cmd git checkout .
     else
-        rm -rf $buildtop/$gcc
+        do_cmd rm -rf $buildtop/$gcc
     fi
-    cd $buildtop
-    rm -rf $builddir $gmp $mpfr $mpc
+    do_cd $buildtop
+    do_cmd rm -rf $builddir $gmp $mpfr $mpc
 }
 
 main "$@"

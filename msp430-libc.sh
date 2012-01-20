@@ -37,12 +37,12 @@
 function download() {
     if [[ $release_mspgcc == current ]]; then
         [[ -d $msp430libc ]] \
-            && { cd $msp430libc; git pull; cd $buildtop; } \
-            || { git clone $repo_msp430libc $msp430libc \
+            && { do_cd $msp430libc; do_cmd git pull; do_cd $buildtop; } \
+            || { do_cmd git clone $repo_msp430libc $msp430libc \
             || die "can not clone msp430-libc project from $repo_msp430libc repository"; }
         [[ -d $msp430mcu ]] \
-            && { cd $msp430mcu; git checkout .; git pull; cd $buildtop; } \
-            || { git clone $repo_msp430mcu $msp430mcu \
+            && { do_cd $msp430mcu; do_cmd git checkout .; do_cmd git pull; do_cd $buildtop; } \
+            || { do_cmd git clone $repo_msp430mcu $msp430mcu \
             || die "can not clone msp430mcu project from $repo_msp430mcu repository"; }
     else
         fetch $url_msp430libc $msp430libc.tar.bz2
@@ -57,23 +57,23 @@ function prepare() {
     if [[ $release_mspgcc == current ]]; then
         :
     else
-        rm -rf $msp430libc
-        tar xjf $msp430libc.tar.bz2
+        do_cmd rm -rf $msp430libc
+        do_cmd tar xjf $msp430libc.tar.bz2
         mspgcc::apply_patches $msp430libc $msp430libc
-        rm -rf $msp430mcu
-        tar xjf $msp430mcu.tar.bz2
+        do_cmd rm -rf $msp430mcu
+        do_cmd tar xjf $msp430mcu.tar.bz2
         mspgcc::apply_patches $msp430mcu $msp430mcu
     fi
 
     for p in $scriptdir/msp430-libc-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $msp430libc -p1 < $p \
+        do_cmd "patch -d $msp430libc -p1 < $p" \
             || die "patch $p failed"
     done
 
     for p in $scriptdir/msp430mcu-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $msp430mcu -p1 < $p \
+        do_cmd "patch -d $msp430mcu -p1 < $p" \
             || die "patch $p failed"
     done
 
@@ -81,30 +81,30 @@ function prepare() {
 }
 
 function build() {
-    cd $msp430libc/src
-    rm -rf Build
-    make -j$(num_cpus) PREFIX=$prefix \
+    do_cd $msp430libc/src
+    do_cmd rm -rf Build
+    do_cmd make -j$(num_cpus) PREFIX=$prefix \
         || die "make failed"
 }
 
 function install() {
-    cd $buildtop/$msp430libc/src
-    sudo make install PREFIX=$prefix
-    cd $buildtop/$msp430mcu
-    sudo sh scripts/install.sh $prefix $buildtop/$msp430mcu
+    do_cd $buildtop/$msp430libc/src
+    do_cmd sudo make -j$(num_cpus) install PREFIX=$prefix
+    do_cd $buildtop/$msp430mcu
+    do_cmd sudo sh scripts/install.sh $prefix $buildtop/$msp430mcu
 }
 
 function cleanup() {
     if [[ $release_mspgcc == current ]]; then
-        cd $buildtop/$msp430libc/src
-        rm -rf Build
-        git checkout .
+        do_cd $buildtop/$msp430libc/src
+        do_cmd rm -rf Build
+        do_cmd git checkout .
 
-        cd $buildtop/$msp430mcu
-        git checkout .
+        do_cd $buildtop/$msp430mcu
+        do_cmd git checkout .
     else
-        cd $buildtop
-        rm -rf $msp430libc $msp430mcu
+        do_cd $buildtop
+        do_cmd rm -rf $msp430libc $msp430mcu
     fi
 }
 

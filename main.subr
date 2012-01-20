@@ -61,24 +61,24 @@ function main() {
     done
 
     if declare -F config_prepare >/dev/null; then
-        set -x; config_prepare; set +x
+        config_prepare
     fi
 
     PATH=$prefix/bin:$PATH
     if [[ ${#cmds[@]} -eq 0 ]]; then
-        set -x; download && prepare && build; set +x
+        download && prepare && build
         echo "To install $scriptname under $prefix, run '$0 install'"
     else
         for cmd in "${cmds[@]}"; do
             case $cmd in
             download)
-                set -x; download || die "download failed"; set +x;;
+                download || die "download failed";;
             build)
-                set -x; prepare && build || die "build failed"; set +x;;
+                prepare && build || die "build failed";;
             install)
-                set -x; install || die "install failed"; set +x;;
+                install || die "install failed";;
             clean|cleanup)
-                set -x; cleanup; set +x;;
+                cleanup;;
             *)
                 die "unknown command '$cmd'";;
             esac

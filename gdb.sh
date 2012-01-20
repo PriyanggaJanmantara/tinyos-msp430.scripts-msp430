@@ -37,8 +37,8 @@
 function download() {
     if [[ $release_mspgcc == current ]]; then
         [[ -d $gdb ]] \
-            && { cd $gdb; git checkout .; git pull; cd $buildtop; } \
-            || { git clone $repo_gdb $gdb -b $branch_gdb \
+            && { do_cd $gdb; do_cmd git checkout .; do_cmd git pull; do_cd $buildtop; } \
+            || { do_cmd git clone $repo_gdb $gdb -b $branch_gdb \
             || die "can not clone gdb project from $repo_gdb repository"; }
     else
         fetch $url_gdb $gdb.tar.bz2
@@ -50,14 +50,14 @@ function prepare() {
     if [[ $release_mspgcc == current ]]; then
         :
     else
-        rm -rf $gdb
-        tar xjf $gdb.tar.bz2
-        mspgcc::gnu_patch gdb | patch -p1 -d $gdb
+        do_cmd rm -rf $gdb
+        do_cmd tar xjf $gdb.tar.bz2
+        mspgcc::gnu_patch gdb | do_cmd patch -p1 -d $gdb
     fi
 
     for p in $scriptdir/gdb-fix_*.patch; do
         [[ -f $p ]] || continue
-        patch -d $gdb -p1 < $p \
+        do_cmd "patch -d $gdb -p1 < $p" \
             || die "patch $p failed"
     done
 
@@ -65,29 +65,29 @@ function prepare() {
 }
 
 function build() {
-    rm -rf $builddir
-    mkdir $builddir
-    cd $builddir
-    ../$gdb/configure --target=$target --prefix=$prefix \
+    do_cmd rm -rf $builddir
+    do_cmd mkdir $builddir
+    do_cd $builddir
+    do_cmd ../$gdb/configure --target=$target --prefix=$prefix \
         --disable-nls \
         || die "configure failed"
-    make -j$(num_cpus) \
+    do_cmd make -j$(num_cpus) \
         || die "make failed"
 }
 
 function install() {
-    cd $builddir
-    sudo make install
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
     if [[ $release_mspgcc == current ]]; then
-        cd $buildtop/$gdb
-        git checkout .
+        do_cd $buildtop/$gdb
+        do_cmd git checkout .
     else
-        rm -rf $gdb
+        do_cmd rm -rf $gdb
     fi
-    rm -rf $builddir
+    do_cmd rm -rf $builddir
 }
 
 main "$@"
