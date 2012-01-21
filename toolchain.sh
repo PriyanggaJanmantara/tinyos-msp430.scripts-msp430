@@ -38,6 +38,10 @@ PATH=$prefix/bin:$PATH
 
 modules="binutils gcc msp430-libc gdb mspdebug"
 
+[[ -d $prefix/bin ]] || do_cmd sudo mkdir -p $prefix/bin
+[[ -f $prefix/bin/envsetup.subr ]] \
+    || do_cmd sudo cp $scriptdir/envsetup.subr $prefix/bin
+
 if [[ $# -eq 0 ]]; then
     for module in $modules; do
 	$scriptdir/$module.sh download
