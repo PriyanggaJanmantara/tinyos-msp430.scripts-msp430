@@ -87,7 +87,7 @@ function build() {
     do_cd $builddir
     do_cmd ../$gcc/configure --target=$target --prefix=$prefix \
         --mandir=$prefix/share/man --infodir=$prefix/share/info \
-        --enable-languages="c,c++" --with-gnu-as --with-gnu-ld \
+        --enable-languages="c,c++" --with-gnu-as --with-gnu-ld --with-system-zlib \
         --disable-nls \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
