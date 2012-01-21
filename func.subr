@@ -47,30 +47,13 @@ function do_cd() {
     cd "$@"
 }
 
-function absolute_path() {
-    local abs
-    case $1 in
-    .) abs=${PWD};;
-    /*) abs=$1;;
-    *) abs=${PWD}/$1;;
-    esac
-    echo $abs
-}
-
-function add_path() {
-    local path=$1 p
-    shift
-    for p in "$@"; do
-        [[ -d $p ]] || continue
-        p=${p%/}
-        case $path in
-        $p:*) ;;
-        *:$p:*) ;;
-        *:$p) ;;
-        *) path=$p:$path;;
-        esac
-    done
-    echo $path
+function do_patch() {
+    [[ $# -ge 2 ]] || die "usage: do_patch dir patch [...]"
+    local dir=$1 patch=$2
+    shift 2
+    [[ -f $patch ]] || return
+    do_cmd "patch -d $dir $@ < $patch" \
+        || die "patch $patch failed"
 }
 
 function is_osx() {
@@ -97,9 +80,26 @@ function num_cpus() {
     echo $((n * 2))
 }
 
+function symlink() {
+    [[ $# -eq 2 ]] \
+        || die "usage: symlink src dst"
+    local src=$1 dst=$2
+    [[ -d $dst || -h $dst ]] \
+        && do_cmd rm -rf $dst
+    do_cmd ln -s $src $dst
+}
+
 function fetch() {
-    [[ $# -eq 2 ]] || die "usage: fetch url out_file"
-    local url=$1 out=$2
+    local url out
+    if [[ $# -eq 1 ]]; then
+        url=$1
+        out=$(basename $url)
+    elif [[ $# -eq 2 ]]; then
+        url=$1
+        out=$2
+    else
+        die "usage: fetch url [out_file]"
+    fi
     [[ -f $out ]] \
         && return
     if is_linux; then
@@ -110,6 +110,78 @@ function fetch() {
             || die "can not fetch $out from $url"
     else
         die "unknown host architecture"
+    fi
+}
+
+function clone() {
+    local sudo=no
+    [[ $1 == "--sudo" ]] && { sudo=yes; shift; }
+    [[ $# -ge 3 ]] \
+        || die "usage: clone [--sudo] git|svn|cvs repo out_dir [...]"
+    local cmd=$1 repo=$2 out=$3
+    shift 3
+
+    local line
+    if [[ -d $out ]]; then
+        do_cd $out
+        case $cmd in
+        git) line+=(git pull);;
+        svn) line+=(svn up);;
+        cvs) line+=(cvs -q up);;
+        *)   die "unknown command $cmd";;
+        esac
+        [[ $sudo == yes ]] && line=(sudo "${line[@]}")
+        do_cmd "${line[@]}"
+        do_cd -
+    else
+        case $cmd in
+        git) line+=(git clone $repo $out "$@");;
+        svn) line+=(svn checkout $repo $out);;
+        cvs) line+=(cvs -z3 -d $repo checkout -P $out);;
+        *)   die "unknown command $cmd";;
+        esac
+        [[ $sudo == yes ]] && line=(sudo "${line[@]}")
+        do_cmd "${line[@]}"
+    fi
+}
+
+function copy() {
+    local sudo=no
+    [[ $1 == "--sudo" ]] && { sudo=yes; shift; }
+    [[ $# -eq 2 ]] || die "usage: copy [--sudo] from to_dir"
+
+    local from=$1 to=$2 rm=(rm) mkdir=(mkdir) tar=(tar) mv=(mv)
+    if [[ $sudo == yes ]]; then
+        rm=(sudo rm)
+        mkdir=(sudo mkdir)
+        tar=(sudo tar)
+        mv=(sudo mv)
+    fi
+
+    [[ -d $to ]] && do_cmd "${rm[@]} -rf $to"
+    if [[ -d $from ]]; then
+        do_cmd "${mkdir[@]} -p $to"
+        local exclude=(--exclude CVS --exclude .svn --exclude .git)
+        do_cmd "tar cf - -C $from . | ${tar[@]} xf - ${exclude[@]} -C $to"
+    elif [[ -f $from ]]; then
+        local out extract
+        case $from in
+        *.tar.gz)
+            out=$(basename $from .tar.gz)
+            extract=(tar xzf);;
+        *.tar.bz2)
+            out=$(basename $from .tar.bz2)
+            extract=(tar xjf);;
+        *)
+            die "unknown source format $from";;
+        esac
+        if [[ $out == $(basename $to) ]]; then
+            [[ $sudo == yes ]] && extract=(sudo "${extract[@]}")
+            do_cmd "${extract[@]} $from -C $(dirname $to)"
+        else
+            do_cmd "${extract[@]} $from"
+            do_cmd "${mv[@]} $out $to"
+        fi
     fi
 }
 

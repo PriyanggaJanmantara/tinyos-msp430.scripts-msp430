@@ -34,20 +34,22 @@
 
 # We must not exit this script because this may be a part of login script.
 
-scriptdir=$(dirname ${BASH_ARGV[0]})
-if [[ ! -f $scriptdir/func.subr ]]; then
-    echo "$scriptdir/func.subr not found" 1>&2
+scriptsdir=$(dirname ${BASH_ARGV[0]})
+if [[ ! -f $scriptsdir/path.subr ]]; then
+    echo "$scriptsdir/path.subr not found" 1>&2
 else
-    . $scriptdir/func.subr
-    scriptdir=$(absolute_path $scriptdir)
+    . $scriptsdir/path.subr
+    scriptsdir=$(absolute_path $scriptsdir)
 
-    if [[ ! -f $scriptdir/config.subr ]]; then
-        echo "$scriptdir/config.subr not found" 1>&2
+    if [[ ! -f $scriptsdir/config.subr ]]; then
+        echo "$scriptsdir/config.subr not found" 1>&2
     else
-        . $scriptdir/config.subr
+        . $scriptsdir/config.subr
 
         PATH=$(add_path $PATH $prefix/sbin $prefix/bin)
         MANPATH=$(add_path $MANPATH $prefix/share/man)
+
+        alias dis430=$scriptsdir/dis430.sh
     fi
 fi
 

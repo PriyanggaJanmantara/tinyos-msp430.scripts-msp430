@@ -32,55 +32,30 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-source $(dirname ${BASH_ARGV[0]})/func.subr
-source $(dirname ${BASH_ARGV[0]})/path.subr
-
-which svn >/dev/null || die "missing svn"
-which git >/dev/null || die "missing git"
-
-scriptsdir=$(absolute_path $(dirname $0))
-scriptname=$(basename $0 .sh)
-buildtop=$PWD
-
-source $scriptsdir/config.subr
-builddir=$buildtop/build-$buildtarget-$scriptname
-
-function usage {
-    die "usage: $0 [--help|-h] [download|build|install|clean|cleanup...]"
+function absolute_path() {
+    local abs
+    case $1 in
+    .) abs=${PWD};;
+    /*) abs=$1;;
+    *) abs=${PWD}/$1;;
+    esac
+    echo $abs
 }
 
-function main() {
-    local i cmd
-    local -a cmds
-
-    for i in "$@"; do
-        case $i in
-            -h|--help) usage;;
-            -*) die "unkown option $i, try --help";;
-            *) cmds+=($i);;
+function add_path() {
+    local path=$1 p
+    shift
+    for p in "$@"; do
+        [[ -d $p ]] || continue
+        p=${p%/}
+        case $path in
+        $p:*) ;;
+        *:$p:*) ;;
+        *:$p) ;;
+        *) path=$p:$path;;
         esac
     done
-
-    PATH=$prefix/bin:$PATH
-    if [[ ${#cmds[@]} -eq 0 ]]; then
-        download && prepare && build
-        echo "To install $scriptname under $prefix, run '$0 install'"
-    else
-        for cmd in "${cmds[@]}"; do
-            case $cmd in
-            download)
-                download || die "download failed";;
-            build)
-                prepare && build || die "build failed";;
-            install)
-                install || die "install failed";;
-            clean|cleanup)
-                cleanup;;
-            *)
-                die "unknown command '$cmd'";;
-            esac
-        done
-    fi
+    echo $path
 }
 
 # Local Variables:

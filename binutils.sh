@@ -32,27 +32,26 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-. $(dirname $0)/main.subr
+source $(dirname $0)/main.subr
+source $(dirname $0)/mspgcc.subr
 
 function download() {
-    if [[ $release_mspgcc == current ]]; then
-        [[ -d $binutils ]] \
-            && { do_cd $binutils; do_cmd git pull; do_cd $buildtop; } \
-            || { do_cmd git clone $repo_binutils $binutils \
-            || die "can not clone binutils project from $repo_binutils repository"; }
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
+        clone git $mspgcc_repo/binutils $binutils
     else
-        fetch $url_binutils $binutils.tar.bz2
+        fetch $binutils_url $binutils.tar.bz2
         mspgcc::download_patches msp430-$binutils
     fi
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc == current ]]; then
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
         :
     else
-        do_cmd rm -rf $binutils
-        do_cmd tar xjf $binutils.tar.bz2
+        copy $binutils.tar.bz2 $buildtop/$binutils
         mspgcc::gnu_patch binutils | do_cmd patch -p1 -d $binutils
         mspgcc::apply_patches msp430-$binutils $binutils
     fi
@@ -60,10 +59,11 @@ function prepare() {
 }
 
 function build() {
-    do_cmd rm -rf $builddir
-    do_cmd mkdir $builddir
+    mspgcc::config
+    [[ -d $builddir ]] && do_cmd rm -rf $builddir
+    do_cmd mkdir -p $builddir
     do_cd $builddir
-    do_cmd ../$binutils/configure --target=$target --prefix=$prefix \
+    do_cmd ../$binutils/configure --target=$buildtarget --prefix=$prefix \
         --disable-nls \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
@@ -71,12 +71,14 @@ function build() {
 }
 
 function install() {
+    mspgcc::config
     do_cd $builddir
     do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
-    if [[ $release_mspgcc == current ]]; then
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
         do_cd $binutils
         do_cmd git checkout .
     else

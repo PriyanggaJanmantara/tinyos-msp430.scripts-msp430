@@ -32,43 +32,39 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-. $(dirname $0)/main.subr
+source $(dirname $0)/main.subr
+source $(dirname $0)/mspgcc.subr
 
 function download() {
-    if [[ $release_mspgcc == current ]]; then
-        [[ -d $gdb ]] \
-            && { do_cd $gdb; do_cmd git checkout .; do_cmd git pull; do_cd $buildtop; } \
-            || { do_cmd git clone $repo_gdb $gdb -b $branch_gdb \
-            || die "can not clone gdb project from $repo_gdb repository"; }
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
+        local branch=()
+        [[ -n $mspgcc_gdb_branch ]] && branch=(-b $mspgcc_gdb_branch)
+        clone git $mspgcc_repo/gdb $gdb "${branch[@]}"
     else
-        fetch $url_gdb $gdb.tar.bz2
+        fetch $gdb_url $gdb.tar.bz2
     fi
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc == current ]]; then
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
         :
     else
-        do_cmd rm -rf $gdb
-        do_cmd tar xjf $gdb.tar.bz2
+        copy $gdb.tar.bz2 $buildtop/$gdb
         mspgcc::gnu_patch gdb | do_cmd patch -p1 -d $gdb
     fi
-
-    for p in $scriptdir/gdb-fix_*.patch; do
-        [[ -f $p ]] || continue
-        do_cmd "patch -d $gdb -p1 < $p" \
-            || die "patch $p failed"
-    done
 
     return 0
 }
 
 function build() {
-    do_cmd rm -rf $builddir
-    do_cmd mkdir $builddir
+    mspgcc::config
+    [[ -d $builddir ]] && do_cmd rm -rf $builddir
+    do_cmd mkdir -p $builddir
     do_cd $builddir
-    do_cmd ../$gdb/configure --target=$target --prefix=$prefix \
+    do_cmd ../$gdb/configure --target=$buildtarget --prefix=$prefix \
         --disable-nls \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
@@ -81,7 +77,8 @@ function install() {
 }
 
 function cleanup() {
-    if [[ $release_mspgcc == current ]]; then
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
         do_cd $buildtop/$gdb
         do_cmd git checkout .
     else

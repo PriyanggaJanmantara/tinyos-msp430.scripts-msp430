@@ -32,60 +32,51 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-. $(dirname $0)/main.subr
+source $(dirname $0)/main.subr
+source $(dirname $0)/mspgcc.subr
 
 function download() {
-    do_cd $buildtop
-    if [[ $release_mspgcc == current ]]; then
-        [[ -d $gcc ]] \
-            && { do_cd $gcc; do_cmd git checkout .; do_cmd git pull; do_cd $buildtop; } \
-            || { do_cmd git clone $repo_gcc $gcc \
-            || die "can not clone gcc project from $repo_gcc repository"; }
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
+        clone git $mspgcc_repo/gcc $gcc
     else
-        fetch $url_gcc $gcc.tar.bz2
+        fetch $gnu_url/gcc/$gcc/$gcc.tar.bz2
         mspgcc::download_patches msp430-$gcc
     fi
-    fetch $url_gmp $gmp.tar.bz2
-    fetch $url_mpfr $mpfr.tar.bz2
-    fetch $url_mpc $mpc.tar.gz
+    fetch $gnu_url/gmp/$gmp.tar.bz2
+    fetch $mpfr_url/$mpfr/$mpfr.tar.bz2
+    fetch $mpc_url/$mpc.tar.gz
     return 0
 }
 
 function prepare() {
-    if [[ $release_mspgcc == current ]]; then
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
         :
     else
-        do_cmd rm -rf $gcc
-        do_cmd tar xjf $gcc.tar.bz2
+        copy $gcc.tar.bz2 $gcc
         mspgcc::gnu_patch gcc | do_cmd patch -p1 -d $gcc
         mspgcc::apply_patches msp430-$gcc $gcc
     fi
 
-    do_cmd tar xjf $gmp.tar.bz2
-    [[ -d $gcc/gmp ]] && do_cmd rm -f $gcc/gmp
-    do_cmd ln -s $buildtop/$gmp $gcc/gmp
+    copy $gmp.tar.bz2 $buildtop/$gmp
+    symlink $buildtop/$gmp $gcc/gmp
 
-    do_cmd tar xjf $mpfr.tar.bz2
-    [[ -d $gcc/mpfr ]] && do_cmd rm -f $gcc/mpfr
-    do_cmd ln -s $buildtop/$mpfr $gcc/mpfr
+    copy $mpfr.tar.bz2 $buildtop/$mpfr
+    symlink $buildtop/$mpfr $gcc/mpfr
 
-    do_cmd tar xzf $mpc.tar.gz
-    [[ -d $gcc/mpc ]] && do_cmd rm -f $gcc/mpc
-    do_cmd ln -s $buildtop/$mpc $gcc/mpc
+    copy $mpc.tar.gz $buildtop/$mpc
+    symlink $buildtop/$mpc $gcc/mpc
 
-    for p in $scriptdir/gcc-fix_*.patch; do
-        [[ -f $p ]] || continue
-        do_cmd "patch -d $gcc -p1 < $p" \
-            || die "patch $p failed"
-    done
     return 0
 }
 
 function build() {
-    do_cmd rm -rf $builddir
-    do_cmd mkdir $builddir
+    mspgcc::config
+    [[ -d $builddir ]] && do_cmd rm -rf $builddir
+    do_cmd mkdir -p $builddir
     do_cd $builddir
-    do_cmd ../$gcc/configure --target=$target --prefix=$prefix \
+    do_cmd ../$gcc/configure --target=$buildtarget --prefix=$prefix \
         --mandir=$prefix/share/man --infodir=$prefix/share/info \
         --enable-languages="c,c++" --with-gnu-as --with-gnu-ld --with-system-zlib \
         --disable-nls \
@@ -100,7 +91,8 @@ function install() {
 }
 
 function cleanup() {
-    if [[ $release_mspgcc == current ]]; then
+    mspgcc::config
+    if [[ $mspgcc_release == current ]]; then
         do_cd $buildtop/$gcc
         do_cmd rm -f gmp mpfr mpc
         do_cmd git checkout .

@@ -1,0 +1,143 @@
+#!/bin/bash
+# -*- mode: shell-script; mode: flyspell-prog; -*-
+#
+# Copyright (c) 2012, Tadashi G Takaoka
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# - Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in
+#   the documentation and/or other materials provided with the
+#   distribution.
+# - Neither the name of Tadashi G. Takaoka nor the names of its
+#   contributors may be used to endorse or promote products derived
+#   from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+# OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+function mspgcc::gnu_patch() {
+    local wild
+    is_linux && wild=--wildcards
+    do_cmd "tar xjf $mspgcc_release.tar.bz2 -O " \
+        "$wild $mspgcc_release/msp430-$1-*.patch 2>/dev/null"
+}
+
+function mspgcc::gnu_version() {
+    local wild prog=$1
+    is_linux && wild=--wildcards
+    local tmp=$(tar tjf $mspgcc_release.tar.bz2 \
+        $wild $mspgcc_release/msp430-$prog-*.patch 2>/dev/null)
+    tmp=${tmp%.patch}
+    tmp=${tmp#$mspgcc_release/msp430-}
+    local version=${tmp%-*}
+    [[ $version == binutils-2.21.1a ]] \
+        && version=${version%a}
+    [[ $version == gdb-7.2a ]] \
+        && version=${version%a}
+    echo $version
+}
+
+function mspgcc::libc_version() {
+    echo $1-$(tar xjf $mspgcc_release.tar.bz2 -O $mspgcc_release/$1.version)
+}
+
+function mspgcc::list_patches() {
+    local prog=$1
+    [[ -d $patches_dir ]] || return
+    cat $patches_dir/README.rst | \
+    while read line; do
+        [[ $line =~ \*\ ($prog-[^ ]*)\ : ]] \
+            && echo "${BASH_REMATCH[1]}.patch"
+    done | \
+    sort
+}
+
+function mspgcc::download_patches() {
+    local prog=$1
+    for p in $(mspgcc::list_patches $prog); do
+        fetch $patches_url/$p/download $patches_dir/$p
+    done
+}
+
+function mspgcc::apply_patches() {
+    local prog=$1 dir=$2
+    for p in $(mspgcc::list_patches $prog); do
+        do_patch $dir $patches_dir/$p -p1
+    done
+}
+
+function mspgcc::config() {
+    do_cd $buildtop
+    if [[ $mspgcc_release == current ]]; then
+        binutils=mspgcc-binutils
+        gcc=mspgcc-gcc
+        msp430libc=mspgcc-msp430-libc
+        msp430mcu=mspgcc-msp430mcu
+        gdb=mspgcc-gdb
+        if [[ -d mspgcc ]]; then
+        # update build directory for compatibility
+            do_cmd mv -f mspgcc/binutils $binutils
+            do_cmd mv -f mspgcc/gcc $gcc
+            do_cmd mv -f mspgcc/msp430-libc $msp430libc
+            do_cmd mv -f mspgcc/msp430mcu $msp430mcu
+            do_cmd mv -f mspgcc/gdb $gdb
+            do_cmd rm -rf mspgcc
+        fi
+    else
+        mspgcc=$mspgcc_release
+        local url=$mspgcc_url/mspgcc/$mspgcc.tar.bz2/download
+        fetch $url $mspgcc.tar.bz2
+
+        binutils=$(mspgcc::gnu_version binutils)
+        binutils_url=$gnu_url/binutils/$binutils.tar.bz2
+        [[ $binutils == binutils-2.21.1 ]] \
+            && binutils_url=${binutils_url/2.21.1/2.21.1a}
+
+        gcc=$(mspgcc::gnu_version gcc)
+
+        msp430libc=$(mspgcc::libc_version msp430-libc)
+        msp430libc_url=$mspgcc_url/msp430-libc/$msp430libc.tar.bz2/download
+        msp430mcu=$(mspgcc::libc_version msp430mcu)
+        msp430mcu_url=$mspgcc_url/msp430mcu/$msp430mcu.tar.bz2/download
+
+        gdb=$(mspgcc::gnu_version gdb)
+        gdb_url=$gnu_url/gdb/$gdb.tar.bz2
+        [[ $gdb == gdb-7.2 ]] \
+            && gdb_url=${gdb_url/7.2/7.2a}
+
+        patches_dir=
+        for rel in "${mspgcc_lts_releases[@]}"; do
+            [[ $rel != $mspgcc ]] && continue
+            patches_url=$mspgcc_url/Patches/LTS/${mspgcc#mspgcc-}
+            patches_dir=$buildtop/$mspgcc-patches
+            [[ -d $patches_dir ]] \
+                || do_cmd mkdir -p $patches_dir
+            fetch $patches_url/README.rst/download $patches_dir/README.rst
+        done
+    fi
+    gmp=$gmp_release
+    mpfr=$mpfr_release
+    mpc=$mpc_release
+}
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+# vim: set et ts=4 sw=4:

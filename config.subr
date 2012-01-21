@@ -32,141 +32,36 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# target
-target=msp430
-
 # install prefix
 prefix=/opt/msp430
-
-release_mspgcc=mspgcc-20110716
-#release_mspgcc=current
-
-release_mspdebug=mspdebug-0.18
-#release_mspdebug=current
+buildtarget=msp430
 
 # mspgcc
-url_gnu=ftp://ftp.gnu.org/pub/gnu
-if [[ $release_mspgcc == current ]]; then
-    repo_mspgcc=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
-    repo_binutils=$repo_mspgcc/binutils
-    repo_gcc=$repo_mspgcc/gcc
-    repo_msp430libc=$repo_mspgcc/msp430-libc
-    repo_msp430mcu=$repo_mspgcc/msp430mcu
-    repo_gdb=$repo_mspgcc/gdb
-    branch_gdb=legacy/release/gdb-7.2
-else
-    url_mspgcc_base=http://sourceforge.net/projects/mspgcc/files
-    url_mspgcc=$url_mspgcc_base/mspgcc/$release_mspgcc.tar.bz2/download
-fi
-
-# gnu
-gmp=gmp-4.3.2
-mpfr=mpfr-2.4.2
-url_gmp=$url_gnu/gmp/$gmp.tar.bz2
-url_mpfr=http://www.mpfr.org/$mpfr/$mpfr.tar.bz2
-
-# mpc
-mpc=mpc-0.8.2
-url_mpc=http://www.multiprecision.org/mpc/download/$mpc.tar.gz
+mspgcc_repo=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
+mspgcc_url=http://sourceforge.net/projects/mspgcc/files
+mspgcc_lts_releases=(mspgcc-20110716)
+#mspgcc_release=mspgcc-20110716
+mspgcc_release=mspgcc-20120119
+#mspgcc_release=current
+#mspgcc_gdb_branch=legacy/release/gdb-7.2
 
 # mspdebug
-if [[ $release_mspdebug == current ]]; then
-    repo_mspdebug=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
-    mspdebug=mspdebug
-else
-    mspdebug=$release_mspdebug
-    url_mspdebug=http://sourceforge.net/projects/mspdebug/files/$mspdebug.tar.gz/download
-fi
+mspdebug_repo=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
+mspdebug_url=http://sourceforge.net/projects/mspdebug/files
+mspdebug_release=mspdebug-0.18
+mspdebug_release=current
 
-function mspgcc::gnu_patch() {
-    local wild
-    is_linux && wild=--wildcards
-    do_cmd "tar xjf $release_mspgcc.tar.bz2 -O $wild $release_mspgcc/msp430-$1-*.patch 2>/dev/null"
-}
+# gnu
+gnu_url=ftp://ftp.gnu.org/pub/gnu
+gmp_release=gmp-4.3.2
 
-function mspgcc::gnu_version() {
-    local wild
-    is_linux && wild=--wildcards
-    local tmp=$(tar tjf $release_mspgcc.tar.bz2 $wild $release_mspgcc/msp430-$1-*.patch 2>/dev/null)
-    tmp=${tmp%.patch}
-    tmp=${tmp#$release_mspgcc/msp430-}
-    echo ${tmp%-*}
-}
+# mpfr
+mpfr_url=http://www.mpfr.org/
+mpfr_release=mpfr-2.4.2
 
-function mspgcc::libc_version() {
-    echo $1-$(tar xjf $release_mspgcc.tar.bz2 -O $release_mspgcc/$1.version)
-}
-
-function mspgcc::list_patches() {
-    local prog=$1
-    cat $patchesdir/README.rst | \
-    while read line; do
-        [[ $line =~ \*\ ($prog-[^ ]*)\ : ]] \
-            && echo "${BASH_REMATCH[1]}.patch"
-    done | \
-    sort
-}
-
-function mspgcc::download_patches() {
-    local prog=$1
-    for p in $(mspgcc::list_patches $prog); do
-        fetch $url_patches_base/$p/download $patchesdir/$p
-    done
-}
-
-function mspgcc::apply_patches() {
-    local prog=$1 dir=$2
-    for p in $(mspgcc::list_patches $prog); do
-        do_cmd "patch -p1 -d $dir < $patchesdir/$p" \
-            || dir "patch $p failed"
-    done
-}
-
-function config_prepare() {
-    do_cd $buildtop
-    if [[ $release_mspgcc == current ]]; then
-        binutils=mspgcc-binutils
-        gcc=mspgcc-gcc
-        msp430libc=mspgcc-msp430-libc
-        msp430mcu=mspgcc-msp430mcu
-        gdb=mspgcc-gdb
-        if [[ -d mspgcc ]]; then
-        # update build directory for compatibility
-            do_cmd mv -f mspgcc/binutils $binutils
-            do_cmd mv -f mspgcc/gcc $gcc
-            do_cmd mv -f mspgcc/msp430-libc $msp430libc
-            do_cmd mv -f mspgcc/msp430mcu $msp430mcu
-            do_cmd mv -f mspgcc/gdb $gdb
-            do_cmd rm -rf mspgcc
-        fi
-    else
-        fetch $url_mspgcc $release_mspgcc.tar.bz2
-
-        binutils=$(mspgcc::gnu_version binutils)
-        url_binutils=$url_gnu/binutils/$binutils.tar.bz2
-        [[ $binutils == binutils-2.21.1 ]] \
-            && url_binutils=${url_binutils/2.21.1/2.21.1a}
-
-        gcc=$(mspgcc::gnu_version gcc)
-        url_gcc=$url_gnu/gcc/$gcc/$gcc.tar.bz2
-
-        msp430libc=$(mspgcc::libc_version msp430-libc)
-        url_msp430libc=$url_mspgcc_base/msp430-libc/$msp430libc.tar.bz2
-        msp430mcu=$(mspgcc::libc_version msp430mcu)
-        url_msp430mcu=$url_mspgcc_base/msp430mcu/$msp430mcu.tar.bz2
-
-        gdb=$(mspgcc::gnu_version gdb)
-        url_gdb=$url_gnu/gdb/$gdb.tar.bz2
-        [[ $gdb == gdb-7.2 ]] \
-            && url_gdb=${url_gdb/7.2/7.2a}
-
-        url_patches_base=$url_mspgcc_base/Patches/LTS/${release_mspgcc#mspgcc-}
-        patchesdir=$buildtop/$release_mspgcc-patches
-        [[ -d $patchesdir ]] \
-            || mkdir -p $patchesdir
-        fetch $url_patches_base/README.rst/download $patchesdir/README.rst
-    fi
-}
+# mpc
+mpc_url=http://www.multiprecision.org/mpc/download
+mpc_release=mpc-0.8.2
 
 # Local Variables:
 # indent-tabs-mode: nil

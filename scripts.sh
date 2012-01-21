@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -u
 # -*- mode: shell-script; mode: flyspell-prog; -*-
 #
-# Copyright (c) 2010, Tadashi G Takaoka
+# Copyright (c) 2012, Tadashi G Takaoka
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,56 +32,35 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-source $(dirname ${BASH_ARGV[0]})/func.subr
-source $(dirname ${BASH_ARGV[0]})/path.subr
+source $(dirname $0)/main.subr
 
-which svn >/dev/null || die "missing svn"
-which git >/dev/null || die "missing git"
-
-scriptsdir=$(absolute_path $(dirname $0))
-scriptname=$(basename $0 .sh)
-buildtop=$PWD
-
-source $scriptsdir/config.subr
-builddir=$buildtop/build-$buildtarget-$scriptname
-
-function usage {
-    die "usage: $0 [--help|-h] [download|build|install|clean|cleanup...]"
+function download() {
+    return 0
 }
 
-function main() {
-    local i cmd
-    local -a cmds
+function prepare() {
+    return 0
+}
 
-    for i in "$@"; do
-        case $i in
-            -h|--help) usage;;
-            -*) die "unkown option $i, try --help";;
-            *) cmds+=($i);;
-        esac
-    done
+function build() {
+    return 0
+}
 
-    PATH=$prefix/bin:$PATH
-    if [[ ${#cmds[@]} -eq 0 ]]; then
-        download && prepare && build
-        echo "To install $scriptname under $prefix, run '$0 install'"
-    else
-        for cmd in "${cmds[@]}"; do
-            case $cmd in
-            download)
-                download || die "download failed";;
-            build)
-                prepare && build || die "build failed";;
-            install)
-                install || die "install failed";;
-            clean|cleanup)
-                cleanup;;
-            *)
-                die "unknown command '$cmd'";;
-            esac
+function install() {
+    local dir=$prefix/scripts
+    [[ -d $dir ]] || do_cmd sudo mkdir -p $dir
+    if [[ $dir != $scriptsdir ]]; then
+        for script in envsetup.subr path.subr config.subr dis430.sh; do
+            do_cmd sudo cp $scriptsdir/$script $dir
         done
     fi
 }
+
+function cleanup() {
+    return 0
+}
+
+main "$@"
 
 # Local Variables:
 # indent-tabs-mode: nil

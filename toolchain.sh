@@ -32,26 +32,22 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-. $(dirname $0)/main.subr
+source $(dirname $0)/main.subr
 
 PATH=$prefix/bin:$PATH
 
-modules="binutils gcc msp430-libc gdb mspdebug"
-
-[[ -d $prefix/bin ]] || do_cmd sudo mkdir -p $prefix/bin
-[[ -f $prefix/bin/envsetup.subr ]] \
-    || do_cmd sudo cp $scriptdir/envsetup.subr $prefix/bin
+modules="binutils gcc msp430-libc gdb mspdebug scripts"
 
 if [[ $# -eq 0 ]]; then
     for module in $modules; do
-	$scriptdir/$module.sh download
+        $scriptsdir/$module.sh download
     done
     for module in $modules; do
-	$scriptdir/$module.sh build install
+        $scriptsdir/$module.sh build install
     done
-elif [[ $1 == "cleanup" ]]; then
+elif [[ $1 == cleanup || $1 == clean ]]; then
     for module in $modules; do
-	$scriptdir/$module.sh cleanup
+        $scriptsdir/$module.sh cleanup
     done
 fi
 

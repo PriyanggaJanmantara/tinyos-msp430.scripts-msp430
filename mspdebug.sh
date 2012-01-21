@@ -32,52 +32,50 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-. $(dirname $0)/main.subr
+source $(dirname $0)/main.subr
 
-libusb=$(which libusb-legacy-config || which libusb-config) 
-[[ -x $libusb ]] \
-    || die "libusb is not installed"
+function mspdebug::config() {
+    do_cd $buildtop
+    if [[ $mspdebug_release == current ]]; then
+        mspdebug=mspdebug
+    else
+        mspdebug=$mspdebug_release
+    fi
+}
 
 function download() {
-    do_cd $buildtop
-    if [[ $release_mspdebug == current ]]; then
-        [[ -d $mspdebug ]] \
-            && { do_cd $mspdebug; do_cmd git pull; do_cd ..; } \
-            || { do_cmd git clone $repo_mspdebug \
-            || die "can not fetch mspdebug project from $repo_mspdebug"; }
+    mspdebug::config
+    if [[ $mspdebug_release == current ]]; then
+        clone git $mspdebug_repo $mspdebug
     else
-        fetch $url_mspdebug $mspdebug.tar.gz
+        local url=$mspdebug_url/$mspdebug.tar.gz/download
+        fetch $url $mspdebug.tar.gz
     fi
     return 0
 }
 
 function prepare() {
-    do_cd $buildtop
-    do_cmd rm -rf $builddir
-    if [[ $release_mspdebug == current ]]; then
-        do_cmd rsync -arC $mspdebug/ $builddir/
+    mspdebug::config
+    local libusb=$(which libusb-legacy-config || which libusb-config) 
+    [[ -x $libusb ]] \
+        || die "libusb is not installed"
+
+    if [[ $mspdebug_release == current ]]; then
+        copy $mspdebug $builddir
     else
-        do_cmd rm -rf $mspdebug
-        do_cmd tar xzf $mspdebug.tar.gz
-        do_cmd mv $mspdebug $builddir
+        copy $mspdebug.tar.gz $builddir
     fi
 
-    for p in $scriptdir/mspdebug-fix_*.patch; do
-        [[ -f $p ]] || continue
-        do_cmd "patch -d $builddir -p1 < $p" \
-            || die "patch $p failed"
+    for p in $scriptsdir/mspdebug-fix_*.patch; do
+        do_patch $builddir $p -p1
     done
-    for p in $scriptdir/mspdebug-enhance_*.patch; do
-        [[ -f $p ]] || continue
-        do_cmd "patch -d $builddir -p1 < $p" \
-            || die "patch $p failed"
+    for p in $scriptsdir/mspdebug-enhance_*.patch; do
+        do_patch $builddir $p -p1
     done
 
     if is_osx; then
-        for p in $scriptdir/mspdebug-osx_*.patch; do
-            [[ -f $p ]] || continue
-            do_cmd "patch -d $builddir -p1 < $p" \
-                || die "patch $p failed"
+        for p in $scriptsdir/mspdebug-osx_*.patch; do
+            do_patch $builddir $p -p1
         done
     fi
     return 0
