@@ -33,13 +33,11 @@
 #
 
 function absolute_path() {
-    local abs
     case $1 in
-    .) abs=${PWD};;
-    /*) abs=$1;;
-    *) abs=${PWD}/$1;;
+    .) echo ${PWD};;
+    /*) echo $1;;
+    *) echo ${PWD}/$1;;
     esac
-    echo $abs
 }
 
 function add_path() {

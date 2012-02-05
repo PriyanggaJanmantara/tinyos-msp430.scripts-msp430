@@ -34,24 +34,43 @@
 
 # We must not exit this script because this may be a part of login script.
 
-scriptsdir=$(dirname ${BASH_ARGV[0]})
-if [[ ! -f $scriptsdir/path.subr ]]; then
-    echo "$scriptsdir/path.subr not found" 1>&2
-else
-    . $scriptsdir/path.subr
-    scriptsdir=$(absolute_path $scriptsdir)
+function msp430::config() {
+    local scriptsdir=$(dirname ${BASH_SOURCE[0]})
+    if [[ $(type -t add_path) != function ]]; then
+        if [[ ! -f $scriptsdir/path.subr ]]; then
+            echo "$scriptsdir/path.subr not found" 1>&2
+            return 1
+        fi
+        source $scriptsdir/path.subr
+        scriptsdir=$(absolute_path $scriptsdir)
+    fi
 
     if [[ ! -f $scriptsdir/config.subr ]]; then
         echo "$scriptsdir/config.subr not found" 1>&2
-    else
-        . $scriptsdir/config.subr
-
-        PATH=$(add_path $PATH $prefix/sbin $prefix/bin)
-        MANPATH=$(add_path $MANPATH $prefix/share/man)
-
-        alias dis430=$scriptsdir/dis430.sh
+        return 1
     fi
-fi
+
+    local prefix buildtarget
+    local mspgcc_repo mspgcc_url mspgcc_release mspgcc_gdb_branch
+    local -a mspgcc_lts_releases
+    local mspdebug_repo mspdebug_url mspdebug_release
+    local gnu_url gmp_release
+    local mpfr_url mpfr_release
+    local mpc_url mpc_release
+    source $scriptsdir/config.subr
+
+    if [[ $# -eq 1 ]]; then
+        echo ${!1}
+        return
+    fi
+
+    PATH=$(add_path $PATH $prefix/sbin $prefix/bin)
+    MANPATH=$(add_path $MANPATH $prefix/share/man)
+
+    alias dis430=$scriptsdir/dis430.sh
+}
+
+msp430::config
 
 # Local Variables:
 # indent-tabs-mode: nil
