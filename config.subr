@@ -41,7 +41,7 @@ mspgcc_repo=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
 mspgcc_url=http://sourceforge.net/projects/mspgcc/files
 mspgcc_lts_releases=(mspgcc-20110716)
 #mspgcc_release=mspgcc-20110716
-mspgcc_release=mspgcc-20120125
+mspgcc_release=mspgcc-20120224
 #mspgcc_release=current
 #mspgcc_gdb_branch=legacy/release/gdb-7.2
 
