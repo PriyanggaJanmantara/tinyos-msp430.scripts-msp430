@@ -48,7 +48,7 @@ mspgcc_release=mspgcc-20120224
 # mspdebug
 mspdebug_repo=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
 mspdebug_url=http://sourceforge.net/projects/mspdebug/files
-#mspdebug_release=mspdebug-0.18
+#mspdebug_release=mspdebug-0.19
 mspdebug_release=current
 
 # gnu
