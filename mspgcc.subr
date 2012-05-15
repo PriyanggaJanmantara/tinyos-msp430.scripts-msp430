@@ -127,14 +127,13 @@ function mspgcc::config() {
             && gdb_url=${gdb_url/7.2/7.2a}
 
         patches_dir=
-        for rel in "${mspgcc_lts_releases[@]}"; do
-            [[ $rel != $mspgcc ]] && continue
+        if [[ $(dirname $mspgcc_release) == . ]]; then
             patches_url=$mspgcc_url/Patches/LTS/${mspgcc#mspgcc-}
             patches_dir=$buildtop/$mspgcc-patches
             [[ -d $patches_dir ]] \
                 || do_cmd mkdir -p $patches_dir
             fetch $patches_url/README.rst/download $patches_dir/README.rst
-        done
+        fi
     fi
     gmp=$gmp_release
     mpfr=$mpfr_release

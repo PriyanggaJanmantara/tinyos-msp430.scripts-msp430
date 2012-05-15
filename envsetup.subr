@@ -52,7 +52,6 @@ function msp430::config() {
 
     local prefix buildtarget
     local mspgcc_repo mspgcc_url mspgcc_release mspgcc_gdb_branch
-    local -a mspgcc_lts_releases
     local mspdebug_repo mspdebug_url mspdebug_release
     local gnu_url gmp_release
     local mpfr_url mpfr_release

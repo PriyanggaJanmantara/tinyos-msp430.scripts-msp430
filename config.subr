@@ -39,8 +39,7 @@ buildtarget=msp430
 # mspgcc
 mspgcc_repo=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
 mspgcc_url=http://sourceforge.net/projects/mspgcc/files
-mspgcc_lts_releases=(mspgcc-20110716 mspgcc-20120406)
-#mspgcc_release=mspgcc-20120406
+#mspgcc_release=mspgcc-20120406 # LTS
 mspgcc_release=DEVEL-4.7.x/mspgcc-20120425
 #mspgcc_release=current
 #mspgcc_gdb_branch=legacy/release/gdb-7.2
