@@ -79,6 +79,7 @@ function build() {
     do_cmd ../$gcc/configure --target=$buildtarget --prefix=$prefix \
         --mandir=$prefix/share/man --infodir=$prefix/share/info \
         --enable-languages="c,c++" --with-gnu-as --with-gnu-ld --with-system-zlib \
+        --with-mpfr-include=../$gcc/mpfr/src --with-mpfr-lib=mpfr/src/.libs \
         --disable-nls \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
