@@ -1,11 +1,9 @@
-diff --git a/scripts/install.sh b/scripts/install.sh
-index 3d71e63..6a6768d 100755
---- a/scripts/install.sh
-+++ b/scripts/install.sh
-@@ -4,7 +4,7 @@
- # This file is part of msp430mcu (http://sourceforge.net/projects/mspgcc/)
+--- msp430mcu-20120627/scripts/install.sh	2012-06-28 07:17:20.000000000 +0900
++++ build-msp430mcu-20120627/scripts/install.sh	2012-08-06 23:55:48.000000000 +0900
+@@ -5,7 +5,7 @@
  
  PREFIX=${1:-/msp430/install/dev}
+ DESTDIR=${DESTDIR:-}
 -MSP430MCU_ROOT=${MSP430MCU_ROOT:-${MSP430_ROOT:-/msp430}/msp430mcu}
 +MSP430MCU_ROOT=${2:-${MSP430MCU_ROOT:-${MSP430_ROOT:-/msp430}/msp430mcu}}
  UPSTREAM=${MSP430MCU_ROOT}/upstream

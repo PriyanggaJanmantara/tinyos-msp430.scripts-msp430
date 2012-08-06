@@ -40,7 +40,8 @@ buildtarget=msp430
 mspgcc_repo=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
 mspgcc_url=http://sourceforge.net/projects/mspgcc/files
 #mspgcc_release=mspgcc-20120406 # LTS
-mspgcc_release=DEVEL-4.7.x/mspgcc-20120627
+#mspgcc_release=DEVEL-4.7.x/mspgcc-20120627
+mspgcc_release=DEVEL-4.7.x/mspgcc-20120716
 #mspgcc_release=current
 #mspgcc_gdb_branch=legacy/release/gdb-7.2
 
@@ -56,11 +57,12 @@ gmp_release=gmp-5.0.5
 
 # mpfr
 mpfr_url=http://www.mpfr.org/
-mpfr_release=mpfr-3.1.0
+mpfr_release=mpfr-3.0.1
+#mpfr_release=mpfr-3.1.0
 
 # mpc
 mpc_url=http://www.multiprecision.org/mpc/download
-mpc_release=mpc-0.9
+mpc_release=mpc-1.0
 
 # Local Variables:
 # indent-tabs-mode: nil
