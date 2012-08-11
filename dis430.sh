@@ -30,8 +30,8 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-replace_label_symbol=($(
-	msp430-objdump -t "$@" | perl -lane '
+replace_symbol=($(
+        msp430-objdump -t "$@" | perl -lane '
             next if $#F < 0;
             ($val = $F[0]) =~ s/^0000?//; $name = $F[$#F]; $sect = $F[$#F-2];
             $flags = join("", splice(@F, 1, $#F-3));
@@ -45,32 +45,22 @@ replace_label_symbol=($(
                 # create sed commands to replace weak symbols.
                 print "-e s;([#\&]?)0x$val;\\1$name;";
             }'
-	))
+        ))
 
-# create sed commands to mark relative jumps operand to its absolute value surrounded by '@'.
-mark_reljmp=($(
-	msp430-objdump -d --no-show-raw-insn "$@" | \
-	    egrep 'abs 0x[0-9a-f]+' | \
-	    sed -E -e 's/([0-9a-f]+:).+\$([+-])([0-9]+).*;.*abs 0x([0-9a-f]+)/-e s;(\1.*)\\$\\\2\3;\\1@\4@;/'
-	))
-
-# create sed commands to replace relative jumps target address to generated labels.
-replace_rellabel=($(
-	msp430-objdump -d --no-show-raw-insn "$@" | \
-	    egrep 'abs 0x[0-9a-f]+' | \
-	    sed -E -e 's/.*;.*abs 0x([0-9a-f]+)/\1/' | \
-	    sort -u | awk '{print NR"@"$1}' | \
-	    sed -E -e 's/([0-9]+)@([0-9a-f]+)/-e s;^.*\2:;_\1:;/'
-	))
-
-# create sed commands to replace relative jumps operand to corresponding generated labels.
 replace_reljmp=($(
-	msp430-objdump -d --no-show-raw-insn "$@" | \
-	    egrep 'abs 0x[0-9a-f]+' | \
-	    sed -E -e 's/^.*;.*abs 0x([0-9a-f]+)/\1/' | \
-	    sort -u | awk '{print NR"@"$1}' | \
-	    sed -E -e 's/([0-9]+)@([0-9a-f]+)/-e s;@\2@;_\1;/'
-	))
+        msp430-objdump -d --no-show-raw-insn "$@" | perl -lne '
+            next unless /;abs 0x([0-9a-f]+)$/; $addr = $1;
+            # create sed commands to mark relative jumps operand to its absolute value
+            # surrounded by '@'.
+            s/([0-9a-f]+:).+\$([+-][0-9]+).*;.*/-e s;($1.*)\\\$\\$2;\\1\@$addr\@;/;
+            print;
+            $label{$addr} = ++$label_no if (!exists $label{$addr});
+            # create sed commands to replace relative jumps target address to generated labels.
+            print "-e s;^.*$addr:;_$label{$addr}:;";
+            # create sed commands to replace relative jumps operand to corresponding
+            # generated labels.
+            print "-e s;\@$addr\@;_$label{$addr};";'
+        ))
 
 case "$*" in
 *--no-show-raw-insn*)
@@ -85,19 +75,17 @@ esac
 # delete unnecessary address
 # delete constant generator comments
 # replace register name r1 and r2 to sp and sr respectively
+# replace relative jmp to labeled jmp
 # delete empty comments
 msp430-objdump -d "$@" | \
     sed -E \
-        "${mark_reljmp[@]}" \
-        "${replace_rellabel[@]}" \
         "${replace_reljmp[@]}" \
-        "${replace_label_symbol[@]}" \
+        "${replace_symbol[@]}" \
         -e 's/^([0-9a-f]{8}) <([a-zA-Z0-9_.]+)>:/\2:/' \
         "${format_address}" \
         -e 's/( *;)abs 0x[0-9a-f]+/\1/' \
         -e 's/r[23] As==[01][01],?//' \
         -e 's/([^a-zA-Z0-9_.])r1([^a-zA-Z0-9.])/\1sp\2/g' \
         -e 's/([^a-zA-Z0-9_.])r2([^a-zA-Z0-9.])/\1sr\2/g' \
+        -e 's/([a-zA-Z0-9_.]+:.+)(_[0-9]+)(.*);abs ([a-zA-Z0-9_.]+)/\1\4\3/' \
         -e 's/ *; *$//'
-
-
