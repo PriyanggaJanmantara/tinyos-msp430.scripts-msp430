@@ -30,25 +30,21 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# create sed commands to replace absolute symbols.
-replace_abssymbol=($(
+replace_label_symbol=($(
 	msp430-objdump -t "$@" | \
-	    awk '$2~/[lg]/ && $3=="*ABS*" && $NF!~/^\./ {print $1,$NF}' | \
-	    sed -E -e 's/^000([0-9a-f]+) ([a-zA-Z0-9_.]+)/-e s;((mov|jmp|call|and|bis|bic).*)([#\&])0x\1;\\1\\3\2;/'
-	))
-
-# create sed commands to replace absolute labels.
-replace_abslabel=($(
-	msp430-objdump -t "$@" | \
-	    awk '$2~/[lg]/ && $4~/.text|.data|.bss/ && $NF!~/^\./ {print $1,$NF}' | \
-	    sed -E -e 's/^000([0-9a-f]+) ([a-zA-Z0-9_.]+)/-e s;([#\&]?)0x\1;\\1\2;/'
-	))
-
-# create sed commands to replace weak symbols.
-replace_weaksymbol=($(
-	msp430-objdump -t "$@" | \
-	    awk '$2~/[wg]/ && $3==".text" && $NF!~/^\./ {print $1,$NF}' | \
-	    sed -E -e 's/^000([0-9a-f]+) ([a-zA-Z0-9_.]+)/-e s;([#\&]?)0x\1;\\1\2;/'
+	    awk '$1~/^0000?/ && $2~/[lgw]/ && $NF!~/^\./ {
+                addr = $1; sub(/^0000?/, "", addr); symb = $NF;
+                if ($2~/[lg]/ && $3=="*ABS*") {
+                    # create sed commands to replace absolute symbols.
+                    print "-e s;((mov|jmp|call|and|bis|bic).*)([#\&])0x"addr";\\1\\3"symb";";
+                } else if ($2~/[lg]/ && $4~/.text|.data|.bss/) {
+                    # create sed commands to replace absolute labels.
+                    print "-e s;([#\&]?)0x"addr";\\1"symb";";
+                } else if ($2~/[wg]/ && $3==".text") {
+                    # create sed commands to replace weak symbols.
+                    print "-e s;([#\&]?)0x"addr";\\1"symb";";
+                }
+            }'
 	))
 
 # create sed commands to mark relative jumps operand to its absolute value surrounded by '@'.
@@ -95,9 +91,7 @@ msp430-objdump -d "$@" | \
         "${mark_reljmp[@]}" \
         "${replace_rellabel[@]}" \
         "${replace_reljmp[@]}" \
-        "${replace_abssymbol[@]}" \
-        "${replace_abslabel[@]}" \
-        "${replace_weaksymbol[@]}" \
+        "${replace_label_symbol[@]}" \
         -e 's/^([0-9a-f]{8}) <([a-zA-Z0-9_.]+)>:/\2:/' \
         "${format_address}" \
         -e 's/( *;)abs 0x[0-9a-f]+/\1/' \
