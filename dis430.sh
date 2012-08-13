@@ -35,13 +35,13 @@ replace_symbol=($(
             next if $#F < 0;
             ($val = $F[0]) =~ s/^0000?//; $name = $F[$#F]; $sect = $F[$#F-2];
             $flags = join("", splice(@F, 1, $#F-3));
-            if ($flags =~ /[lg]/ && $sect eq "*ABS*") {
+            if ($flags =~ /g/ && $sect eq "*ABS*" && $name !~ /^__(bss|data)_size$/) {
                 # create sed commands to replace absolute symbols.
-                print "-e s;((mov|jmp|call|and|bis|bic).*)([#\&])0x$val;\\1\\3$name;";
-            } elsif ($flags =~ /[lg]/ && $sect =~ /.text|.data|.bss/) {
-                # create sed commands to replace absolute labels.
+                print "-e s;([#\&])0x$val;\\1$name;";
+            } elsif ($flags =~ /gO|[lg]F/ && $sect =~ /.text|.data|.bss/) {
+                # create sed commands to replace labels.
                 print "-e s;([#\&]?)0x$val;\\1$name;";
-            } elsif ($flags =~ /[wg]/ && $sect eq ".text") {
+            } elsif ($flags =~ /w/ && $sect eq ".text") {
                 # create sed commands to replace weak symbols.
                 print "-e s;([#\&]?)0x$val;\\1$name;";
             }'
