@@ -109,11 +109,8 @@ function fetch() {
     [[ -f $out ]] \
         && return
     if is_linux; then
-        # wget: -N option doesn't work with -O option
-        pushd $(dirname $out)
-        do_cmd wget -N $url \
+        do_cmd wget -O $out $url \
             || die "can not fetch $out from $url"
-        popd
     elif is_osx; then
         do_cmd curl -R -o $out -L $url \
             || die "can not fetch $out from $url"
