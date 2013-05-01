@@ -53,9 +53,7 @@ function msp430::config() {
     local prefix buildtarget
     local mspgcc_repo mspgcc_url mspgcc_release mspgcc_gdb_branch
     local mspdebug_repo mspdebug_url mspdebug_release
-    local gnu_url gmp_release
-    local mpfr_url mpfr_release
-    local mpc_url mpc_release
+    local gnu_url gmp_release mpfr_release mpc_release
     source $scriptsdir/config.subr
 
     if [[ $# -eq 1 ]]; then

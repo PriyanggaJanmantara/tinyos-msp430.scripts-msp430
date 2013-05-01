@@ -44,8 +44,8 @@ function download() {
         mspgcc::download_patches msp430-$gcc
     fi
     fetch $gnu_url/gmp/$gmp.tar.bz2
-    fetch $mpfr_url/$mpfr/$mpfr.tar.bz2
-    fetch $mpc_url/$mpc.tar.gz
+    fetch $gnu_url/mpfr/$mpfr.tar.bz2
+    fetch $gnu_url/mpc/$mpc.tar.gz
     return 0
 }
 
