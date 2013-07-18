@@ -46,7 +46,7 @@ mspgcc_release=DEVEL-4.7.x/mspgcc-20120911
 #mspgcc_gdb_branch=legacy/release/gdb-7.2
 
 # mspdebug
-mspdebug_repo=git://mspdebug.git.sourceforge.net/gitroot/mspdebug/mspdebug
+mspdebug_repo=git://git.code.sf.net/p/mspdebug/code
 mspdebug_url=http://sourceforge.net/projects/mspdebug/files
 #mspdebug_release=mspdebug-0.19
 mspdebug_release=current
