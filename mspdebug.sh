@@ -57,8 +57,12 @@ function download() {
 function prepare() {
     mspdebug::config
     local libusb=$(which libusb-legacy-config || which libusb-config) 
-    [[ -x $libusb ]] \
-        || die "libusb is not installed"
+    if [[ ! -x $libusb ]]; then
+        [[ -x port ]] \
+            && die "libusb-legacy is not installed"
+        [[ -x brew ]] \
+            && die "libusb-compat is not installed"
+    fi
 
     if [[ $mspdebug_release == current ]]; then
         copy $mspdebug $builddir
