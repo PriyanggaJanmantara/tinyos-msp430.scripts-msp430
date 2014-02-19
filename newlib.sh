@@ -1,7 +1,7 @@
 #!/bin/bash -u
 # -*- mode: shell-script; mode: flyspell-prog; -*-
 #
-# Copyright (c) 2011, Tadashi G Takaoka
+# Copyright (c) 2014, Tadashi G Takaoka
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,32 +34,66 @@
 
 source $(dirname $0)/main.subr
 
-PATH=$prefix/bin:$PATH
+function download() {
+    do_cd $buildtop
+    if [[ $newlib == newlib-current ]]; then
+        clone git $newlib_repo $newlib
+        do_cd $newlib
+        git checkout master
+        do_cd $buildtop
+    else
+        fetch $newlib_url/$newlib.tar.gz
+    fi
+    return 0
+}
 
-modules="gcc-host newlib gcc-target"
-
-if [[ $# -eq 0 ]]; then
-    $0 download build
-else
-    for cmd in "$@"; do
-        case $cmd in
-        build)
-            for module in $modules; do
-                $scriptsdir/$module.sh build install
-            done
-            ;;
-        install)
-            ;;
-        download|clean|cleanup)
-            for module in $modules; do
-                $scriptsdir/$module.sh "$@"
-            done
-            ;;
-        *)
-            die "unknown command '$cmd'";;
-        esac
+function prepare() {
+    [[ $newlib == newlib-current ]] && return
+    do_cd $buildtop
+    [[ -d $newlib ]] \
+        || copy $newlib.tar.gz $buildtop/$newlib
+    for p in $scriptsdir/newlib-fix_*.patch; do
+        do_patch $newlib $p -p1
     done
-fi
+    return 0
+}
+
+function build() {
+    [[ -d $builddir ]] && do_cmd rm -rf $builddir
+    do_cmd mkdir $builddir
+    do_cd $builddir
+    do_cmd ../$newlib/configure \
+        --target=$buildtarget \
+        --prefix=$prefix \
+        --disable-newlib-supplied-syscalls \
+        --enable-newlib-reent-small \
+        --disable-newlib-fseek-optimization \
+        --disable-newlib-wide-orient \
+        --enable-newlib-nano-formatted-io \
+        --disable-newlib-io-float \
+        --enable-newlib-nano-malloc \
+        --disable-newlib-unbuf-stream-opt \
+        --enable-lite-exit \
+        --enable-newlib-global-atexit \
+        --disable-nls \
+        || die "configure failed"
+    do_cmd make -j$(num_cpus) \
+        'CFLAGS_FOR_TARGET="-DPREFER_SIZE_OVER_SPEED -D__OPTIMIZE_SIZE__ -Os -fomit-frame-pointer"' \
+        || die "make failed"
+}
+
+function install() {
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) install
+}
+
+function cleanup() {
+    do_cd $buildtop
+    do_cmd rm -rf $builddir
+    [[ $newlib == newlib-current ]] || do_cmd rm -rf $newlib
+}
+
+main "$@"
 
 # Local Variables:
 # indent-tabs-mode: nil

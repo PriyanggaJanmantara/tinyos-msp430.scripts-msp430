@@ -33,49 +33,31 @@
 #
 
 source $(dirname $0)/main.subr
-source $(dirname $0)/mspgcc.subr
 
 function download() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        local branch=()
-        [[ -n $mspgcc_gdb_branch ]] && branch=(-b $mspgcc_gdb_branch)
-        clone git $mspgcc_repo/gdb $gdb "${branch[@]}"
-    else
-        fetch $gdb_url $gdb.tar.bz2
-    fi
+    do_cd $buildtop
+    [[ $gdb == gdb-current ]] && return
+    fetch $gnu_url/gdb/$gdb.tar.bz2
     return 0
 }
 
 function prepare() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        :
-    elif [[ ! -d $gdb ]]; then
-        copy $gdb.tar.bz2 $buildtop/$gdb
-        mspgcc::gnu_patch gdb | do_cmd patch -p1 -d $gdb
-        if is_osx_mountain_lion || is_osx_maverics; then
-            for p in $scriptsdir/${gdb}-clang_*.patch; do
-                do_patch $gdb $p -p1
-            done
-        fi
-    fi
-
+    [[ $gdb == gdb-current ]] && return
+    do_cd $buildtop
+    [[ -d $gdb ]] \
+        || copy $gdb.tar.bz2 $buildtop/$gdb
     return 0
 }
 
 function build() {
-    mspgcc::config
+    [[ $gdb == gdb-current ]] && return
     [[ -d $builddir ]] && do_cmd rm -rf $builddir
-    do_cmd mkdir -p $builddir
+    do_cmd mkdir $builddir
     do_cd $builddir
-    local werror=
-    if is_osx_mountain_lion || is_osx_maverics; then
-        export CC="gcc -Wno-sizeof-pointer-memaccess"
-        werror=--disable-werror
-        echo "==== using $CC for clang ===="
-    fi
-    do_cmd ../$gdb/configure --target=$buildtarget --prefix=$prefix \
+    do_cmd ../$gdb/configure \
+        --target=$buildtarget \
+        --prefix=$prefix \
+        --disable-sim \
         --disable-nls \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
@@ -83,19 +65,15 @@ function build() {
 }
 
 function install() {
+    [[ $gdb == gdb-current ]] && return
     do_cd $builddir
     do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        do_cd $buildtop/$gdb
-        do_cmd git checkout .
-    else
-        do_cmd rm -rf $gdb
-    fi
-    do_cmd rm -rf $builddir
+    [[ $gdb == gdb-current ]] && return
+    do_cd $buildtop
+    do_cmd rm -rf $builddir $gdb
 }
 
 main "$@"

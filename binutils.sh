@@ -33,69 +33,53 @@
 #
 
 source $(dirname $0)/main.subr
-source $(dirname $0)/mspgcc.subr
 
 function download() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        clone git $mspgcc_repo/binutils $binutils
+    do_cd $buildtop
+    if [[ $binutils == binutils-current ]]; then
+        clone git $binutils_repo $binutils
+        do_cd $binutils
+        git checkout master
+        do_cd $buildtop
     else
-        fetch $binutils_url $binutils.tar.bz2
-        mspgcc::download_patches msp430-$binutils
+        fetch $gnu_url/binutils/$binutils.tar.bz2
     fi
     return 0
 }
 
 function prepare() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        :
-    elif [[ ! -d $binutils ]]; then
-        copy $binutils.tar.bz2 $buildtop/$binutils
-        mspgcc::gnu_patch binutils | do_cmd patch -p1 -d $binutils
-        mspgcc::apply_patches msp430-$binutils $binutils
-        if is_osx_mountain_lion || is_osx_maverics; then
-            for p in $scriptsdir/${binutils}-clang_*.patch; do
-                do_patch $binutils $p -p1
-            done
-        fi
-    fi
+    do_cd $buildtop
+    [[ $binutils == binutils-current || -d $binutils ]] \
+        || copy $binutils.tar.bz2 $buildtop/$binutils
+    for p in $scriptsdir/$binutils-*.patch; do
+        do_patch $binutils $p -p1
+    done
     return 0
 }
 
 function build() {
-    mspgcc::config
     [[ -d $builddir ]] && do_cmd rm -rf $builddir
     do_cmd mkdir -p $builddir
     do_cd $builddir
-    local werror=
-    if is_osx_mountain_lion || is_osx_maverics; then
-        export CC="gcc -Wno-deprecated-declarations -Wno-empty-body -Wno-self-assign"
-        werror=--disable-werror
-        echo "==== using $CC for clang ===="
-    fi
-    do_cmd ../$binutils/configure --target=$buildtarget --prefix=$prefix \
-        --disable-nls $werror \
+    do_cmd ../$binutils/configure \
+        --target=$buildtarget \
+        --prefix=$prefix \
+        --disable-nls \
+        --disable-werror \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
         || die "make failed"
 }
 
 function install() {
-    mspgcc::config
     do_cd $builddir
     do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        do_cd $binutils
-        do_cmd git checkout .
-    else
-        do_cmd rm -rf $binutils
-    fi
+    do_cd $buildtop
     do_cmd rm -rf $builddir
+    [[ $binutils == binutils-current ]] || do_cmd rm -rf $binutils
 }
 
 main "$@"

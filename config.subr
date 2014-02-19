@@ -33,29 +33,36 @@
 #
 
 # install prefix
-prefix=/opt/msp430
-buildtarget=msp430
-
-# mspgcc
-mspgcc_repo=git://mspgcc.git.sourceforge.net/gitroot/mspgcc
-mspgcc_url=http://sourceforge.net/projects/mspgcc/files
-#mspgcc_release=mspgcc-20120406 # LTS
-#mspgcc_release=DEVEL-4.7.x/mspgcc-20120716
-mspgcc_release=DEVEL-4.7.x/mspgcc-20120911
-#mspgcc_release=current
-#mspgcc_gdb_branch=legacy/release/gdb-7.2
+prefix=/opt/msp430-elf
+buildtarget=msp430-elf
 
 # mspdebug
-mspdebug_repo=git://git.code.sf.net/p/mspdebug/code
 mspdebug_url=http://sourceforge.net/projects/mspdebug/files
-mspdebug_release=mspdebug-0.22
-#mspdebug_release=current
+#mspdebug_release=mspdebug-0.22
 
 # gnu
 gnu_url=ftp://ftp.gnu.org/pub/gnu
-gmp_release=gmp-5.0.5
-mpfr_release=mpfr-3.0.1
-mpc_release=mpc-1.0.1
+#binutils=binutils-2.24
+#gcc=gcc-4.9.2
+gmp=gmp-5.1.3
+mpfr=mpfr-3.1.2
+mpc=mpc-1.0.2
+#gdb=gdb-7.7.1
+
+# newlib
+newlib_url=ftp://sourceware.org/pub/newlib
+#newlib=newlib-2.1.0
+
+# current versions
+binutils_repo=git://sourceware.org/git/binutils-gdb.git
+binutils=binutils-current
+gdb=gdb-current
+gcc_repo=git://gcc.gnu.org/git/gcc.git
+gcc=gcc-current
+newlib_repo=git://sourceware.org/git/newlib.git
+newlib=newlib-current
+mspdebug_repo=git://git.code.sf.net/p/mspdebug/code
+mspdebug_release=current
 
 # Local Variables:
 # indent-tabs-mode: nil
