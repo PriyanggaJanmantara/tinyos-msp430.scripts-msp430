@@ -33,39 +33,25 @@
 #
 
 source $(dirname $0)/main.subr
-source $(dirname $0)/mspgcc.subr
 
 function download() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        local branch=()
-        [[ -n $mspgcc_gdb_branch ]] && branch=(-b $mspgcc_gdb_branch)
-        clone git $mspgcc_repo/gdb $gdb "${branch[@]}"
-    else
-        fetch $gdb_url $gdb.tar.bz2
-    fi
+    do_cd $buildtop
+    fetch $gnu_url/gdb/$gdb.tar.bz2
     return 0
 }
 
 function prepare() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        :
-    else
-        copy $gdb.tar.bz2 $buildtop/$gdb
-        mspgcc::gnu_patch gdb | do_cmd patch -p1 -d $gdb
-    fi
-
+    do_cd $buildtop
+    copy $gdb.tar.bz2 $buildtop/$gdb
     return 0
 }
 
 function build() {
-    mspgcc::config
     [[ -d $builddir ]] && do_cmd rm -rf $builddir
-    do_cmd mkdir -p $builddir
+    do_cmd mkdir $builddir
     do_cd $builddir
     do_cmd ../$gdb/configure --target=$buildtarget --prefix=$prefix \
-        --disable-nls \
+        --disable-sim --disable-nls \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
         || die "make failed"
@@ -77,14 +63,8 @@ function install() {
 }
 
 function cleanup() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        do_cd $buildtop/$gdb
-        do_cmd git checkout .
-    else
-        do_cmd rm -rf $gdb
-    fi
-    do_cmd rm -rf $builddir
+    do_cd $buildtop
+    do_cmd rm -rf $builddir $gdb
 }
 
 main "$@"

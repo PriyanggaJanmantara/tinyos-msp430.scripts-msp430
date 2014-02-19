@@ -1,7 +1,7 @@
 #!/bin/bash -u
 # -*- mode: shell-script; mode: flyspell-prog; -*-
 #
-# Copyright (c) 2011, Tadashi G Takaoka
+# Copyright (c) 2014, Tadashi G Takaoka
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,32 +34,32 @@
 
 source $(dirname $0)/main.subr
 
-PATH=$prefix/bin:$PATH
+function download() {
+    :
+}
 
-modules="gcc-host newlib gcc-target"
+function prepare() {
+    :
+}
 
-if [[ $# -eq 0 ]]; then
-    $0 download build
-else
-    for cmd in "$@"; do
-        case $cmd in
-        build)
-            for module in $modules; do
-                $scriptsdir/$module.sh build install
-            done
-            ;;
-        install)
-            ;;
-        download|clean|cleanup)
-            for module in $modules; do
-                $scriptsdir/$module.sh "$@"
-            done
-            ;;
-        *)
-            die "unknown command '$cmd'";;
-        esac
-    done
-fi
+function build() {
+    do_cd $builddir
+    do_cmd make -j$(num_cpus) all-target \
+        || die "make failed"
+}
+
+function install() {
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) install-target
+}
+
+function cleanup() {
+    do_cd $buildtop
+    do_cmd rm -rf $builddir $gmp $mpfr $mpc
+    [[ $gcc = gcc-current ]] || do_cmd rm -rf $gcc
+}
+
+main "$@"
 
 # Local Variables:
 # indent-tabs-mode: nil

@@ -33,58 +33,44 @@
 #
 
 source $(dirname $0)/main.subr
-source $(dirname $0)/mspgcc.subr
 
 function download() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        clone git $mspgcc_repo/binutils $binutils
-    else
-        fetch $binutils_url $binutils.tar.bz2
-        mspgcc::download_patches msp430-$binutils
-    fi
+    do_cd $buildtop
+    fetch $gnu_url/binutils/$binutils.tar.bz2
     return 0
 }
 
 function prepare() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        :
-    else
-        copy $binutils.tar.bz2 $buildtop/$binutils
-        mspgcc::gnu_patch binutils | do_cmd patch -p1 -d $binutils
-        mspgcc::apply_patches msp430-$binutils $binutils
-    fi
+    do_cd $buildtop
+    copy $binutils.tar.bz2 $buildtop/$binutils
+    for p in $scriptsdir/$binutils-*.patch; do
+        do_patch $binutils $p -p1
+    done
     return 0
 }
 
 function build() {
-    mspgcc::config
     [[ -d $builddir ]] && do_cmd rm -rf $builddir
     do_cmd mkdir -p $builddir
     do_cd $builddir
+    local disable_werror=
+    is_osx && disable_werror=--disable-werror
     do_cmd ../$binutils/configure --target=$buildtarget --prefix=$prefix \
-        --disable-nls \
+        --enable-interwork --enable-multilib \
+        --disable-nls $disable_werror \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
         || die "make failed"
 }
 
 function install() {
-    mspgcc::config
     do_cd $builddir
     do_cmd sudo make -j$(num_cpus) install
 }
 
 function cleanup() {
-    mspgcc::config
-    if [[ $mspgcc_release == current ]]; then
-        do_cd $binutils
-        do_cmd git checkout .
-    else
-        do_cmd rm -rf $binutils
-    fi
-    do_cmd rm -rf $builddir
+    do_cd $binutils
+    do_cmd rm -rf $builddir $binutils
 }
 
 main "$@"

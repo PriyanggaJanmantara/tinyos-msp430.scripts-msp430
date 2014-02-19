@@ -1,7 +1,7 @@
 #!/bin/bash -u
 # -*- mode: shell-script; mode: flyspell-prog; -*-
 #
-# Copyright (c) 2011, Tadashi G Takaoka
+# Copyright (c) 2014, Tadashi G Takaoka
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,32 +34,63 @@
 
 source $(dirname $0)/main.subr
 
-PATH=$prefix/bin:$PATH
+function download() {
+    do_cd $buildtop
+    if [[ $gcc = gcc-current ]]; then
+        clone svn $gcc_repo $gcc
+    else
+        fetch $gnu_url/gcc/$gcc/$gcc.tar.bz2
+    fi
+    fetch $gnu_url/gmp/$gmp.tar.bz2
+    fetch $gnu_url/mpfr/$mpfr.tar.bz2
+    fetch $gnu_url/mpc/$mpc.tar.gz
+    return 0
+}
 
-modules="gcc-host newlib gcc-target"
+function prepare() {
+    do_cd $buildtop
+    [[ $gcc != gcc-current || -d $gcc ]] \
+        || copy $gcc.tar.bz2 $buildtop/$gcc
 
-if [[ $# -eq 0 ]]; then
-    $0 download build
-else
-    for cmd in "$@"; do
-        case $cmd in
-        build)
-            for module in $modules; do
-                $scriptsdir/$module.sh build install
-            done
-            ;;
-        install)
-            ;;
-        download|clean|cleanup)
-            for module in $modules; do
-                $scriptsdir/$module.sh "$@"
-            done
-            ;;
-        *)
-            die "unknown command '$cmd'";;
-        esac
-    done
-fi
+    [[ -d $gmp ]] \
+        || copy $gmp.tar.bz2 $buildtop/$gmp
+    symlink $buildtop/$gmp $gcc/gmp
+
+    [[ -d $mpfr ]] \
+        || copy $mpfr.tar.bz2 $buildtop/$mpfr
+    symlink $buildtop/$mpfr $gcc/mpfr
+
+    [[ -d $mpc ]] \
+        || copy $mpc.tar.gz $buildtop/$mpc
+    symlink $buildtop/$mpc $gcc/mpc
+
+    return 0
+}
+
+function build() {
+    [[ -d $builddir ]] && do_cmd rm -rf $builddir
+    do_cmd mkdir -p $builddir
+    do_cd $builddir
+    do_cmd ../$gcc/configure --target=$buildtarget --prefix=$prefix \
+        --enable-languages="c" --with-newlib \
+        --with-gnu-as --with-gnu-ld --with-system-zlib \
+        --disable-nls \
+        || die "configure failed"
+    do_cmd make -j$(num_cpus) all-host \
+        || die "make failed"
+}
+
+function install() {
+    do_cd $builddir
+    do_cmd sudo make -j$(num_cpus) install-host
+}
+
+function cleanup() {
+    do_cd $buildtop
+    do_cmd rm -rf $builddir
+}
+
+main "$@"
 
 # Local Variables:
 # indent-tabs-mode: nil

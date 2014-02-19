@@ -36,7 +36,7 @@ source $(dirname $0)/main.subr
 
 PATH=$prefix/bin:$PATH
 
-modules="binutils gcc msp430-libc gdb mspdebug scripts"
+modules="binutils gcc gdb mspdebug scripts"
 
 if [[ $# -eq 0 ]]; then
     for module in $modules; do
