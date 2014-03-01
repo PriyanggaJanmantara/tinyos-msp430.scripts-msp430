@@ -69,7 +69,6 @@ function build() {
     do_cmd mkdir -p $builddir
     do_cd $builddir
     local werror=
-    set -x
     if is_osx_mountain_lion || is_osx_maverics; then
         export CC="gcc -Wno-deprecated-declarations -Wno-empty-body -Wno-self-assign"
         werror=--disable-werror
