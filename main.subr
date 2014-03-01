@@ -35,9 +35,6 @@
 source $(dirname ${BASH_ARGV[0]})/func.subr
 source $(dirname ${BASH_ARGV[0]})/path.subr
 
-which svn >/dev/null || die "missing svn"
-which git >/dev/null || die "missing git"
-
 scriptsdir=$(absolute_path $(dirname $0))
 scriptname=$(basename $0 .sh)
 buildtop=$PWD

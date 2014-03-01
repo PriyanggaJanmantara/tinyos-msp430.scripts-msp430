@@ -133,18 +133,21 @@ function clone() {
     local sudo=no
     [[ $1 == "--sudo" ]] && { sudo=yes; shift; }
     [[ $# -ge 3 ]] \
-        || die "usage: clone [--sudo] git|svn|cvs repo out_dir [...]"
+        || die "usage: clone [--sudo] git|cvs repo out_dir [...]"
     local cmd=$1 repo=$2 out=$3
     shift 3
+
+    case $cmd in
+    git|cvs) [[ $(which $cmd) =~ $cmd ]] || "missing $cmd";;
+    *) die "unknown version control $cmd";;
+    esac
 
     local line
     if [[ -d $out ]]; then
         do_cd $out
         case $cmd in
         git) line+=(git pull);;
-        svn) line+=(svn up);;
         cvs) line+=(cvs -q up);;
-        *)   die "unknown command $cmd";;
         esac
         [[ $sudo == yes ]] && line=(sudo "${line[@]}")
         do_cmd "${line[@]}"
@@ -152,9 +155,7 @@ function clone() {
     else
         case $cmd in
         git) line+=(git clone $repo $out "$@");;
-        svn) line+=(svn checkout $repo $out);;
         cvs) line+=(cvs -z3 -d $repo checkout -P $out);;
-        *)   die "unknown command $cmd";;
         esac
         [[ $sudo == yes ]] && line=(sudo "${line[@]}")
         do_cmd "${line[@]}"
@@ -177,7 +178,7 @@ function copy() {
     [[ -d $to ]] && do_cmd "${rm[@]} -rf $to"
     if [[ -d $from ]]; then
         do_cmd "${mkdir[@]} -p $to"
-        local exclude=(--exclude CVS --exclude .svn --exclude .git)
+        local exclude=(--exclude CVS --exclude .git)
         do_cmd "tar cf - -C $from . | ${tar[@]} xf - ${exclude[@]} -C $to"
     elif [[ -f $from ]]; then
         local out extract
