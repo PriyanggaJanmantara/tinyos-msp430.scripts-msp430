@@ -56,12 +56,13 @@ function download() {
 
 function prepare() {
     mspdebug::config
-    local libusb=$(which libusb-legacy-config || which libusb-config) 
+    local libusb=$(which libusb-config) 
     if [[ ! -x $libusb ]]; then
-        [[ -x port ]] \
-            && die "libusb-legacy is not installed"
-        [[ -x brew ]] \
-            && die "libusb-compat is not installed"
+        if [[ $(which port) =~ port ]]; then
+            die "Please install libusb-compat by port command"
+        else
+            die "libusb-compat is not installed"
+        fi
     fi
 
     if [[ $mspdebug_release == current ]]; then

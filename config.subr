@@ -48,8 +48,8 @@ mspgcc_release=DEVEL-4.7.x/mspgcc-20120911
 # mspdebug
 mspdebug_repo=git://git.code.sf.net/p/mspdebug/code
 mspdebug_url=http://sourceforge.net/projects/mspdebug/files
-#mspdebug_release=mspdebug-0.19
-mspdebug_release=current
+mspdebug_release=mspdebug-0.22
+#mspdebug_release=current
 
 # gnu
 gnu_url=ftp://ftp.gnu.org/pub/gnu

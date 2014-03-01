@@ -51,9 +51,14 @@ function prepare() {
     mspgcc::config
     if [[ $mspgcc_release == current ]]; then
         :
-    else
+    elif [[ ! -d $gdb ]]; then
         copy $gdb.tar.bz2 $buildtop/$gdb
         mspgcc::gnu_patch gdb | do_cmd patch -p1 -d $gdb
+        if [[ is_osx_mountain_lion || is_osx_maverics ]]; then
+            for p in $scriptsdir/${gdb}-clang_*.patch; do
+                do_patch $gdb $p -p1
+            done
+        fi
     fi
 
     return 0
@@ -64,6 +69,12 @@ function build() {
     [[ -d $builddir ]] && do_cmd rm -rf $builddir
     do_cmd mkdir -p $builddir
     do_cd $builddir
+    local werror=
+    if [[ is_osx_mountain_lion || is_osx_maverics ]]; then
+        export CC="gcc -Wno-sizeof-pointer-memaccess"
+        werror=--disable-werror
+        echo "==== using $CC for clang ===="
+    fi
     do_cmd ../$gdb/configure --target=$buildtarget --prefix=$prefix \
         --disable-nls \
         || die "configure failed"

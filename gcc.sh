@@ -53,19 +53,19 @@ function prepare() {
     mspgcc::config
     if [[ $mspgcc_release == current ]]; then
         :
-    else
+    elif [[ ! -d $gcc ]]; then
         copy $gcc.tar.bz2 $gcc
         mspgcc::gnu_patch gcc | do_cmd patch -p1 -d $gcc
         mspgcc::apply_patches msp430-$gcc $gcc
     fi
 
-    copy $gmp.tar.bz2 $buildtop/$gmp
+    [[ -d $gmp ]] || copy $gmp.tar.bz2 $buildtop/$gmp
     symlink $buildtop/$gmp $gcc/gmp
 
-    copy $mpfr.tar.bz2 $buildtop/$mpfr
+    [[ -d $mpfr ]] || copy $mpfr.tar.bz2 $buildtop/$mpfr
     symlink $buildtop/$mpfr $gcc/mpfr
 
-    copy $mpc.tar.gz $buildtop/$mpc
+    [[ -d $mpc ]] || copy $mpc.tar.gz $buildtop/$mpc
     symlink $buildtop/$mpc $gcc/mpc
 
     return 0

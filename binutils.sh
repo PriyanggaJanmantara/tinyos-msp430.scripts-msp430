@@ -50,10 +50,15 @@ function prepare() {
     mspgcc::config
     if [[ $mspgcc_release == current ]]; then
         :
-    else
+    elif [[ ! -d $binutils ]]; then
         copy $binutils.tar.bz2 $buildtop/$binutils
         mspgcc::gnu_patch binutils | do_cmd patch -p1 -d $binutils
         mspgcc::apply_patches msp430-$binutils $binutils
+        if [[ is_osx_mountain_lion || is_osx_maverics ]]; then
+            for p in $scriptsdir/${binutils}-clang_*.patch; do
+                do_patch $binutils $p -p1
+            done
+        fi
     fi
     return 0
 }
@@ -63,8 +68,14 @@ function build() {
     [[ -d $builddir ]] && do_cmd rm -rf $builddir
     do_cmd mkdir -p $builddir
     do_cd $builddir
+    local werror=
+    if [[ is_osx_mountain_lion || is_osx_maverics ]]; then
+        export CC="gcc -Wno-deprecated-declarations -Wno-empty-body -Wno-self-assign"
+        werror=--disable-werror
+        echo "==== using $CC for clang ===="
+    fi
     do_cmd ../$binutils/configure --target=$buildtarget --prefix=$prefix \
-        --disable-nls \
+        --disable-nls $werror \
         || die "configure failed"
     do_cmd make -j$(num_cpus) \
         || die "make failed"

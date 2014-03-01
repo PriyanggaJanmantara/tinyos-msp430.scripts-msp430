@@ -70,6 +70,16 @@ function is_osx_lion() {
     [[ $(sw_vers -productVersion) =~ ^10.7 ]]
 }
 
+function is_osx_mountain_lion() {
+    is_osx || return 1
+    [[ $(sw_vers -productVersion) =~ ^10.8 ]]
+}
+
+function is_osx_maverics() {
+    is_osx || return 1
+    [[ $(sw_vers -productVersion) =~ ^10.9 ]]
+}
+
 function is_linux() {
     [[ $(uname) = Linux ]]
 }
@@ -90,8 +100,8 @@ function symlink() {
     [[ $# -eq 2 ]] \
         || die "usage: symlink src dst"
     local src=$1 dst=$2
-    [[ -d $dst || -h $dst ]] \
-        && do_cmd rm -rf $dst
+    [[ -d $dst ]]  && do_cmd rm -rf $dst
+    [[ -h $dst ]]  && do_cmd rm -f $dst
     do_cmd ln -s $src $dst
 }
 
