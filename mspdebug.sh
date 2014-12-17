@@ -37,7 +37,7 @@ source $(dirname $0)/main.subr
 function mspdebug::config() {
     do_cd $buildtop
     if [[ $mspdebug_release == current ]]; then
-        mspdebug=mspdebug
+        mspdebug=mspdebug-current
     else
         mspdebug=$mspdebug_release
     fi
